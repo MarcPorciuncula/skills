@@ -12,4 +12,5 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | **setup-claude-preferences** | Set up user-level CLAUDE.md with personal workflow preferences |
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
+| **sync-skills** | Compare machine vs repo skills, reconcile differences, install new ones |
 | **update-branch** | Rebase branches or restack git-spice stacks |
