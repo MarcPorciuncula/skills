@@ -67,7 +67,13 @@ The distinction is:
 
 ## Temporary Files
 
-When you need to write temporary files (e.g., commit messages, scratch data for a command to read), write them in the current working directory/worktree — not in `/tmp`. Files in `/tmp` trigger a permission prompt every time. Write the file locally, use it, then delete it immediately. Never commit temporary files.
+When you need to write temporary files, write them in the current working directory/worktree — not in `/tmp`. Files in `/tmp` trigger a permission prompt every time. Write the file locally, use it, then delete it immediately. Never commit temporary files.
+
+**Commit messages and PR bodies must always use this pattern.** Do not pass long strings inline via shell substitution (`-m "$(cat <<'EOF'...)"`) — that also triggers permission prompts. Instead:
+
+1. Write the message to a temp file in the current directory (e.g., `./commit-msg.txt`)
+2. Pass it to the command via flag (e.g., `git commit -F commit-msg.txt` or `gh pr create --body-file pr-body.txt`)
+3. Delete the temp file immediately after
 
 ## Committing and Pushing
 
