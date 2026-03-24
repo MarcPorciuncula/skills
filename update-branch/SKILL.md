@@ -21,24 +21,24 @@ Run `git fetch origin` before doing anything else. **This is mandatory even if t
 - **All branches** (user says "update branches", "update all branches", etc.): Discover branches first:
   1. List open PRs via `gh pr list --author @me --state open --json number,title,headRefName`.
   2. Cross-reference with `git worktree list` — only branches with a worktree can be updated. Report any PR branches without a worktree.
-  3. Group branches by git-spice stack: for each branch with a worktree, run `gs ls` from within that worktree. If multiple PR branches belong to the same stack, group them — they'll be updated as a single unit. Standalone branches are each their own group.
+  3. Group branches by git-spice stack: for each branch with a worktree, run `git-spice ls` from within that worktree. If multiple PR branches belong to the same stack, group them — they'll be updated as a single unit. Standalone branches are each their own group.
   4. Apply Step 3 to each group. For git-spice stacks, only process once per stack (not per branch).
   5. Report a summary: which branches were updated, which were skipped (and why), and any errors.
 
 ## Step 3: Update a branch/stack
 
-**Determine if the branch is managed by git-spice** by running `gs ls` — if the current branch appears in the output, it's git-spice managed.
+**Determine if the branch is managed by git-spice** by running `git-spice ls` — if the current branch appears in the output, it's git-spice managed.
 
 ### Git-spice managed
 
-Run `gs repo sync` (ensures git-spice internal state is updated), then `gs upstack restack` (to restack from the current branch upward) or `gs stack restack` (to restack the entire stack), then `gs stack submit --update-only`.
+Run `git-spice repo sync` (ensures git-spice internal state is updated), then `git-spice upstack restack` (to restack from the current branch upward) or `git-spice stack restack` (to restack the entire stack), then `git-spice stack submit --update-only`.
 
-- **If `gs repo sync` fails** (common in bare repo + worktree setups), continue with restacking — the fetch in Step 1 already updated the remote refs.
+- **If `git-spice repo sync` fails** (common in bare repo + worktree setups), continue with restacking — the fetch in Step 1 already updated the remote refs.
 - **If restacking fails because a branch is checked out in another worktree:** Git cannot rebase a branch that's checked out elsewhere. To resolve:
   1. Run `git worktree list` to find which worktree has the conflicting branch.
   2. Check if that worktree is actively being worked on (dirty working tree, uncommitted changes).
   3. **If not actively used:** Remove it with `git worktree remove <worktree-path>`, then retry the restack.
-  4. **If actively used:** `cd` into that worktree and run `gs branch restack` there to restack just that branch in place, then return to the original worktree and continue.
+  4. **If actively used:** `cd` into that worktree and run `git-spice branch restack` there to restack just that branch in place, then return to the original worktree and continue.
 
 ### Normal branch
 

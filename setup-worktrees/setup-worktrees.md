@@ -85,10 +85,10 @@ Create `.claude/settings.local.json` with an empty allowlist (the user will popu
 ### 6. Initialize git-spice
 
 ```bash
-gs repo init --trunk main
+git-spice repo init --trunk main
 ```
 
-If `gs` is not available, skip this step and note that git-spice was not initialized.
+If `git-spice` is not available, skip this step and note that git-spice was not initialized.
 
 ### 7. Create README.md
 
@@ -123,7 +123,7 @@ git worktree add <repo-name>-c <branch>
 
 The `post-checkout` hook will automatically symlink `.claude/settings.local.json` from the bare repo into the new worktree.
 
-git-spice state is stored in `refs/spice/` in the bare repo, so `gs repo init --trunk main` only needs to be run once — it applies to all worktrees.
+git-spice state is stored in `refs/spice/` in the bare repo, so `git-spice repo init --trunk main` only needs to be run once — it applies to all worktrees.
 ```
 
 ### 8. Create CLAUDE.md
