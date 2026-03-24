@@ -14,8 +14,9 @@ Analyze review comments on the current branch's PR, categorize each one, and pre
 
 - **"Address review comments"** (or similar action-oriented phrasing): Analyze, present the table, then immediately proceed to execute the recommended changes without waiting for user approval.
 - **"Evaluate review comments"** (or similar analysis-oriented phrasing): Analyze, present the table, then **stop and wait** for the user to review, ask questions, and decide which to address.
+- **"Address and resolve review comments"** (or phrasing that includes "resolve", e.g. "fix and resolve", "address and close threads"): Same as address mode, but after fixing code also **replies to every comment** and **resolves all review threads** on GitHub. See Phase 3.
 
-In both modes, always present the analysis table first so the user can see what's happening.
+In all modes, always present the analysis table first so the user can see what's happening.
 
 ## Phase 1: Analysis
 
@@ -52,8 +53,9 @@ For question/discussion items, include the full draft reply text below the table
 
 ### After presenting
 
-- If no comments require code changes, say so and stop. Do not proceed to Phase 2.
+- If no comments require code changes (and not in address-and-resolve mode), say so and stop.
 - **Address mode:** Proceed directly to Phase 2 with all recommended changes.
+- **Address and resolve mode:** Proceed directly to Phase 2, then continue to Phase 3.
 - **Evaluate mode:** Stop and wait. The user may ask deeper questions about specific items, adjust recommendations, or tell you which numbers to address.
 
 ## Phase 2: Execution
@@ -65,4 +67,66 @@ Work through the approved items:
 3. **Questions/discussion items and out-of-scope items** are skipped during execution — the user handles replies and follow-ups.
 4. **Outdated/already-fixed items** need no action.
 
-Do not post reply comments on GitHub — the user will handle the review conversation. Focus on code changes only.
+In address and evaluate modes: do not post reply comments on GitHub — the user will handle the review conversation. Focus on code changes only.
+
+In address-and-resolve mode: continue to Phase 3 after all code changes are committed and pushed.
+
+## Phase 3: Reply and Resolve (address-and-resolve mode only)
+
+This phase only runs in address-and-resolve mode.
+
+### Gather context
+
+1. Get the repo owner/name: `gh repo view --json nameWithOwner --jq .nameWithOwner`
+2. The PR number was already determined in Phase 1.
+
+### Reply to every comment
+
+For each review comment from Phase 1, post a reply using its comment ID:
+
+```
+gh api repos/{owner}/{repo}/pulls/{number}/comments/{comment_id}/replies -f body="[Claude] ..."
+```
+
+Every reply body **must** be prefixed with `[Claude]`. Keep replies concise — one or two sentences. The reply content depends on the category:
+
+- **Outdated / already fixed:** `[Claude] This was already addressed in {commit short hash}.`
+- **Question / discussion:** `[Claude] {the draft explanation from the analysis table}.`
+- **Valid concern — simple fix:** `[Claude] Fixed — {brief description of what changed}.`
+- **Valid concern — behavioural change or test gap:** `[Claude] Fixed — added test and implementation for {brief description}.`
+- **Out of scope:** `[Claude] Acknowledged — deferring to a follow-up.`
+
+### Resolve all review threads
+
+After all replies are posted, resolve every unresolved review thread:
+
+1. Fetch thread IDs:
+   ```
+   gh api graphql -f query='
+     query {
+       repository(owner: "{owner}", name: "{repo}") {
+         pullRequest(number: {number}) {
+           reviewThreads(first: 100) {
+             nodes {
+               id
+               isResolved
+             }
+           }
+         }
+       }
+     }'
+   ```
+
+2. For each thread where `isResolved` is `false`, resolve it:
+   ```
+   gh api graphql -f query='
+     mutation {
+       resolveReviewThread(input: {threadId: "{thread_id}"}) {
+         thread { isResolved }
+       }
+     }'
+   ```
+
+### Summary
+
+After replying and resolving, present a brief summary: how many comments were replied to, how many threads were resolved.
