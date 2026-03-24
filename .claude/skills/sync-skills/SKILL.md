@@ -17,6 +17,7 @@ Compare the skills installed on this machine (`~/.claude/skills/` and `~/.claude
 ### Machine skills
 - List all skills in `~/.claude/skills/*/SKILL.md`
 - List all commands in `~/.claude/commands/*.md`
+- For each, check if it's a symlink (`test -L`) and where it points (`readlink`)
 - Read each file's content
 
 ### Repo skills
@@ -29,15 +30,19 @@ Build a combined list of all skill names from both sources.
 
 For each skill name, determine which category it falls into:
 
-### Identical
-Present on both machine and repo with the same content. No action needed.
+### Symlinked
+Present on both machine and repo, and the machine version is a symlink pointing to this repo. Already in sync — no action needed.
+
+### Identical (copied)
+Present on both machine and repo with the same content, but the machine version is a regular file (not a symlink). Recommend converting to a symlink for automatic sync.
 
 ### Different
-Present on both but content differs. Diff the two versions and determine which is likely newer:
+Present on both but content differs (machine version is a regular file). Diff the two versions and determine which is likely newer:
 - Check `git log` in the repo for the last commit date touching that skill
 - Check file modification time on the machine via `stat`
 - If one is clearly newer (e.g. repo was updated last week, machine file hasn't changed in months), recommend updating the older one
 - If it's ambiguous, show the diff and ask the user which version they prefer or whether to merge
+- After resolving, offer to convert to a symlink unless the user intentionally maintains a local copy
 
 ### Machine only
 Exists on the machine but not in the repo. The user may want to add it to the repo.
@@ -51,10 +56,11 @@ Show a summary table:
 
 | Skill | Status | Recommendation |
 |-------|--------|----------------|
-| red-green | Identical | — |
-| update-branch | Different | Repo is newer → update machine |
+| red-green | Symlinked | — |
+| update-branch | Identical (copied) | Convert to symlink |
+| clean-workspaces | Different | Repo is newer → update machine, then symlink |
 | my-custom-skill | Machine only | Add to repo? |
-| setup-notifications | Repo only | Install to machine? |
+| setup-notifications | Repo only | Install to machine (symlink)? |
 
 For skills with differences, show a concise summary of what changed (not the full diff unless the user asks).
 
@@ -62,10 +68,15 @@ For skills with differences, show a concise summary of what changed (not the ful
 
 Wait for the user to confirm which actions to take, then execute:
 
-- **Update machine from repo:** Copy the repo version to the appropriate location (`~/.claude/skills/<name>/SKILL.md` or `~/.claude/commands/<name>.md`). Preserve the original directory structure — skills with `SKILL.md` go in a subdirectory, commands go as flat `.md` files.
-- **Update repo from machine:** Copy the machine version into the repo, commit, and push.
-- **Add new skill to repo:** Copy from machine to repo, commit, and push.
-- **Install skill from repo:** Copy from repo to `~/.claude/skills/<name>/SKILL.md` on the machine. Create the directory if needed.
+- **Update machine from repo (symlinked):** If the skill on the machine is already a symlink pointing to this repo, it's already in sync — no action needed. If it's a regular file, replace it with a symlink (see Install below).
+- **Update machine from repo (local copy):** If the user explicitly wants a local copy (e.g. to customize for this machine), copy the repo version to the appropriate location. This is the exception, not the default.
+- **Update repo from machine:** Copy the machine version into the repo, commit, and push. If the machine skill was a regular file, offer to replace it with a symlink now that the repo has the latest version.
+- **Add new skill to repo:** Copy from machine to repo, commit, and push. Then offer to replace the machine copy with a symlink.
+- **Install skill from repo:** Symlink the individual skill directory into `~/.claude/skills/`. For skills: `ln -s <repo>/<name> ~/.claude/skills/<name>`. For commands: `ln -s <repo>/<name>/<file>.md ~/.claude/commands/<name>.md`. Create parent directories if needed. Symlink each skill individually — do not symlink the entire skills directory, so that skills from other sources or machine-local skills can coexist.
+
+### When to copy instead of symlink
+
+If the user wants to modify a skill for the current machine only, they should replace the symlink with a regular copy (`cp -L` to dereference). This breaks the auto-sync for that skill, so future updates from the repo will need to be synced manually for that skill.
 
 Batch all repo changes into a single commit.
 
