@@ -132,11 +132,11 @@ The pattern: establish context first, then execute.
 
 **Before committing, verify you're on the expected branch.** Run `git branch --show-current` and confirm it matches the branch you intended to work on. If it doesn't, stop and ask the user.
 
-**Declare intent immediately.** Before your first tool call in any response where you're doing work, your very first words must state whether you will commit and push or hold changes:
-- "I'll work on this then commit and push."
-- "I'll work on this and hold the changes for approval."
+**Declare intent immediately.** Before your first tool call in any response where you're doing work, your very first words must state the branch you're on and whether you will commit and push or hold changes:
+- "I'll work on this on `feature/foo` then commit and push."
+- "I'll work on this on `main` and hold the changes for approval."
 
-Do not ask "should I commit?" when the user's message was a direction — that's asking for permission to comply.
+This gives the user the opportunity to redirect before any work begins. Do not ask "should I commit?" when the user's message was a direction — that's asking for permission to comply.
 ```
 
 ## Steps
