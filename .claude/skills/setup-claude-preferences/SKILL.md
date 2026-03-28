@@ -77,6 +77,8 @@ The distinction is:
 
 ## Temporary Files
 
+Permission prompts interrupt the user's flow and require them to stop and approve before work can continue. Each one is a small failure of preparation — a sign that the approach was wrong, not that the user needs to grant more access. The rules below exist to prevent them entirely. Follow them; don't look for alternatives.
+
 **NEVER use the system temp folder (`/tmp`, `/var/tmp`, `$TMPDIR`, `os.tmpdir()`, `tempfile`, or any OS-provided temp directory).** These always trigger permission prompts and are harder to track. There are no exceptions to this rule.
 
 **ALWAYS write temp files in the current working directory/worktree.** Write the file locally, use it, then delete it immediately. Never commit temporary files.
@@ -101,6 +103,8 @@ The required pattern:
 | "Shell substitution `$(cat ...)` avoids the temp file" | Still triggers permission prompts — Write tool only |
 
 ## Shell Commands
+
+Directory-targeting flags and chained `cd` commands trigger the same permission prompts as temp file misuse — and carry the same cost. The fix is always the same: establish context cleanly first, then execute.
 
 **Use absolute paths instead of `cd` wherever possible.** Most commands accept a path argument directly.
 
