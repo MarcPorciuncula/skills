@@ -49,6 +49,8 @@ When refactoring or removing code in internal codebases:
 - The user explicitly requests limiting the scope to avoid touching too many files
 - Even then, ask first rather than assuming deprecation is preferred
 
+**Before invoking this exception, count the call sites** — grep for usages, don't estimate. If you find yourself thinking "there are probably more than 10," that's not the exception condition. The exception requires actually having more than 10.
+
 **The principle:** Deprecation is for maintaining backwards compatibility in public APIs. Internal codebases should evolve atomically - when you change something, update all its uses.
 
 ## Refactoring and Cleanup
@@ -59,7 +61,15 @@ Follow the "leave it better than you found it" principle. When working in an are
 - The user is discussing, suggesting, or requesting the cleanup
 - The refactor is in code directly related to what was just changed
 
-**Do not push back on refactoring requests** by citing ticket scope, suggesting it belongs in a separate PR, or asking "are you sure?" when the user has clearly directed the work. If the user is asking for it, do it.
+**Do not push back on refactoring requests.** If you find yourself about to say any of the following, stop — that's pushback, and the user has already directed the work:
+
+| Pushback phrase | What to do instead |
+|----------------|-------------------|
+| "This might be better as a separate PR" | Do it in this PR |
+| "This is outside the scope of the ticket" | The user is expanding the scope — proceed |
+| "Are you sure you want to do this?" | Yes, they are — proceed |
+| "This is a lot of changes for one PR" | Do it |
+| "Should I open a follow-up issue instead?" | No — do it now |
 
 The distinction is:
 - **Unsolicited refactoring:** Don't do this without asking — stay focused on the task
@@ -67,13 +77,46 @@ The distinction is:
 
 ## Temporary Files
 
-When you need to write temporary files, write them in the current working directory/worktree — not in `/tmp`. Files in `/tmp` trigger a permission prompt every time. Write the file locally, use it, then delete it immediately. Never commit temporary files.
+**NEVER use the system temp folder (`/tmp`, `/var/tmp`, `$TMPDIR`, `os.tmpdir()`, `tempfile`, or any OS-provided temp directory).** These always trigger permission prompts and are harder to track. There are no exceptions to this rule.
 
-**Commit messages and PR bodies must always use this pattern.** Do not pass long strings inline (shell substitution or heredoc) — both trigger permission prompts. Instead:
+**ALWAYS write temp files in the current working directory/worktree.** Write the file locally, use it, then delete it immediately. Never commit temporary files.
 
-1. Use the Write file tool to write the message to a temp file in the current directory (e.g., `./commit-msg.txt`)
+**Any multiline input to a command must be written to a temp file using the Write file tool.** This applies to commit messages, PR bodies, and anything else with more than one line.
+
+**NEVER use heredocs (`<< 'EOF'`) or shell string substitution (`$(...)`) to pass multiline content.** These are convoluted and trigger permission prompts. The Write tool is always the right approach.
+
+The required pattern:
+
+1. Use the **Write file tool** (not Bash, not echo, not cat heredoc) to write the content to a temp file in the current directory (e.g., `./commit-msg.txt`)
 2. Pass it to the command via flag (e.g., `git commit -F commit-msg.txt` or `gh pr create --body-file pr-body.txt`)
 3. Delete the temp file immediately after with a Bash tool call
+
+**Violating the letter of this rule is violating the spirit of it.** These are all violations even though they don't use `/tmp`:
+
+| Temptation | Reality |
+|-----------|---------|
+| "It's a short message, `-m` is fine" | Any message worth writing deserves the Write tool |
+| "Heredoc is faster than a tool call" | Heredocs trigger permission prompts — Write tool is faster |
+| "I'm not using `/tmp` so the rule doesn't apply" | The rule covers every approach except Write tool + flag |
+| "Shell substitution `$(cat ...)` avoids the temp file" | Still triggers permission prompts — Write tool only |
+
+## Shell Commands
+
+**Use absolute paths instead of `cd` wherever possible.** Most commands accept a path argument directly.
+
+**When `cd` is necessary, run it as a standalone Bash tool call** — never chain it with `&&` to subsequent commands. Chaining conflates navigation with execution and makes commands harder to read and review.
+
+**Never use directory-targeting CLI flags** to encode the working path into a command. These flags trigger the same permission checks as `/tmp` and obscure context:
+
+| Avoid | Instead |
+|-------|---------|
+| `cd /path && command` | `cd /path` (standalone), then `command` |
+| `git -C /path/to/repo status` | `cd /path/to/repo` (standalone), then `git status` |
+| `pnpm --dir /path/to/pkg install` | `cd /path/to/pkg` (standalone), then `pnpm install` |
+| `make -C /path/to/project` | `cd /path/to/project` (standalone), then `make` |
+| `npm --prefix /path run build` | `cd /path` (standalone), then `npm run build` |
+
+The pattern: establish context first, then execute.
 
 ## Committing and Pushing
 
@@ -85,9 +128,11 @@ When you need to write temporary files, write them in the current working direct
 
 **Before committing, verify you're on the expected branch.** Run `git branch --show-current` and confirm it matches the branch you intended to work on. If it doesn't, stop and ask the user.
 
-**Declare intent immediately.** When you begin executing work, your very first words should state whether you will commit and push or hold changes:
+**Declare intent immediately.** Before your first tool call in any response where you're doing work, your very first words must state whether you will commit and push or hold changes:
 - "I'll work on this then commit and push."
 - "I'll work on this and hold the changes for approval."
+
+Do not ask "should I commit?" when the user's message was a direction — that's asking for permission to comply.
 ```
 
 ## Steps
