@@ -10,13 +10,23 @@ description: >
 
 Analyze review comments on the current branch's PR, categorize each one, and present recommendations. Depending on the user's phrasing, either proceed to fix immediately or wait for input.
 
+## Red Flags — Stop
+
+| Thought | Reality |
+|---------|---------|
+| "These all look like simple fixes, I'll just start executing" | The analysis table comes first in every mode. Always. |
+| "The username looks like a bot so I'll auto-resolve without checking the category" | Bot status affects auto-resolve eligibility, not whether analysis is required. Check the category. |
+| "I reviewed this comment already, I can add its ID to the resolve list" | Only IDs recorded during Phase 1 may be resolved. Post-push comments are out of scope regardless of content. |
+
 ## Mode
 
 - **"Address review comments"** (or similar action-oriented phrasing): Analyze, present the table, then immediately proceed to execute the recommended changes without waiting for user approval.
 - **"Evaluate review comments"** (or similar analysis-oriented phrasing): Analyze, present the table, then **stop and wait** for the user to review, ask questions, and decide which to address.
 - **"Address and resolve review comments"** (or phrasing that includes "resolve", e.g. "fix and resolve", "address and close threads"): Same as address mode, but after fixing code also **replies to every comment** and **resolves threads** on GitHub per the auto-resolve rules. See Phase 3.
 
-In all modes, always present the analysis table first so the user can see what's happening.
+<HARD-GATE>
+In ALL modes — including address mode where execution follows immediately — you MUST present the analysis table before taking any action. This applies even when all comments look obviously simple or trivial. The table is the commitment: it shows the user exactly what you are about to do and creates an opportunity to redirect before any changes are made.
+</HARD-GATE>
 
 ## Phase 1: Analysis
 
@@ -111,7 +121,7 @@ After replying, write a temp file with the comment IDs to resolve (one per line)
 
 **The guiding principle:** If a human reviewer would want to see the reply and confirm it's satisfactory before the thread closes, leave it open. If the fix is mechanical and the reply makes it self-evident, resolve it.
 
-**CRITICAL: Only pass comment IDs that were analyzed in Phase 1.** New review comments may have appeared after the code was pushed in Phase 2 — the allow-list ensures those are not touched.
+**CRITICAL: Only pass comment IDs that were recorded in Phase 1.** New review comments may have appeared after the code was pushed in Phase 2 — resolving them without analysis would be silently wrong. The allow-list you built in Phase 1 is the only source of truth for what gets resolved. Do not expand it here.
 
 ### Summary
 

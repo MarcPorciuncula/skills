@@ -34,11 +34,12 @@ Run `git fetch origin` before doing anything else. **This is mandatory even if t
 Run `git-spice repo sync` (ensures git-spice internal state is updated), then `git-spice upstack restack` (to restack from the current branch upward) or `git-spice stack restack` (to restack the entire stack), then `git-spice stack submit --update-only`.
 
 - **If `git-spice repo sync` fails** (common in bare repo + worktree setups), continue with restacking — the fetch in Step 1 already updated the remote refs.
-- **If restacking fails because a branch is checked out in another worktree:** Git cannot rebase a branch that's checked out elsewhere. To resolve:
-  1. Run `git worktree list` to find which worktree has the conflicting branch.
-  2. Check if that worktree is actively being worked on (dirty working tree, uncommitted changes).
-  3. **If not actively used:** Remove it with `git worktree remove <worktree-path>`, then retry the restack.
-  4. **If actively used:** `cd` into that worktree and run `git-spice branch restack` there to restack just that branch in place, then return to the original worktree and continue.
+- **If restacking skips branches checked out in other worktrees:** `git-spice upstack restack` will skip branches checked out in other worktrees. To handle this:
+  1. Start from the bottom of the stack and work up.
+  2. For each branch that was skipped, `cd` into the worktree that has it checked out and run `git-spice branch restack` there.
+  3. **Worktree names may not match branch names** — agents frequently check out different branches in worktrees. Use `git branch --show-current` to verify which branch a worktree actually has, and `git checkout <correct-branch>` to fix mismatches before restacking.
+  4. If a worktree has no dirty changes and isn't needed, you can also remove it with `git worktree remove <path>` and then restack from elsewhere.
+- **If restacking reports a stash error but the working tree is clean:** git-spice sometimes reports "Dirty changes in the worktree were stashed, but could not be re-applied" even when the rebase succeeded and the working tree is clean. This is a cosmetic error. Verify with `git status` — if the branch has diverged from its remote tracking branch and the working tree is clean, the restack succeeded despite the error. Continue with the next step.
 
 ### Normal branch
 
@@ -64,6 +65,13 @@ After rebasing:
 ## Pushing
 
 Do not ask for confirmation — the user has already authorized pushing by requesting the update. Force pushes use `--force-with-lease` and the local reflog serves as a safety net.
+
+## Red Flags — Stop
+
+| Thought | Reality |
+|---------|---------|
+| "The rebase reported 'already up to date' — done" | The tracking ref may be stale. Verify the base branch hasn't been merged and moved underneath this one. |
+| "The base branch hasn't changed, I can skip the PR check" | A branch that hasn't changed in diff can still have been merged into main. Check PR state, not just the diff. |
 
 ## Conflict resolution
 

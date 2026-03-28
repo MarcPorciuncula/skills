@@ -9,6 +9,24 @@ description: >
 
 # Red-Green Testing
 
+This skill is **rigid** — follow it exactly. The discipline has no exceptions for perceived simplicity or time pressure.
+
+Skipping the verification plan or writing implementation before a failing test produces code that *appears* tested but isn't. The test suite becomes a liability: it passes regardless of whether the behavior is correct.
+
+## Red Flags — Stop
+
+If you find yourself thinking any of these, stop — you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
+| "This fix is too small for a full red-green cycle" | Small fixes are exactly where untested bugs hide. The cycle is fast for small changes. |
+| "I already know the solution — I'll write tests after" | Tests written after implementation verify what you wrote, not what the code should do. |
+| "I'll write all tests upfront, then implement everything" | This is not red-green. Each logical change gets its own cycle. |
+| "The test is clearly failing — I don't need to check the failure message" | Tests can fail for the wrong reason (missing import, wrong setup). Verify the message points to missing behavior. |
+| "I'll implement quickly and clean up the commit order later" | The commit order IS the workflow. Red commit before green commit, always. |
+
+---
+
 A disciplined test-driven development workflow. Every logical change follows its own red-green-refactor cycle. A full implementation may produce multiple cycles: red, green, red, green, red, green.
 
 ## Autonomy
@@ -47,7 +65,17 @@ Once you find the level where behavior is directly verifiable in a function's in
 
 1. Write or modify tests according to your verification plan. Add, change, or remove tests as needed.
 2. **Tests MUST compile.** A test that doesn't compile is not "running red" — it's not running at all. Use real types, valid imports, and correct syntax. Stub or zero-initialize values where the implementation doesn't exist yet, but the test code itself must be valid.
-3. Run the tests. Verify they **fail for the right reason** — the behavior doesn't exist yet, not a setup error, wrong import, or misconfigured test harness. The failure message should clearly point to the missing behavior.
+3. Run the tests.
+
+<HARD-GATE>
+Do NOT proceed to implementation until:
+- The test **compiles** without errors
+- The test **runs and fails**
+- The failure message **clearly points to the missing behavior** — not a setup error, wrong import, or misconfigured test harness
+
+If the test passes before any implementation exists, the test is wrong. Fix it before continuing.
+</HARD-GATE>
+
 4. Commit the failing tests with a message describing what's being tested, e.g. `Add tests for batch deduplication` or `Update validation tests for new error cases`. Push the branch.
 
 ## Green phase

@@ -116,7 +116,7 @@ Read the existing `~/.claude/settings.json` and merge in the following hooks con
 }
 ```
 
-**Important:** If the user already has hooks configured, merge carefully — don't overwrite existing hook entries.
+**Important:** If the user already has hooks configured, you MUST merge carefully — read the existing config first and add entries without overwriting. Clobbering existing hooks silently breaks them.
 
 ## Step 3: Verify
 
