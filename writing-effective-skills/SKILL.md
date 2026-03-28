@@ -1,0 +1,245 @@
+---
+name: writing-effective-skills
+description: >
+  Use when writing or improving skills or CLAUDE.md directives. Covers the
+  persuasion principles and design patterns that make agent instructions
+  reliably followed rather than rationalized away.
+---
+
+# Writing Effective Skills and Directives
+
+## The Core Problem
+
+Instructions that merely describe desired behavior have a predictable failure mode: the agent will follow them until it doesn't feel like it. Under time pressure, apparent simplicity, or strong priors about the "right" approach, rules get rationalized away. The agent doesn't disobey — it convinces itself the rule doesn't apply *this particular time*.
+
+Effective skills are designed around this failure mode. They describe what to do *and* intercept the moment before the agent stops doing it.
+
+---
+
+## Research Foundation
+
+LLMs respond to the same persuasion principles as humans. This isn't accidental — they're trained on text where these patterns precede compliance.
+
+**Meincke et al. (2025)** tested 7 persuasion principles across N=28,000 LLM conversations. Compliance increased from **33% → 72%** (p < .001) with persuasion techniques. Authority, commitment, and scarcity were the most effective. Liking actively degraded quality.
+
+**Cialdini (2021)** — the foundational framework for the seven principles.
+
+The key insight: **LLMs are parahuman.** Treat instruction design as applied behavioral science, not documentation.
+
+---
+
+## The Seven Principles
+
+### 1. Authority — use for discipline-enforcing rules
+
+Imperative language removes decision fatigue. Absolute framing eliminates "is this an exception?" questions.
+
+```markdown
+✅ YOU MUST complete Phase 1 before proposing any fix. No exceptions.
+❌ Generally try to investigate before proposing fixes.
+```
+
+**Iron Law pattern** — monospaced all-caps for the non-negotiable core:
+```
+NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+```
+
+### 2. Commitment — use to create accountability
+
+Requiring public declarations before action creates consistency pressure. Once the agent announces what it will do, not doing it is a violation of its own stated intent.
+
+```markdown
+✅ Before your first tool call, your very first words must state the branch and commit intent.
+❌ Let the user know what you're planning to do.
+```
+
+**TodoWrite for checklists** — creating a task per checklist item forces sequential commitment. Steps don't get skipped because skipping requires actively marking an incomplete item done.
+
+**Require announcements** — "Announce at start: 'I'm using the writing-plans skill'" creates a commitment that the rest of the response must honor.
+
+### 3. Scarcity — use to prevent "I'll do it later"
+
+Time-bound or sequentially-dependent requirements prevent deferral.
+
+```markdown
+✅ BEFORE attempting any fix, complete Phase 1.
+❌ Root cause investigation is important and should be done.
+```
+
+### 4. Social Proof — use to establish norms
+
+"Every time," "always," and failure statistics make the rule feel like universal practice rather than a personal preference.
+
+```markdown
+✅ Checklists without TodoWrite tracking = steps get skipped. Every time.
+❌ Some people find TodoWrite helpful for checklists.
+```
+
+Grounding rules in real costs makes them feel discovered, not imposed:
+> "From 24 failure memories: the user said 'I don't believe you' — trust broken."
+
+### 5. Unity — use for collaborative workflows
+
+Shared-identity framing reduces adversarial reading of rules. "We're colleagues working together" lands differently than "you must."
+
+```markdown
+✅ We're colleagues. I need your honest technical judgment, not agreement.
+❌ You should probably tell me if I'm wrong.
+```
+
+### 6. Reciprocity — use sparingly
+
+Rarely needed. Other principles are more effective and less manipulative-feeling.
+
+### 7. Liking — avoid for compliance
+
+Actively counterproductive. Creates sycophancy. Never use for discipline enforcement.
+
+---
+
+## The Most Important Pattern: Anti-Rationalization Tables
+
+This is the highest-leverage technique in skill design and the most absent from typical instructions.
+
+Every rule has a predictable bypass: the agent doesn't break the rule, it convinces itself the rule doesn't apply. Anti-rationalization tables name the specific internal thoughts that precede violation, and rebut them before they become output.
+
+**Structure:**
+```markdown
+| If you're thinking... | Reality |
+|----------------------|---------|
+| "This is too simple to need the process" | Simple cases have root causes too. Process is fast for simple bugs. |
+| "I'll just do this one quick thing first" | Check BEFORE doing anything. |
+| "The rule doesn't apply here because..." | Violating the letter is violating the spirit. |
+```
+
+The table works because it intercepts *at the moment of temptation*, not after. By the time the agent has written out a justification for skipping, it's already committed to the bypass. The table fires earlier.
+
+**Write these tables by asking:** What will the agent think right before it violates this rule? Write that thought down. Then rebut it.
+
+---
+
+## Closing the Meta-Loophole
+
+The most common sophisticated bypass: honoring the letter while evading the spirit. An agent can technically follow every rule while still missing the intent entirely.
+
+Close this explicitly:
+
+```markdown
+**Violating the letter of this rule is violating the spirit of it.**
+```
+
+Use this for any rule where creative compliance is a real risk — especially rules with examples or patterns that could be partially applied.
+
+---
+
+## Hard Triggers vs. Soft Triggers
+
+Soft triggers require judgment to activate. Hard triggers fire automatically.
+
+```markdown
+❌ Soft: "When you begin executing work, declare your intent."
+✅ Hard: "Before your first tool call in any response where you're doing work..."
+```
+
+Soft triggers fail under ambiguity ("is this 'executing work'?"). Hard triggers don't require interpretation.
+
+**Implementation intentions** ("When X, do Y") are more effective than general directives ("generally do Y"). The more specific the trigger condition, the less cognitive load on compliance.
+
+---
+
+## Principle Combinations by Skill Type
+
+| Skill type | Use | Avoid |
+|------------|-----|-------|
+| Discipline-enforcing (TDD, verification) | Authority + Commitment + Social Proof | Liking, Reciprocity |
+| Process/guidance | Moderate Authority + Scarcity + Unity | Heavy authority |
+| Collaborative | Unity + Commitment | Authority, Liking |
+| Reference/lookup | Clarity only | All persuasion |
+
+Don't use all seven. Two or three well-chosen principles are more effective than a maximally-persuasive pile-on that reads as manipulative.
+
+---
+
+## Pattern Library
+
+### The Iron Law
+For the single non-negotiable core of a discipline skill:
+```
+NO [BEHAVIOR] WITHOUT [PREREQUISITE] FIRST
+```
+
+### The Red Flags Table
+For intercepting rationalization before it becomes output:
+```markdown
+## Red Flags — STOP
+
+If you find yourself thinking any of these, stop — you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
+| "[specific rationalization]" | [specific rebuttal] |
+```
+
+### The Failure Modes Table
+For rules with multiple violation patterns:
+```markdown
+| Avoid | Instead |
+|-------|---------|
+| [specific bad pattern] | [specific correct pattern] |
+```
+
+### The Cost Statement
+One sentence grounding a rule in real consequences:
+```markdown
+Each permission prompt interrupts the user's flow and requires them to stop
+and approve before work can continue. It is a small failure of preparation.
+```
+
+### The Spirit Statement
+For rules where creative compliance is a risk:
+```markdown
+**Violating the letter of this rule is violating the spirit of it.**
+```
+
+### The Announcement Requirement (Commitment)
+```markdown
+**Announce at start:** "I'm using the [skill name] skill to [purpose]."
+```
+
+### The Hard Gate
+For preventing premature progression:
+```markdown
+<HARD-GATE>
+Do NOT proceed to [next phase] until [condition]. This applies regardless of
+perceived simplicity.
+</HARD-GATE>
+```
+
+---
+
+## Checklist: Reviewing a Skill or Directive
+
+Before finalizing, ask:
+
+- [ ] **What's the failure mode?** How will this rule be rationalized away? Is there an anti-rationalization table for the most likely bypasses?
+- [ ] **Is the trigger hard or soft?** Can it be made more specific?
+- [ ] **Is the letter/spirit gap closed?** Could an agent technically comply while missing the intent?
+- [ ] **Are principles overloaded?** Using all seven at once reads as manipulative. Two or three is right.
+- [ ] **Is Liking present?** Remove it.
+- [ ] **Are costs grounded?** Is there at least one sentence explaining what failure actually looks like?
+- [ ] **For checklists:** Is TodoWrite required? Without it, steps get skipped.
+- [ ] **Is it rigid or flexible?** Make this explicit. Rigid skills should say "follow exactly."
+
+---
+
+## Applying This to CLAUDE.md Directives
+
+CLAUDE.md directives follow the same principles as skills but are always-on rather than invoked. A few specific considerations:
+
+**Don't just state the rule — intercept the bypass.** "Don't use `/tmp`" is incomplete. The full rule includes what to do instead, why, and a table of the tempting alternatives that are also prohibited.
+
+**State the cost, not just the prohibition.** "These trigger permission prompts" is better than "don't do this." "Permission prompts interrupt the user's flow and signal a failure of preparation" is better still.
+
+**Avoid exception clauses that invite estimation.** "Don't do X unless there are many consumers" will be read as "use my judgment about what 'many' means." Fix with: "Before invoking this exception, count — don't estimate."
+
+**Extend commitment mechanisms to CLAUDE.md.** Requiring a branch + intent declaration before the first tool call is a commitment mechanism, not just a transparency measure. The agent is now accountable to its own opening statement.
