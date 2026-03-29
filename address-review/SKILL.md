@@ -3,7 +3,8 @@ name: address-review
 description: >
   Analyze and address PR review comments. Use when the user mentions
   addressing review comments, evaluating review comments, PR feedback,
-  or review feedback on the current branch's PR.
+  review feedback, checking comments, looking at comments, PR comments,
+  or any reference to comments on the current branch's PR.
 ---
 
 # Address Review Comments
@@ -20,9 +21,8 @@ Analyze review comments on the current branch's PR, categorize each one, and pre
 
 ## Mode
 
-- **"Address review comments"** (or similar action-oriented phrasing): Analyze, present the table, then immediately proceed to execute the recommended changes without waiting for user approval.
-- **"Evaluate review comments"** (or similar analysis-oriented phrasing): Analyze, present the table, then **stop and wait** for the user to review, ask questions, and decide which to address.
-- **"Address and resolve review comments"** (or phrasing that includes "resolve", e.g. "fix and resolve", "address and close threads"): Same as address mode, but after fixing code also **replies to every comment** and **resolves threads** on GitHub per the auto-resolve rules. See Phase 3.
+- **"Address review comments"** (or similar action-oriented phrasing): Analyze, present the table, then immediately proceed to execute the recommended changes, reply to comments, and resolve threads per the auto-resolve rules. Phases 1 → 2 → 3.
+- **"Evaluate review comments"** (or similar analysis-oriented phrasing): Analyze, present the table, then **stop and wait** for the user to review, ask questions, and decide which to address. Phase 1 only — do not post replies or resolve threads.
 
 <HARD-GATE>
 In ALL modes — including address mode where execution follows immediately — you MUST present the analysis table before taking any action. This applies even when all comments look obviously simple or trivial. The table is the commitment: it shows the user exactly what you are about to do and creates an opportunity to redirect before any changes are made.
@@ -65,9 +65,7 @@ For question/discussion items, include the full draft reply text below the table
 
 ### After presenting
 
-- If no comments require code changes (and not in address-and-resolve mode), say so and stop.
-- **Address mode:** Proceed directly to Phase 2 with all recommended changes.
-- **Address and resolve mode:** Proceed directly to Phase 2, then continue to Phase 3.
+- **Address mode:** Proceed directly to Phase 2 with all recommended changes, then continue to Phase 3 (reply and resolve).
 - **Evaluate mode:** Stop and wait. The user may ask deeper questions about specific items, adjust recommendations, or tell you which numbers to address.
 
 ## Phase 2: Execution
@@ -79,13 +77,13 @@ Work through the approved items:
 3. **Questions/discussion items and out-of-scope items** are skipped during execution — the user handles replies and follow-ups.
 4. **Outdated/already-fixed items** need no action.
 
-In address and evaluate modes: do not post reply comments on GitHub — the user will handle the review conversation. Focus on code changes only.
+In evaluate mode: do not post reply comments on GitHub — the user will handle the review conversation. Focus on code changes only.
 
-In address-and-resolve mode: continue to Phase 3 after all code changes are committed and pushed.
+In address mode: continue to Phase 3 after all code changes are committed and pushed.
 
-## Phase 3: Reply and Resolve (address-and-resolve mode only)
+## Phase 3: Reply and Resolve
 
-This phase only runs in address-and-resolve mode.
+This phase runs in address mode after Phase 2 completes. It does not run in evaluate mode.
 
 ### Reply to comments
 
@@ -129,13 +127,13 @@ After replying and resolving, present a brief summary: how many comments were re
 
 ## Scripts
 
-This skill includes helper scripts in its directory (adjacent to this SKILL.md file):
+This skill includes helper scripts in its directory (adjacent to this SKILL.md file). All scripts have executable permissions — **invoke them directly via Bash using their path, not via `bash script.sh`**. The skill directory path is available as `$SKILL_DIR` (set by the skill loader). Use `"$SKILL_DIR/script-name.sh"` to invoke each script.
 
 - **`fetch-review-comments.sh`** — Fetch all inline review comments for a PR.
-  Usage: `fetch-review-comments.sh <owner/repo> <pr_number>`
+  Usage: `"$SKILL_DIR/fetch-review-comments.sh" <owner/repo> <pr_number>`
 - **`fetch-reviews.sh`** — Fetch all review statuses for a PR.
-  Usage: `fetch-reviews.sh <owner/repo> <pr_number>`
+  Usage: `"$SKILL_DIR/fetch-reviews.sh" <owner/repo> <pr_number>`
 - **`reply-to-comments.sh`** — Bulk-reply to PR review comments in one invocation. Reads `comment_id:body` pairs from a file (one per line).
-  Usage: `reply-to-comments.sh <owner/repo> <pr_number> <file>`
+  Usage: `"$SKILL_DIR/reply-to-comments.sh" <owner/repo> <pr_number> <file>`
 - **`resolve-threads.sh`** — Resolve PR review threads, filtered to only threads whose root comment ID is in the provided allow-list. Reads comment IDs from a file (one per line). Prevents accidentally resolving threads from newer reviews.
-  Usage: `resolve-threads.sh <owner/repo> <pr_number> <file>`
+  Usage: `"$SKILL_DIR/resolve-threads.sh" <owner/repo> <pr_number> <file>`
