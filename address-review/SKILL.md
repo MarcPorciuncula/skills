@@ -127,13 +127,13 @@ After replying and resolving, present a brief summary: how many comments were re
 
 ## Scripts
 
-This skill includes helper scripts in its directory (adjacent to this SKILL.md file). All scripts have executable permissions — **invoke them directly via Bash using their path, not via `bash script.sh`**. The skill directory path is available as `$SKILL_DIR` (set by the skill loader). Use `"$SKILL_DIR/script-name.sh"` to invoke each script.
+This skill includes helper scripts in its directory (adjacent to this SKILL.md file). All scripts have executable permissions — **invoke them directly using their absolute path, not via `bash script.sh`**. To find the script directory, use `dirname` on this skill file's path, or locate scripts by globbing for `**/address-review/fetch-review-comments.sh` under `~/.claude/skills/`.
 
 - **`fetch-review-comments.sh`** — Fetch all inline review comments for a PR.
-  Usage: `"$SKILL_DIR/fetch-review-comments.sh" <owner/repo> <pr_number>`
+  Usage: `<skill-dir>/fetch-review-comments.sh <owner/repo> <pr_number>`
 - **`fetch-reviews.sh`** — Fetch all review statuses for a PR.
-  Usage: `"$SKILL_DIR/fetch-reviews.sh" <owner/repo> <pr_number>`
+  Usage: `<skill-dir>/fetch-reviews.sh <owner/repo> <pr_number>`
 - **`reply-to-comments.sh`** — Bulk-reply to PR review comments in one invocation. Reads `comment_id:body` pairs from a file (one per line).
-  Usage: `"$SKILL_DIR/reply-to-comments.sh" <owner/repo> <pr_number> <file>`
+  Usage: `<skill-dir>/reply-to-comments.sh <owner/repo> <pr_number> <file>`
 - **`resolve-threads.sh`** — Resolve PR review threads, filtered to only threads whose root comment ID is in the provided allow-list. Reads comment IDs from a file (one per line). Prevents accidentally resolving threads from newer reviews.
-  Usage: `"$SKILL_DIR/resolve-threads.sh" <owner/repo> <pr_number> <file>`
+  Usage: `<skill-dir>/resolve-threads.sh <owner/repo> <pr_number> <file>`
