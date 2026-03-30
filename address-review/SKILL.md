@@ -127,7 +127,7 @@ After replying and resolving, present a brief summary: how many comments were re
 
 ## Scripts
 
-This skill includes helper scripts in its directory (adjacent to this SKILL.md file). All scripts have executable permissions — **invoke them directly using their absolute path, not via `bash script.sh`**. To find the script directory, use `dirname` on this skill file's path, or locate scripts by globbing for `**/address-review/fetch-review-comments.sh` under `~/.claude/skills/`.
+This skill includes helper scripts in its directory (adjacent to this SKILL.md file). All scripts have executable permissions — **invoke them directly using their absolute path, not via `bash script.sh`**.
 
 - **`fetch-review-comments.sh`** — Fetch all inline review comments for a PR.
   Usage: `<skill-dir>/fetch-review-comments.sh <owner/repo> <pr_number>`
