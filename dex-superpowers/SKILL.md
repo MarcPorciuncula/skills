@@ -70,3 +70,4 @@ These are loaded on demand by the phase documents that reference them:
 | `implementer-prompt.md` | Subagent template for task implementation |
 | `spec-reviewer-prompt.md` | Subagent template for spec compliance review |
 | `code-quality-reviewer-prompt.md` | Subagent template for code quality review |
+| `plan-reviewer-prompt.md` | Subagent template for plan review after task decomposition |

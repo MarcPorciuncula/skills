@@ -23,7 +23,7 @@ Complete these steps in order:
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
 6. **Create dex epic** — save the validated design as a dex epic description (see below)
 7. **Decompose into dex subtasks** — break the design into implementation tasks with blocking dependencies (see below)
-8. **Plan self-check** — review the task tree for dependency accuracy, research gaps, granularity, and completeness (see below)
+8. **Plan review (subagent)** — dispatch a reviewer subagent to check the task tree for dependency accuracy, research gaps, granularity, and completeness (see below)
 9. **User reviews task tree** — ask user to review the dex tasks before proceeding
 10. **Transition to execution** — load `execution.md` to begin implementation
 
@@ -40,7 +40,9 @@ digraph brainstorming {
     "User approves design?" [shape=diamond];
     "Create dex epic" [shape=box];
     "Decompose into subtasks" [shape=box];
-    "Plan self-check" [shape=box];
+    "Dispatch plan reviewer subagent\n(./plan-reviewer-prompt.md)" [shape=box];
+    "Reviewer approves plan?" [shape=diamond];
+    "Fix issues" [shape=box];
     "User reviews task tree?" [shape=diamond];
     "Load execution.md" [shape=doublecircle];
 
@@ -54,8 +56,11 @@ digraph brainstorming {
     "User approves design?" -> "Present design sections" [label="no, revise"];
     "User approves design?" -> "Create dex epic" [label="yes"];
     "Create dex epic" -> "Decompose into subtasks";
-    "Decompose into subtasks" -> "Plan self-check";
-    "Plan self-check" -> "User reviews task tree?";
+    "Decompose into subtasks" -> "Dispatch plan reviewer subagent\n(./plan-reviewer-prompt.md)";
+    "Dispatch plan reviewer subagent\n(./plan-reviewer-prompt.md)" -> "Reviewer approves plan?";
+    "Reviewer approves plan?" -> "Fix issues" [label="no"];
+    "Fix issues" -> "User reviews task tree?";
+    "Reviewer approves plan?" -> "User reviews task tree?" [label="yes"];
     "User reviews task tree?" -> "Decompose into subtasks" [label="changes requested"];
     "User reviews task tree?" -> "Load execution.md" [label="approved"];
 }
@@ -142,16 +147,11 @@ dex edit <task-id> --add-blocker <dependency-id>  # for sequential dependencies
 - Large initiative (5+ independent tasks) → Epic with tasks
 - 3-7 children per parent is optimal. Don't over-decompose.
 
-### Step 8: Plan Self-Check
+### Step 8: Plan Review (Subagent)
 
-After creating the task tree, review it before moving on:
+**Do NOT self-check the plan.** The agent who built the plan sees what it intended, not what it wrote. Dispatch a reviewer subagent using `plan-reviewer-prompt.md` with the epic ID. The reviewer reads the tasks from dex directly.
 
-1. **Dependency accuracy** — does each `blocked-by` relationship reflect a real build/type/data dependency? Remove false dependencies that would serialize parallelizable work.
-2. **Research gaps** — are there open questions (which library, which API, which approach) that could become rabbit holes during implementation? Pin them down in the task description or call them out as risks.
-3. **Task granularity** — is each task's value clear? If a task's purpose overlaps heavily with another, fold them together or sharpen the distinction.
-4. **Completeness** — do the subtasks cover all done criteria from the epic?
-
-Fix any issues found. No need to re-review — just fix and move on.
+If the reviewer finds issues, fix them. No need to re-review after fixing — the user review gate (Step 9) follows immediately.
 
 ### Step 9: User Review Gate
 
