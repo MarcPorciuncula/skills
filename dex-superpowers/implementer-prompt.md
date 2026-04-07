@@ -62,6 +62,9 @@ Task tool (general-purpose):
       and note it as a concern in your report
     - In existing codebases, follow established patterns. Improve code you're touching
       the way a good developer would, but don't restructure things outside your task.
+    - **Exception:** If the task spec mandates a change that affects consumers, updating
+      those consumers IS your task. "Too many consumers" is not a reason to skip or
+      work around a spec-mandated change. Code is cheap — update all of them.
 
     ## When You're in Over Your Head
 
@@ -95,9 +98,10 @@ Task tool (general-purpose):
     - Is the code clean and maintainable?
 
     **Discipline:**
-    - Did I avoid overbuilding (YAGNI)?
-    - Did I only build what was requested?
+    - Did I build everything the spec requires? Did I cut any corners?
+    - Did I avoid building things NOT in the spec (YAGNI)?
     - Did I follow existing patterns in the codebase?
+    - If the spec required changing consumers, did I update ALL of them?
 
     **Testing:**
     - Do tests actually verify behavior (not just mock behavior)?

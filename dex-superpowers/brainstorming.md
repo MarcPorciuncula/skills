@@ -165,10 +165,27 @@ Wait for the user's response. If they request changes, make them and re-run the 
 
 - **One question at a time** - Don't overwhelm with multiple questions
 - **Multiple choice preferred** - Easier to answer than open-ended when possible
-- **YAGNI ruthlessly** - Remove unnecessary features from all designs
+- **Consider YAGNI** - Don't add speculative features nobody asked for
+- **Correctness is non-negotiable** - Code is cheap. If something is critical to the system working correctly, it stays in the design. Never cut correctness requirements to reduce effort.
+- **Escalate scope reductions, don't decide them** - You can recommend cutting something, but the user decides. Never present a reduced scope as a fait accompli.
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design, get approval before moving on
 - **Be flexible** - Go back and clarify when something doesn't make sense
+
+## Red Flags — Scope Reduction
+
+If you find yourself thinking any of these, stop — you're about to cut something the user may consider critical:
+
+| Thought | Reality |
+|---------|---------|
+| "This is too much effort for now" | Code is cheap. Present the full-effort option and let the user decide. |
+| "We can add this later" | Later means never, and the user didn't ask for a phased approach. Ask first. |
+| "This is out of scope" | You're defining scope right now. If it's relevant to correctness, it's in scope until the user says otherwise. |
+| "Let's keep it simple for v1" | Simplicity is good. Cutting correctness requirements is not simplicity — it's cutting corners. |
+| "This would require changing too much existing code" | That's an effort estimate, not a design argument. Present the change with the effort noted and let the user decide. |
+| "YAGNI" | YAGNI applies to speculative features nobody asked for. It does not apply to requirements that ensure the system works correctly. |
+
+**The rule:** You can recommend against including something. You MUST NOT unilaterally remove it from the design. Present the trade-off and let the user choose.
 
 ## Visual Companion
 

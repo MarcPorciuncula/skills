@@ -78,7 +78,8 @@ git diff {BASE_SHA}..{HEAD_SHA}
 **Requirements:**
 - All plan requirements met?
 - Implementation matches spec?
-- No scope creep?
+- No scope creep (building things not in spec)?
+- No scope shrink (skipping spec requirements or working around them to avoid effort)?
 - Breaking changes documented?
 
 **Production Readiness:**

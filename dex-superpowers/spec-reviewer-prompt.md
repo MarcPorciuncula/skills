@@ -48,6 +48,12 @@ Task tool (general-purpose):
     - Did they over-engineer or add unnecessary features?
     - Did they add "nice to haves" that weren't in spec?
 
+    **Scope reduction:**
+    - Did they skip or work around a requirement because it was "too much effort"?
+    - Did they avoid updating consumers that the spec required changing?
+    - Did they add workarounds or compatibility shims instead of making the change the spec mandates?
+    - Scope reduction is not the implementer's call. If the spec says do it, it must be done.
+
     **Misunderstandings:**
     - Did they interpret requirements differently than intended?
     - Did they solve the wrong problem?
