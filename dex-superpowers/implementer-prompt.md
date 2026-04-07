@@ -8,6 +8,16 @@ Task tool (general-purpose):
   prompt: |
     You are implementing dex task <id>: [task name]
 
+    ## Before You Do Anything Else
+
+    Read these files now, before reading the rest of this prompt:
+    - `<skill-dir>/tdd.md` — Required TDD process. Follow it exactly.
+
+    [Replace <skill-dir> with the absolute path to the dex-superpowers skill directory.]
+
+    Do not proceed from a summary or memory of what these files contain.
+    Read them. The process described in tdd.md is non-negotiable.
+
     ## Task Description
 
     [Paste the output of `dex show <id> --full` here.

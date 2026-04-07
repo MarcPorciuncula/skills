@@ -264,10 +264,106 @@ Never fix bugs without a test.
 
 ## Testing Anti-Patterns
 
-When adding mocks or test utilities, read `testing-anti-patterns.md` in this directory to avoid common pitfalls:
-- Testing mock behavior instead of real behavior
-- Adding test-only methods to production classes
-- Mocking without understanding dependencies
+Tests must verify real behavior, not mock behavior. Mocks are a means to isolate, not the thing being tested.
+
+**Core principle:** Test what the code does, not what the mocks do.
+
+### Anti-Pattern 1: Testing Mock Behavior
+
+```typescript
+// ❌ BAD: Testing that the mock exists
+test('renders sidebar', () => {
+  render(<Page />);
+  expect(screen.getByTestId('sidebar-mock')).toBeInTheDocument();
+});
+
+// ✅ GOOD: Test real component or don't mock it
+test('renders sidebar', () => {
+  render(<Page />);  // Don't mock sidebar
+  expect(screen.getByRole('navigation')).toBeInTheDocument();
+});
+```
+
+Before asserting on any mock element, ask: "Am I testing real component behavior or just mock existence?" If testing mock existence, delete the assertion or unmock the component.
+
+### Anti-Pattern 2: Test-Only Methods in Production
+
+```typescript
+// ❌ BAD: destroy() only used in tests
+class Session {
+  async destroy() {  // Looks like production API!
+    await this._workspaceManager?.destroyWorkspace(this.id);
+  }
+}
+
+// ✅ GOOD: Test utilities handle test cleanup
+// Session has no destroy() - it's stateless in production
+// In test-utils/
+export async function cleanupSession(session: Session) {
+  const workspace = session.getWorkspaceInfo();
+  if (workspace) {
+    await workspaceManager.destroyWorkspace(workspace.id);
+  }
+}
+```
+
+Before adding any method to a production class, ask: "Is this only used by tests?" If yes, put it in test utilities instead.
+
+### Anti-Pattern 3: Mocking Without Understanding
+
+```typescript
+// ❌ BAD: Mock breaks test logic
+test('detects duplicate server', () => {
+  // Mock prevents config write that test depends on!
+  vi.mock('ToolCatalog', () => ({
+    discoverAndCacheTools: vi.fn().mockResolvedValue(undefined)
+  }));
+
+  await addServer(config);
+  await addServer(config);  // Should throw - but won't!
+});
+
+// ✅ GOOD: Mock at correct level
+test('detects duplicate server', () => {
+  vi.mock('MCPServerManager'); // Just mock slow server startup
+
+  await addServer(config);  // Config written
+  await addServer(config);  // Duplicate detected ✓
+});
+```
+
+Before mocking any method: (1) What side effects does the real method have? (2) Does this test depend on any of those side effects? (3) Do I fully understand what this test needs? If unsure, run with the real implementation first, observe what needs to happen, then add minimal mocking.
+
+### Anti-Pattern 4: Incomplete Mocks
+
+```typescript
+// ❌ BAD: Partial mock - only fields you think you need
+const mockResponse = {
+  status: 'success',
+  data: { userId: '123', name: 'Alice' }
+  // Missing: metadata that downstream code uses
+};
+
+// ✅ GOOD: Mirror real API completeness
+const mockResponse = {
+  status: 'success',
+  data: { userId: '123', name: 'Alice' },
+  metadata: { requestId: 'req-789', timestamp: 1234567890 }
+};
+```
+
+Mock the COMPLETE data structure as it exists in reality, not just fields your immediate test uses. Partial mocks fail silently when code depends on omitted fields.
+
+### Mock Red Flags
+
+- Assertion checks for `*-mock` test IDs
+- Methods only called in test files
+- Mock setup is >50% of test
+- Test fails when you remove mock
+- Can't explain why mock is needed
+- Mocking "just to be safe"
+
+When mocks become too complex (setup longer than test logic, mocking everything to make test pass), consider integration tests with real components — often simpler than complex mocks.
 
 ## Verification Checklist
 
