@@ -37,6 +37,17 @@ Task tool (general-purpose):
 
     **Ask them now.** Raise any concerns before starting work.
 
+    ## Shell Discipline
+
+    **Never combine `cd` with other commands.** `cd /path && git commit` triggers
+    permission prompts. You are already in the correct working directory — just run
+    `git commit` directly. If you need to change directory, run `cd` as a standalone
+    Bash call, then run the next command separately.
+
+    **Write temp files with the Write tool, not heredocs.** For commit messages and
+    multi-line input, use the Write tool to create a file (e.g., `commit-msg.txt`),
+    pass it via flag (`git commit -F commit-msg.txt`), then delete it.
+
     ## Your Job
 
     Once you're clear on requirements:
