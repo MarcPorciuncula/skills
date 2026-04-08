@@ -65,6 +65,8 @@ Before starting execution:
 
 ## Per-Task Flow
 
+**Execute tasks one at a time, in dependency order.** Even when multiple tasks are unblocked, dispatch a single implementer, complete its full review cycle, then move to the next. This is not a limitation — it's the model. Each task builds on committed work from previous tasks.
+
 For each task:
 
 1. **Mark in-progress:** `dex start <id>`
@@ -197,7 +199,6 @@ Final reviewer: All requirements met, ready to merge
 - Start implementation on main/master branch without explicit user consent
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
-- Dispatch multiple implementation subagents in parallel (conflicts)
 - Make subagent read dex tasks directly (provide full text instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
