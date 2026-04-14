@@ -54,10 +54,12 @@ digraph process {
 
 Before starting execution:
 
-1. **Read all tasks upfront:** `dex list <epic-id>` to get the full task tree, then `dex show <id> --full` for each task. Extract the full text and context now — don't make subagents read dex.
+1. **Survey the task tree:** `dex list <epic-id>` to see all tasks, their statuses, and dependencies. Read individual tasks with `dex show <id>` (without `--full`) to get enough context for batching decisions.
 2. **Check for ready tasks:** `dex list --ready` to find unblocked tasks.
 3. **Group into batches** (see Batching below).
 4. **Identify the execution order** from blocking dependencies between batches.
+
+**Don't read full task descriptions into your own context.** Subagents read their own tasks via `dex show <id> --full`. You only need summaries for batching and coordination.
 
 ## Batching
 
@@ -86,10 +88,10 @@ For each batch:
 
 1. **Mark in-progress:** `dex start <id>` for each task in the batch
 2. **Record base SHA:** `git rev-parse HEAD` — you'll need this for the reviewer
-3. **Dispatch implementer subagent** using the template in `implementer-prompt.md`. Paste the full task descriptions (from `dex show <id> --full` for each task in the batch) into the prompt. Include parent context if they're subtasks.
+3. **Dispatch implementer subagent** using the template in `implementer-prompt.md`. List the dex task IDs (and parent ID if subtasks) — the implementer reads them via `dex show`. Add brief scene-setting context about where these tasks fit.
 4. **Handle implementer status** (see below)
 5. **Dispatch reviewer subagent** using `reviewer-prompt.md`. Include:
-   - The task specs (same text you gave the implementer)
+   - The dex task IDs (and parent ID if subtasks) — the reviewer reads them via `dex show`
    - The implementer's status report
    - Base SHA (from step 2) and head SHA (current HEAD after implementer committed)
    - The reviewer runs `git diff` itself — do NOT read the diff into your own context
@@ -98,13 +100,13 @@ For each batch:
 
 ## Context Pre-Curation
 
-**Your job as orchestrator is to point, not to read.** You know the task spec and the commit range. The subagent does the heavy reading.
+**Your job as orchestrator is to point, not to read.** Give subagents dex task IDs, commit ranges, and brief scene-setting. They read the details themselves.
 
-For **implementers:** provide full task descriptions, parent context, and any answers to prior questions. The implementer reads the codebase itself.
+For **implementers:** provide dex task IDs (and parent ID for subtasks), brief context about where the tasks fit, and answers to any prior questions. The implementer reads task descriptions and codebase itself.
 
-For **reviewers:** provide the task spec, implementer's report, and the base/head SHAs. The reviewer starts by running `git diff <base>..<head>` to see exactly what changed. This focuses the review on the actual delta instead of requiring the reviewer to explore the codebase to discover what was modified.
+For **reviewers:** provide dex task IDs, the implementer's status report, and base/head SHAs. The reviewer reads task specs via `dex show` and the diff via `git diff`.
 
-**Do NOT** read diffs, file contents, or test output into your own context to relay them. That pollutes your context window with content that belongs in the subagent's context.
+**Do NOT** read full task descriptions, diffs, file contents, or test output into your own context to relay them. That duplicates content across context windows. Subagents have the tools to read what they need — give them pointers, not payloads.
 
 ## Model Selection
 
@@ -150,15 +152,14 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 ```
 You: I'm executing the dex task tree for epic abc123.
 
-[Read all tasks: dex list abc123]
-[dex show def456 --full, dex show ghi789 --full, dex show jkl012 --full, ...]
-[Extract all task text and context]
+[Survey tasks: dex list abc123]
+[dex show def456, dex show ghi789, dex show jkl012 — summaries only for batching]
 
 Batch 1: Tasks def456 + ghi789 (both touch hook installation, share files)
 
 [dex start def456, dex start ghi789]
 [Record base SHA: a1b2c3d]
-[Dispatch implementer subagent with both task descriptions]
+[Dispatch implementer subagent with task IDs def456, ghi789, parent abc123]
 
 Implementer: "Before I begin - should hooks be installed at user or system level?"
 
@@ -173,7 +174,7 @@ Implementer: "Got it. Implementing now..."
   - Committed as f4e5d6c
 
 [Dispatch reviewer subagent with:
-  - Both task specs
+  - Task IDs: def456, ghi789 (parent: abc123)
   - Implementer's report
   - Base SHA: a1b2c3d, Head SHA: f4e5d6c]
 
@@ -212,7 +213,7 @@ Final reviewer: ✅ Approved — integration is clean
 - Start implementation on main/master branch without explicit user consent
 - Skip review for any batch
 - Proceed with unfixed issues
-- Make subagent read dex tasks directly (provide full text instead)
+- Give subagents more dex IDs than they need (they'll wander — scope to exactly the relevant tasks)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found spec issues = not done)
@@ -248,7 +249,8 @@ Final reviewer: ✅ Approved — integration is clean
 - Batching reduces cold-start overhead for related tasks
 - Unified review (spec + quality) eliminates redundant codebase exploration
 - Reviewer starts from `git diff` — focused on the delta, not exploring the repo
-- Controller points subagents at the right context without reading it itself
+- Subagents read their own task specs via dex — no content duplication across context windows
+- Controller stays lightweight: task IDs and SHAs, not full descriptions and diffs
 - Questions surfaced before work begins (not after)
 
 **Quality gates:**

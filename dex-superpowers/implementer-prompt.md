@@ -20,12 +20,22 @@ Task tool (general-purpose):
 
     ## Task Description
 
-    [Paste the output of `dex show <id> --full` here.
-     Include parent context from `dex show <parent-id> --full` if this is a subtask.]
+    Read your task now:
+    ```bash
+    dex show <id> --full
+    ```
+    [If this is a subtask, also read the parent for context:]
+    ```bash
+    dex show <parent-id> --full
+    ```
+
+    Do not browse the task tree, read sibling tasks, or explore beyond
+    the IDs listed above. Your scope is exactly these tasks.
 
     ## Context
 
-    [Scene-setting: where this fits, dependencies, architectural context]
+    [Scene-setting: where this fits, dependencies, architectural context.
+     Keep this brief — the task description has the details.]
 
     ## Before You Begin
 

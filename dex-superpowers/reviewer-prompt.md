@@ -14,7 +14,22 @@ Task tool (general-purpose):
 
     ## What Was Requested
 
-    [Paste the dex task description (`dex show <id> --full`) here]
+    Read the task spec now:
+    ```bash
+    dex show <id> --full
+    ```
+    [If reviewing a batch, list all task IDs:]
+    ```bash
+    dex show <id-1> --full
+    dex show <id-2> --full
+    ```
+    [If these are subtasks, also read the parent for context:]
+    ```bash
+    dex show <parent-id> --full
+    ```
+
+    Do not browse the task tree, read sibling tasks, or explore beyond
+    the IDs listed above. Your scope is exactly these tasks.
 
     ## What Implementer Claims They Built
 
