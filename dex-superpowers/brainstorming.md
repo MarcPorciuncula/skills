@@ -17,23 +17,20 @@ Every project goes through this process. A todo list, a single-function utility,
 Complete these steps in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
-3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation
-5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Create dex epic** — save the validated design as a dex epic description (see below)
-7. **Decompose into dex subtasks** — break the design into implementation tasks with blocking dependencies (see below)
-8. **Plan review (subagent)** — dispatch a reviewer subagent to check the task tree for dependency accuracy, research gaps, granularity, and completeness (see below)
-9. **User reviews task tree** — ask user to review the dex tasks before proceeding
-10. **Transition to execution** — load `execution.md` to begin implementation
+2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
+3. **Propose 2-3 approaches** — with trade-offs and your recommendation
+4. **Present design** — in sections scaled to their complexity, get user approval after each section
+5. **Create dex epic** — save the validated design as a dex epic description (see below)
+6. **Decompose into dex subtasks** — break the design into implementation tasks with blocking dependencies (see below)
+7. **Plan review (subagent)** — dispatch a reviewer subagent to check the task tree for dependency accuracy, research gaps, granularity, and completeness (see below)
+8. **User reviews task tree** — ask user to review the dex tasks before proceeding
+9. **Transition to execution** — load `execution.md` to begin implementation
 
 ## Process Flow
 
 ```dot
 digraph brainstorming {
     "Explore project context" [shape=box];
-    "Visual questions ahead?" [shape=diamond];
-    "Offer Visual Companion\n(own message, no other content)" [shape=box];
     "Ask clarifying questions" [shape=box];
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
@@ -46,10 +43,7 @@ digraph brainstorming {
     "User reviews task tree?" [shape=diamond];
     "Load execution.md" [shape=doublecircle];
 
-    "Explore project context" -> "Visual questions ahead?";
-    "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
-    "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];
-    "Offer Visual Companion\n(own message, no other content)" -> "Ask clarifying questions";
+    "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
@@ -187,21 +181,73 @@ If you find yourself thinking any of these, stop — you're about to cut somethi
 
 **The rule:** You can recommend against including something. You MUST NOT unilaterally remove it from the design. Present the trade-off and let the user choose.
 
-## Visual Companion
+## Explaining With Structure
 
-A browser-based companion for showing mockups, diagrams, and visual options during brainstorming. Available as a tool — not a mode. Accepting the companion means it's available for questions that benefit from visual treatment; it does NOT mean every question goes through the browser.
+When presenting designs, problems, or solutions, **show structure visually** using ASCII diagrams in the terminal. A diagram communicates architecture faster than prose and gives the user something concrete to react to.
 
-**Offering the companion:** When you anticipate that upcoming questions will involve visual content (mockups, layouts, diagrams), offer it once for consent:
-> "Some of what we're working on might be easier to explain if I can show it to you in a web browser. I can put together mockups, diagrams, comparisons, and other visuals as we go. This feature is still new and can be token-intensive. Want to try it? (Requires opening a local URL)"
+**Default to visual explanation.** Don't wait to be asked. If what you're describing has components, flow, hierarchy, or spatial relationships, draw it.
 
-**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the offer above and nothing else. Wait for the user's response before continuing. If they decline, proceed with text-only brainstorming.
+**Scope explanations one step wider than the immediate question.** If the user asks about a component, show where it sits in the system. If they ask about a flow, show what triggers it and what it feeds into. The user shouldn't have to ask "what calls this?" or "what happens next?" — that context should already be in the diagram.
 
-**Per-question decision:** Even after the user accepts, decide FOR EACH QUESTION whether to use the browser or the terminal. The test: **would the user understand this better by seeing it than reading it?**
+**Use the right format for the content:**
 
-- **Use the browser** for content that IS visual — mockups, wireframes, layout comparisons, architecture diagrams, side-by-side visual designs
-- **Use the terminal** for content that is text — requirements questions, conceptual choices, tradeoff lists, A/B/C/D text options, scope decisions
+```
+Call trees — who calls what, and in what order:
 
-A question about a UI topic is not automatically a visual question. "What does personality mean in this context?" is a conceptual question — use the terminal. "Which wizard layout works better?" is a visual question — use the browser.
+  handleRequest()
+  ├── validateInput()
+  │   ├── checkAuth()
+  │   └── parseBody()
+  ├── processOrder()
+  │   ├── checkInventory()
+  │   └── createTransaction()
+  └── sendResponse()
 
-If they agree to the companion, read the detailed guide before proceeding:
-`visual-companion.md` in this directory.
+Component/data flow — how pieces connect:
+
+  ┌──────────┐     ┌───────────┐     ┌──────────┐
+  │  Client  │────▶│  Gateway  │────▶│ Service  │
+  └──────────┘     └───────────┘     └──────────┘
+                         │
+                         ▼
+                   ┌───────────┐
+                   │   Cache   │
+                   └───────────┘
+
+Directory/file structure:
+
+  src/
+  ├── hooks/
+  │   ├── install.ts      ← new
+  │   └── verify.ts       ← new
+  ├── config/
+  │   └── schema.ts       ← modified
+  └── index.ts
+
+State machines / decision flow:
+
+  IDLE ──▶ LOADING ──▶ READY
+                │         │
+                ▼         ▼
+             ERROR    PROCESSING ──▶ DONE
+                         │
+                         ▼
+                       ERROR
+
+UI wireframes (for web/CLI layouts):
+
+  ┌─────────────────────────────────┐
+  │  Header          [Save] [Exit] │
+  ├──────────┬──────────────────────┤
+  │ Sidebar  │  Main content area   │
+  │          │                      │
+  │ • Item 1 │  ┌────────────────┐  │
+  │ • Item 2 │  │   Editor       │  │
+  │ • Item 3 │  │                │  │
+  │          │  └────────────────┘  │
+  └──────────┴──────────────────────┘
+```
+
+**When to use which:** Call trees for understanding execution paths. Component diagrams for architecture discussions. File trees for showing what changes where. State machines for lifecycle/workflow questions. Wireframes for UI layout discussions.
+
+These are not decoration — they are the primary medium for communicating structure. Prose accompanies the diagram to explain *why*, the diagram shows *what*.
