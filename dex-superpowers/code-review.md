@@ -32,7 +32,7 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 **2. Dispatch code-reviewer subagent:**
 
-Use the template in `code-quality-reviewer-prompt.md` in this directory.
+Use the template in `reviewer-prompt.md` in this directory.
 
 **Placeholders:**
 - `{WHAT_WAS_IMPLEMENTED}` - What you just built
