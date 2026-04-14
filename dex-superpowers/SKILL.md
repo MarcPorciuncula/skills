@@ -62,7 +62,6 @@ These are loaded on demand by the phase documents that reference them:
 
 | Document | Purpose |
 |----------|---------|
-| `visual-companion.md` | Browser-based mockups during brainstorming |
 | `root-cause-tracing.md` | Trace bugs backward through call stack |
 | `defense-in-depth.md` | Multi-layer validation after finding root cause |
 | `condition-based-waiting.md` | Replace arbitrary timeouts with condition polling |
