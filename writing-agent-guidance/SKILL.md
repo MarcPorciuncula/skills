@@ -33,6 +33,8 @@ Agent guidance is consumed by models with limited context windows. How you write
 
 State what to do first, for a reader with zero context. Prohibitions, exceptions, and caveats come after — if they're needed at all. Don't lead with what's wrong, don't argue against alternatives, and don't justify the rule. If a directive needs a paragraph of justification to land, rewrite the directive more precisely.
 
+This applies to individual directives and sections. Structural framing (introductions, summaries) is excluded.
+
 ```markdown
 # Bad — leads with the prohibition, then argues against an alternative
 Never put business logic in the gateway layer. The gateway exists
@@ -113,7 +115,7 @@ Use `pkg/log` for all logging. Every handler logs request ID, method,
 and path at entry. Add contextual fields for business-relevant data.
 ```
 
-**Test:** Remove the paragraph or clause. Does the doc still tell the reader what to do? If yes, it was argumentation, not instruction.
+**Test:** Remove the paragraph or clause. Does the doc still tell the reader what to do? If yes, it was likely argumentation. If the text is an introduction or forward summary, it's not argumentation — see principle 1.
 
 ### Prohibition lists compensating for weak directives
 
