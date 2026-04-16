@@ -1,121 +1,135 @@
 ---
 name: tidy-agent-guidance
-description: Use when reviewing documentation that was written or edited collaboratively with an AI agent — CLAUDE.md, .cursorrules, AGENTS.md, README, or inline code documentation. Detects overcorrections where the agent injected defensive framing, conversation-specific rebuttals, or duplicated explanations that don't belong in prescriptive guidance.
+description: Use when writing, editing, or reviewing agent guidance — CLAUDE.md, .cursorrules, AGENTS.md, skills, README, or inline code documentation. Ensures guidance is written as direct, prescriptive reference rather than argumentation or conversation artifacts.
 ---
 
 # Tidy Agent Guidance
 
-Review agent-edited guidance docs and strip overcorrections — defensive framing, conversation artifacts, and duplication that accumulate when an AI agent helps write or revise documentation.
+Write guidance for a fresh reader who has no context from the current session.
+
+Agents are over-contextualised on their current work. Identify and remove:
+- **War stories** — references to changes, bugs, or decisions from the current session
+- **Rebuttals** — arguments against approaches instead of plainly stating the right one
+- **Justifications** — explaining why a rule is correct instead of stating it
+
+Instead, write clear directives followed by specific caveats where needed.
 
 ## When to use
 
-- After collaborating with an AI agent on guidance docs (CLAUDE.md, .cursorrules, AGENTS.md, README, inline docs)
+- When writing or editing agent guidance (CLAUDE.md, .cursorrules, AGENTS.md, skills, README, inline docs)
+- When reviewing guidance that was written collaboratively with an AI agent
 - When guidance reads more like an argument than a reference
-- When the same concept is explained in multiple places
 
-## The review process
+## Principles of good agent guidance
 
-### 1. Diff against the base
+Agent guidance is consumed by models with limited context windows. How you write it directly affects whether it gets followed:
 
-Compare only what was added or changed — don't re-evaluate the entire document. Use `git diff main` or compare against the last known-good version. The overcorrections are in the delta.
+- **Clear directives are authoritative** — they don't invite the reading agent to argue or rationalize around them. Argumentation invites counter-argument.
+- **Compact guidance stays in context** — the more concise the guidance, the more likely the agent retains and follows it across a long session.
+- **Every token counts** — verbose justifications and war stories consume context that could hold actual instructions.
 
-### 2. Classify each addition
+### 1. Lead with the desired behavior, then add caveats
 
-Check every added paragraph, bullet, or section against the overcorrection smells below. Most agent-edited docs will have 2-3 of these.
+State what to do first, for a reader with zero context. Prohibitions, exceptions, and caveats come after — if they're needed at all. Don't lead with what's wrong, don't argue against alternatives, and don't justify the rule.
 
-### 3. Fix and verify
+```markdown
+# Bad — leads with the prohibition, then argues against an alternative
+Never put business logic in the gateway layer. The gateway exists
+only to translate between external and internal types...
 
-Apply the fix for each smell, then re-read the result. The corrected text should be something a senior engineer would write from scratch for a new team member — declarative, prescriptive, no argumentation.
+# Good — states the directive, then adds a caveat plainly
+The gateway layer translates between external and internal types.
+No business logic in this layer.
+```
+
+### 2. One rule, one place
+
+If a rule is stated clearly once, restating it elsewhere is reinforcement for the author, not clarity for the reader. Pick one canonical home. Replace duplicates with a one-line pointer.
 
 ## Overcorrection smells
 
 ### Rebuttal framing
 
-The text argues against a position nobody reading the doc would hold. Phrases like "this is X, not Y" or "not an optimisation" are responding to a challenge from the editing conversation.
+*Violates principle 1.* The text argues against a position nobody reading the doc would hold. Phrases like "this is X, not Y" or "not an optimisation" are responding to a challenge from the editing conversation.
 
 ```markdown
-# Before (rebuttal)
+# Before
 This is a structural requirement, not an optimisation. When the codebase
 follows proper layering...
 
-# After (declarative)
-This breaks the import cycle between domains/ and workflows/ — workflow
-activities import domain services, so domain services cannot import
-workflow packages directly.
+# After
+This breaks the import cycle between core/ and handlers/ — handler
+functions import core services, so core cannot import handler packages.
 ```
 
 **Test:** Would a new reader think the thing being rebutted? If not, remove the rebuttal.
 
-### Conversation-specific anti-patterns
+### Prohibition lists compensating for weak directives
 
-Rules that prohibit things nobody would think to do unless they were in the editing conversation. These sound reasonable in isolation but aren't genuinely common pitfalls.
+*Violates principle 1.* When the positive directive is too vague, agents compensate by enumerating everything the layer *isn't*. A long prohibition list is often a sign the directive hasn't said clearly enough what something *is*.
 
-```markdown
-# Before (conversation-specific)
-No business logic, no type translation, no feature flag checks,
-no conditional workflow selection.
-
-# After (genuinely common pitfalls only)
-No business logic, no type translation.
-```
-
-**Test:** Would a developer working in this area plausibly make this mistake without prompting? "Business logic in a thin wrapper" — yes, common. "Feature flags in a dispatcher" — no, that's oddly specific.
-
-### Defensive enumeration
-
-A paragraph that pre-emptively explains what the reader should do if they're tempted to deviate. This is the agent anticipating pushback that will never come.
+Sharpen the directive first, then reassess the list. Some prohibitions block behaviors that have been directly observed — those are doing real work and should stay. The ones to cut are prohibitions that become obvious once the directive is precise enough.
 
 ```markdown
-# Before (defensive)
-If the domain needs to make a decision about which workflow to dispatch,
-it does that itself and calls the appropriate dispatcher method.
+# Before — vague directive, compensated with a prohibition list
+The adapter layer sits between external and internal systems.
+It must not contain business logic, type translation, feature flag
+evaluation, conditional workflow selection, or retry orchestration.
 
-# After (removed)
-[delete — the "no business logic" rule already covers this]
+# After — precise directive, keep only prohibitions that still add value
+The adapter layer maps external request types to internal service
+calls. No business logic in this layer.
 ```
 
-**Test:** Is this restating a rule that's already declared elsewhere in the doc? If so, the restatement is the agent reinforcing its own argument.
+**Test:** Strengthen the directive, then re-read each prohibition. Does it block something a reader might still plausibly do despite the clear directive? Keep it. Is it obvious from the directive alone? Cut it.
+
+**Removing a prohibition is a destructive action** — someone put it there because they observed the behavior. Strengthening directives, removing argumentation, and reordering are safe to do directly. Before removing any prohibition, present a recommendation (keep or remove) with your reasoning for each one and let the user confirm or override.
+
+### Argumentation disguised as guidance
+
+*Violates principle 1.* Text whose purpose is to convince the reader the rule is correct, rather than to state it. This includes:
+
+- **Justification paragraphs** — often starting with "The reason for this is..." or providing a multi-sentence rationale after a clear directive.
+- **War stories** — over-referencing changes from the current session as context ("the previous implementation used X, which caused Y" or "this was changed from X because..."). A fresh reader doesn't need the history of how the guidance arrived at its current state.
+- **Defensive enumeration** — pre-emptively explaining what the reader should do if they're tempted to deviate ("if you think you need to bypass X, you almost certainly don't").
+
+**Test:** Remove the paragraph. Does the doc still tell the reader what to do? If yes, the paragraph was argumentation, not instruction.
 
 ### Duplicated explanations
 
-The same concept explained fully in two or more places, often across related files. Agents do this to make each document "self-contained", but it creates a maintenance burden and signals the agent was being thorough rather than intentional.
+*Violates principle 2.* The same concept explained fully in two or more places, often across related files. Agents do this to make each document "self-contained", but it creates a maintenance burden.
 
-**Fix:** Pick one canonical home for the explanation. Replace the other with a one-line pointer.
+**Fix:** Pick one canonical home. Replace the other with a one-line pointer.
 
 ```markdown
-# Before (full duplicate in secondary file)
-Workflow input/output types are defined in `pkg/workflows/types/`,
-not in the individual workflow packages. This is a leaf package with
-no dependencies on domains or workflow implementations, so both sides
+# Before (full explanation in secondary file)
+Shared types are defined in `pkg/common/types/`. This is a leaf
+package with no dependencies on services or handlers, so both sides
 can import it without creating cycles.
-[diagram]
-See the `workflows/types` section in `pkg/workflows/CLAUDE.md` for
-the rationale.
+See the types section in `pkg/common/CLAUDE.md` for the rationale.
 
-# After (one-liner pointer)
-Workflow input/output types live in `pkg/workflows/types/`.
-See `pkg/workflows/CLAUDE.md` for details.
+# After
+Shared types live in `pkg/common/types/`. See `pkg/common/CLAUDE.md`
+for details.
 ```
 
 **Test:** If you updated the explanation in one place, would you remember to update the other? If not, consolidate.
 
-### Justification paragraphs
-
-A paragraph whose purpose is to convince the reader the rule is correct, rather than to state it. Often starts with "The reason for this is..." or provides a multi-sentence rationale after a clear directive.
-
-**Test:** Remove the paragraph. Does the doc still tell the reader what to do? If yes, the paragraph was justification, not instruction.
-
 ## What to keep
 
-Not everything an agent adds is overcorrection. Keep:
+Keep genuine reference material — diagrams, code examples, migration notes, checklists. The target is argumentation and conversational artifacts, not thoroughness.
 
-- **Diagrams** showing dependency relationships or data flow — these are genuinely useful reference material
-- **Code examples** showing the correct pattern — concrete and scannable
-- **Migration notes** acknowledging current state vs target — practical and honest
-- **Step-by-step checklists** for adding new things — actionable for new contributors
+## Reviewing changes to guidance
 
-## The calibration question
+When reviewing a diff (agent-edited guidance vs. the previous version), focus on what was added or changed — the overcorrections are in the delta. Run `git diff main` or compare against the last known-good version. Check each addition against the principles and smells above.
 
-For each piece of guidance, ask: **"Would a senior engineer write this from scratch for a new team member, or is this the agent arguing with itself?"**
+## Verifying improvements
 
-Guidance docs should read like a reference written by someone who knows the codebase, not like a transcript of a debate about how the codebase should work.
+To test whether revised guidance is actually better, run a head-to-head comparison with subagents:
+
+1. Save the old version of the guidance file (e.g. `cp CLAUDE.md CLAUDE.old.md`)
+2. Make your changes to the current version
+3. Dispatch two subagents in parallel — one following the old guidance, one following the new — against the same task or test file
+4. Compare the outputs: is the new version producing tighter, more directive-led results? Are prohibitions being applied with better judgment?
+
+This catches cases where changes that look better on paper don't change agent behavior, and cases where they overcorrect.
