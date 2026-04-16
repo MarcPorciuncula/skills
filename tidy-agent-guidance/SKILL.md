@@ -42,9 +42,9 @@ The gateway layer translates between external and internal types.
 No business logic in this layer.
 ```
 
-### 2. One rule, one place
+### 2. Consolidate overlapping guidance
 
-If a rule is stated clearly once, restating it elsewhere is reinforcement for the author, not clarity for the reader. Pick one canonical home. Replace duplicates with a one-line pointer.
+Proactively consolidate and trim guidance that overlaps. When guidance must live in multiple places, pick one canonical location for the comprehensive version and reference it from others. Distributed variations (context-sensitive abridgements, wider-scoped summaries) should always link to the detailed guidance.
 
 ## Overcorrection smells
 
@@ -97,9 +97,9 @@ calls. No business logic in this layer.
 
 ### Duplicated explanations
 
-*Violates principle 2.* The same concept explained fully in two or more places, often across related files. Agents do this to make each document "self-contained", but it creates a maintenance burden.
+*Violates principle 2.* The same concept explained in full in multiple places within a single file, or copy-pasted verbatim across files with no clear canonical source. Agents do this to make each section or document "self-contained", but identical copies drift apart over time.
 
-**Fix:** Pick one canonical home. Replace the other with a one-line pointer.
+**Fix:** Pick one canonical home for the full explanation. Other locations can carry an abridged version tailored to their context, with a pointer to the canonical source.
 
 ```markdown
 # Before (full explanation in secondary file)
