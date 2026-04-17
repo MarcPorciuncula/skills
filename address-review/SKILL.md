@@ -18,6 +18,8 @@ Analyze review comments on the current branch's PR, categorize each one, and pre
 | "These all look like simple fixes, I'll just start executing" | The analysis table comes first in every mode. Always. |
 | "The username looks like a bot so I'll auto-resolve without checking the category" | Bot status affects auto-resolve eligibility, not whether analysis is required. Check the category. |
 | "I reviewed this comment already, I can add its ID to the resolve list" | Only IDs recorded during Phase 1 may be resolved. Post-push comments are out of scope regardless of content. |
+| "The plan says X but the code does Y, I should sync the plan" | Single-use plans are historical. Don't sync them to final code. Only update living design/architecture docs. |
+| "The PR description contradicts the code, so the code must be wrong" | Check commit history first. Intentional divergence → update the description. Unexplained divergence → may be a real bug. |
 
 ## Mode
 
@@ -56,13 +58,23 @@ Read the current state of the code at each commented location. For each comment,
 
 ### Stale documentation as a source of false positives
 
-Automated reviewers compare code against the PR description, plan docs, and specs. When the implementation evolves over multiple rounds of review (especially after rebases or significant refactors), this documentation can become stale. Common patterns:
+Automated reviewers compare code against the PR description, plan docs, and specs. Divergence is common — plans are usually written before implementation and the code evolves as real constraints surface. **The code is the source of truth.**
 
-- **PR description references old approach** — e.g., description says "uses SlidingPanel for mobile" but the code was refactored to use Dialog. The code is correct; the description is stale.
-- **Comment quotes a requirement from a plan/spec** — e.g., "the spec says max 768px but the code uses grid-cols-2". The spec may have been superseded by a deliberate design decision.
-- **Comment flags a doc that "doesn't belong"** — e.g., a spec file from another feature that was included in an early commit but already removed.
+Before categorizing a comment as stale docs, check commit history. A divergence that commits don't explain may be a real bug — treat as a valid concern instead.
 
-When a comment's concern is rooted in stale documentation rather than a real code issue, categorize it as **Stale documentation mismatch** and recommend updating the documentation (PR description, plan, or spec) rather than changing the code. Updating a PR description is a valid and often correct response to these comments — it's not a workaround, it's fixing the actual problem (the docs are wrong, not the code).
+For intentional divergences, the recommendation depends on the doc type:
+
+- **Single-use plan or execution doc** (e.g. `plans/*.md`, pre-execution specs, one-off design notes consumed during implementation) — **no action**. The plan is a historical artifact; syncing it to final code adds churn without improving the codebase. Asking for a plan to be rewritten to match the code does not improve code quality.
+- **Living design or architecture doc** (e.g. `README.md`, `ARCHITECTURE.md`, docs kept as ongoing reference) — update the doc to match current behaviour.
+- **PR description** — update the description to reflect the change. Only when commit history makes the intent unambiguous; if commits and description conflict about what the PR is supposed to do, stop and surface it to the user rather than rewriting either.
+
+If the doc type is unclear, default to treating it as a single-use plan. Ask the user if uncertain.
+
+Common shapes:
+
+- PR description references an old approach — update the description.
+- Plan doc describes a step done differently — leave the plan alone.
+- Comment flags a doc that "doesn't belong" (e.g. a spec from another feature bundled in an early commit) — no action.
 
 ### Present the table
 
@@ -77,7 +89,8 @@ Present a numbered table summarizing the findings:
 | 5 | `handler.go:15` | "Nit: rename this var" | reviewer | Valid — simple fix | Rename variable | Yes (trivial directive) |
 | 6 | `utils.go:200` | "Consider extracting this" | reviewer | Out of scope | Acknowledge, defer to follow-up | No (out of scope) |
 | 7 | `hook.go:30` | "Both caller and callee subscribe" | copilot | Pedantic | Intentional colocation; coupling not worth it | Yes (bot) |
-| 8 | `api.go:50` | "PR says X but code does Y" | copilot | Stale docs | Update PR description | Yes (bot) |
+| 8 | `api.go:50` | "PR description says X but code does Y" | copilot | Stale docs | Update PR description (commits confirm intent) | Yes (bot) |
+| 9 | `user.go:12` | "plan.md step 3 specifies util extraction" | copilot | Stale docs | No action — plan is historical | Yes (bot) |
 
 For question/discussion items, include the full draft reply text below the table so the user can copy and post it.
 
@@ -120,7 +133,10 @@ Write a temp file with one `comment_id:body` pair per line, then pass it to `rep
 - **Valid concern — simple fix:** `[Claude] Fixed — {brief description of what changed}.`
 - **Valid concern — behavioural change or test gap:** `[Claude] Fixed — added test and implementation for {brief description}.`
 - **Pedantic:** `[Claude] {brief explanation of why the current approach is intentional and the trade-off isn't worth it}.`
-- **Stale documentation mismatch:** `[Claude] Updated the PR description to reflect the current implementation.` (or similar, depending on what was updated)
+- **Stale documentation mismatch:** pick the reply for what was (or wasn't) updated:
+  - PR description: `[Claude] Updated the PR description to reflect the current implementation.`
+  - Living design/architecture doc: `[Claude] Updated {doc} to match the current behaviour.`
+  - Single-use plan: `[Claude] The plan was written before implementation and the code has since diverged. Leaving the plan as-is — the code is the source of truth.`
 - **Out of scope:** `[Claude] Acknowledged — deferring to a follow-up.`
 
 ### Resolve threads
