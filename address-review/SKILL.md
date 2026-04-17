@@ -46,7 +46,23 @@ Read the current state of the code at each commented location. For each comment,
 - **Question or discussion:** The reviewer is asking why something was done a certain way, or making a suggestion that shouldn't be adopted. Draft a clear explanation the user can post as a reply — explain the decision and the reasoning behind it.
 - **Valid concern — simple fix:** A straightforward change like a naming improvement, missing error check, unused import, formatting. These can be batched together in one commit.
 - **Valid concern — behavioural change or test gap:** The comment reveals a real issue that requires a change in behaviour or a gap in test coverage. Flag that this will follow the red-green testing workflow during execution.
+- **Pedantic:** Technically accurate but adds coupling, complexity, or churn for negligible benefit. Common shapes:
+  - Comments about intentional design trade-offs (colocation, inlined patterns)
+  - Micro-optimizations outside hot paths
+  - "Consider" suggestions that add abstraction over a simpler working approach
+  - Re-raising a variant of an already-addressed concern
+- **Stale documentation mismatch:** The comment compares code against a stale PR description, plan doc, or spec rather than identifying a real code issue. See "Stale documentation as a source of false positives" below.
 - **Out of scope:** The suggestion is valid but unrelated to the PR's purpose. Recommend acknowledging and deferring to a follow-up.
+
+### Stale documentation as a source of false positives
+
+Automated reviewers compare code against the PR description, plan docs, and specs. When the implementation evolves over multiple rounds of review (especially after rebases or significant refactors), this documentation can become stale. Common patterns:
+
+- **PR description references old approach** — e.g., description says "uses SlidingPanel for mobile" but the code was refactored to use Dialog. The code is correct; the description is stale.
+- **Comment quotes a requirement from a plan/spec** — e.g., "the spec says max 768px but the code uses grid-cols-2". The spec may have been superseded by a deliberate design decision.
+- **Comment flags a doc that "doesn't belong"** — e.g., a spec file from another feature that was included in an early commit but already removed.
+
+When a comment's concern is rooted in stale documentation rather than a real code issue, categorize it as **Stale documentation mismatch** and recommend updating the documentation (PR description, plan, or spec) rather than changing the code. Updating a PR description is a valid and often correct response to these comments — it's not a workaround, it's fixing the actual problem (the docs are wrong, not the code).
 
 ### Present the table
 
@@ -60,8 +76,18 @@ Present a numbered table summarizing the findings:
 | 4 | `process.go:89` | "Edge case: empty input" | reviewer | Valid — test gap | Add test + fix (red-green) | No (substantive) |
 | 5 | `handler.go:15` | "Nit: rename this var" | reviewer | Valid — simple fix | Rename variable | Yes (trivial directive) |
 | 6 | `utils.go:200` | "Consider extracting this" | reviewer | Out of scope | Acknowledge, defer to follow-up | No (out of scope) |
+| 7 | `hook.go:30` | "Both caller and callee subscribe" | copilot | Pedantic | Intentional colocation; coupling not worth it | Yes (bot) |
+| 8 | `api.go:50` | "PR says X but code does Y" | copilot | Stale docs | Update PR description | Yes (bot) |
 
 For question/discussion items, include the full draft reply text below the table so the user can copy and post it.
+
+### Flag convergence
+
+If the majority of this run's comments are Pedantic (or Pedantic plus Outdated), add a note below the table:
+
+> This review appears to have converged — most remaining comments are pedantic. Consider stopping here rather than continuing to iterate.
+
+This is advisory only. The user decides whether to proceed.
 
 ### After presenting
 
@@ -93,6 +119,8 @@ Write a temp file with one `comment_id:body` pair per line, then pass it to `rep
 - **Question / discussion:** `[Claude] {the draft explanation from the analysis table}.`
 - **Valid concern — simple fix:** `[Claude] Fixed — {brief description of what changed}.`
 - **Valid concern — behavioural change or test gap:** `[Claude] Fixed — added test and implementation for {brief description}.`
+- **Pedantic:** `[Claude] {brief explanation of why the current approach is intentional and the trade-off isn't worth it}.`
+- **Stale documentation mismatch:** `[Claude] Updated the PR description to reflect the current implementation.` (or similar, depending on what was updated)
 - **Out of scope:** `[Claude] Acknowledged — deferring to a follow-up.`
 
 ### Resolve threads
