@@ -34,9 +34,11 @@ git fetch origin
 
 ### 3. Set up hooks directory
 
+**Important:** `core.hooksPath` must be an absolute path. Relative paths resolve from the `.git` directory, which for worktrees is `worktrees/<name>/` inside the bare repo — not the bare repo root. A relative path like `hooks` will silently fail to find the hooks from any worktree.
+
 ```bash
 mkdir -p hooks
-git config core.hooksPath hooks
+git config core.hooksPath "$(pwd)/hooks"
 ```
 
 ### 4. Create post-checkout hook
