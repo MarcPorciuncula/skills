@@ -35,7 +35,9 @@ Agent guidance is consumed by models with limited context windows. How you write
 
 State what to do first, for a reader with zero context. Prohibitions, exceptions, and caveats come after — if they're needed at all. Don't lead with what's wrong, don't argue against alternatives, and don't justify the rule. If a directive needs a paragraph of justification to land, rewrite the directive more precisely.
 
-This applies to individual directives and sections. Structural framing (introductions, summaries) is excluded.
+**Absorb scope into the directive.** Don't lead with a sentence whose only job is to name the subject. If your first sentence only describes a fact about the thing ("Error responses include a `code` field"), fold the scope into the directive that follows ("Use codes from `pkg/errcodes` in error responses") or cut it. This does *not* apply to genuine architecture sections, nor to "each X does Y" / "every X gets Y" forms — those are imperative even when phrased descriptively.
+
+This applies to individual directives and sections. Structural framing (introductions, summaries, dedicated architecture sections) is excluded.
 
 ```markdown
 # Bad — leads with the prohibition, then argues against an alternative
@@ -45,6 +47,12 @@ only to translate between external and internal types...
 # Good — states the directive, then adds a caveat plainly
 The gateway layer translates between external and internal types.
 No business logic in this layer.
+
+# Bad — leads with a scope-setup sentence
+Error responses include a `code` field. Use codes from `pkg/errcodes`.
+
+# Good — scope absorbed into the directive
+Use codes from `pkg/errcodes` in error responses.
 ```
 
 ### 2. Write for a fresh reader
