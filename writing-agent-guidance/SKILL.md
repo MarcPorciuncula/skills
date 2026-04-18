@@ -10,8 +10,10 @@ Write agent guidance like a reference manual. A fresh reader with zero context s
 Common problems to identify and remove:
 
 - **War stories** — references to changes, bugs, or decisions from a previous session
-- **Rebuttals** — arguments against approaches instead of plainly stating the right one
-- **Justifications** — explaining why a rule is correct instead of stating it
+- **Strawman rebuttals** — arguments against positions a fresh reader wouldn't hold
+- **Weak justifications** — rationale for a rule that doesn't name a failure mode the reader would recognise
+
+Rebuttals and justifications that intercept a *recognisable default* — a behaviour a fresh reader would agree an agent or author might plausibly fall into — are **interception** (principle 4). Keep the insight, promote the form.
 
 These appear in any collaboratively-written guidance, but are especially frequent when agents have been involved in the writing.
 
@@ -53,6 +55,45 @@ Guidance should make sense to someone encountering the codebase for the first ti
 
 When guidance must live in multiple places, pick one canonical location for the comprehensive version and reference it from others. Distributed variations (context-sensitive abridgements, wider-scoped summaries) should always link to the detailed guidance.
 
+### 4. Intercept recognisable defaults, don't argue against strawmen
+
+A rebuttal or justification that names a *recognisable default* — a behaviour any fresh reader would agree an agent or author might plausibly fall into — is **interception**, not argumentation. Keep the insight, but promote the form: imperative directive, Iron Law, Red Flags row, or directive + cost statement. Rebuttals and justifications that only make sense with session history (named incidents, prior implementations, changes made during the editing conversation) are war stories — remove.
+
+**Recognisability test:** Look at the behaviour being rebutted or justified against. Would a fresh reader think "yes, I can see an agent or author plausibly defaulting to that"?
+
+- **Yes** → interception → promote to imperative form (below)
+- **No, it requires session context to recognise** → war story → remove
+- **No, no one would do that** → strawman → remove
+
+**Promotion forms:**
+
+- **Iron Law** — short imperative, usually bolded or capitalised. Used when the directive is the whole point: `NARRATION IS THE SPINE. VISUALS EARN THEIR PLACE.`
+- **Red Flags row** — name the tempting thought and rebut it at the moment of temptation:
+
+  ```
+  | If you're thinking…                          | Reality                           |
+  | "I should list every file for completeness"  | The reader has `git diff --stat`. |
+  ```
+
+- **Directive + cost** — short directive followed by the shortest self-contained phrase naming the consequence: `Don't invent new error codes inline. Unknown codes fall through to a generic error.`
+- **Stop phrase** — one short sentence written at the point of temptation in a checklist or procedure.
+
+**Cost statements name consequences, not mechanisms.** A cost statement answers "what breaks?" in terms the reader can recognise without learning internals — shared knowledge (`reviewers already have the diff`), project context the reader already holds (`the gateway owns auth`), or observable breakage (`unknown codes fall through to a generic error`). If the cost would require teaching a specific class, function, or file to make sense, either rephrase in terms of observable behaviour, or move the explanation to a dedicated architecture section and let the directive stand alone.
+
+**Durability check:** Would the cost statement still be accurate after a routine refactor of the named thing? If yes — it's at the right level. If a refactor would make it wrong — it's naming a mechanism; rephrase. Shape-level teaching (layers, responsibilities, component boundaries) belongs in a dedicated overview, authored once and referenced. Directives point at consequences.
+
+**Example — same insight, promoted from rebuttal to directive:**
+
+```markdown
+# Before — rebuttal prose form (insight is real; form is weak)
+Don't spit out a bullet list of every file changed in the PR body —
+reviewers can already see the diff on GitHub.
+
+# After — promoted to directive + cost
+PR bodies explain motivation and tradeoffs. Don't restate the diff —
+reviewers already have `git diff`.
+```
+
 ## Common violations
 
 ### Duplicated explanations
@@ -81,29 +122,37 @@ details. Middleware runs struct-tag validation before the handler.
 
 ### Rebuttal framing
 
-*Violates principle 1.* The text argues against a position nobody reading the doc would hold. Phrases like "this is X, not Y" or "not suitable here because" are responding to a challenge from the editing conversation, not instructing a reader.
+*Violates principle 1.* The text argues against a position instead of stating the directive plainly. Phrases like "this is X, not Y" or "not suitable here because" are responding to a challenge — either from the editing conversation (war story) or from a position no reader would hold (strawman).
 
 ```markdown
-# Before
+# Strawman — remove
 This is a structural requirement, not a performance optimisation.
 
-# After
-(remove — state the structural requirement directly instead)
+# Interception in rebuttal form — promote (don't remove)
+Don't lead PR bodies with a summary of the diff — reviewers can
+already see what changed.
+
+# Interception promoted to directive + cost
+PR bodies explain motivation and tradeoffs. Reviewers already have
+the diff.
 ```
 
-**Test:** Would a fresh reader think the thing being rebutted? If not, remove the rebuttal.
+**Test:** Apply the recognisability test from principle 4 to the rebutted behaviour.
+
+- Recognisable default → interception → **promote**, don't delete
+- Requires session context → war story → remove
+- No one would do it → strawman → remove
 
 ### Argumentation disguised as guidance
 
 *Violates principles 1 and 2.* Text whose purpose is to convince the reader the rule is correct, rather than to state it. Forms include:
 
-- **Justification paragraphs** — rationale after a clear directive, often starting with "The reason for this is..." or explaining consequences of not following the rule ("without this, X becomes difficult").
-- **Session-specific references** — references to previous implementations, past decisions, or changes that produced the current guidance ("the previous approach was removed because...", "this was changed from X to Y"). A fresh reader doesn't need the history of how the guidance arrived at its current state.
-- **Defensive enumeration** — pre-emptively explaining what the reader should do if they're tempted to deviate.
-- **Embedded justifications** — justifications attached to otherwise-clear prohibitions or directives ("don't use X — it produces output that Y can't parse"). If the prohibition is clear on its own, the justification is argumentation.
+- **Weak justification paragraphs** — rationale after a clear directive, often starting with "The reason for this is..." — unless the rationale names a recognisable failure mode, in which case it's interception (principle 4) and should be promoted, not deleted.
+- **Session-specific references** — references to previous implementations, past decisions, or changes that produced the current guidance ("the previous approach was removed because...", "this was changed from X to Y"). Always war stories; remove.
+- **Embedded justifications** — justifications attached to directives ("don't use X — it produces output that Y can't parse"). If the rationale names a recognisable failure mode, keep it as a short cost statement (principle 4). If it just restates the directive, cut.
 
 ```markdown
-# Before — justification-first framing
+# Before — justification-first framing, recognisability test fails
 Structured logging is essential for maintaining observability across
 the service mesh. Without consistent structured logs, correlating
 requests across service boundaries becomes significantly more difficult.
@@ -115,7 +164,11 @@ Use `pkg/log` for all logging. Every handler logs request ID, method,
 and path at entry. Add contextual fields for business-relevant data.
 ```
 
-**Test:** Remove the paragraph or clause. Does the doc still tell the reader what to do? If yes, it was likely argumentation. If the text is an introduction or forward summary, it's not argumentation — see principle 1.
+**Test:** Remove the paragraph or clause.
+
+- Doc still tells the reader what to do, and nothing load-bearing was lost → it was argumentation → keep it cut.
+- Removal weakens the doc against a recognisable default → it was interception → restore and promote (principle 4).
+- Text is an introduction or forward summary → not argumentation; keep per principle 1.
 
 ### Prohibition lists compensating for weak directives
 
