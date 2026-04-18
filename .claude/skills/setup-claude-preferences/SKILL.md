@@ -49,7 +49,7 @@ does.
 
 When explaining code, designs, or proposed changes, lead with a diagram, table, or call tree before prose. Assume the reader has not read the code under discussion.
 
-Use ASCII — boxes-and-arrows, tables with box-draw characters (`┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼`), indented call trees, bordered boxes for data shapes. ASCII renders in the terminal and copy-pastes cleanly.
+Use ASCII for diagrams — boxes-and-arrows (`┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼`), indented call trees, bordered boxes for data shapes. ASCII renders in the terminal and copy-pastes cleanly. For tabular data, use regular markdown tables — Claude Code renders them more reliably than hand-drawn ASCII tables.
 
 Match the form to the intent:
 
@@ -59,7 +59,7 @@ Match the form to the intent:
 | Request path with branching or fan-out | numbered steps or indented lanes |
 | Lifecycle or states | labelled boxes with arrow transitions |
 | Schema / relationships | indented field lists with arrows for relations |
-| Before/after, enumerable mappings, file inventory | ASCII table with box-draw characters |
+| Before/after, enumerable mappings, file inventory | markdown table |
 | Execution path through functions | indented call tree |
 | Data or payload shape | bordered ASCII box |
 
