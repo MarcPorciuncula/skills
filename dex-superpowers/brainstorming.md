@@ -66,7 +66,8 @@ digraph brainstorming {
 
 **Understanding the idea:**
 
-- Check out the current project state first (files, docs, recent commits)
+- Check out the current project state first: source files, `docs/`, any knowledge base, recent commits, and existing task tracking (`dex list`). Don't skip docs or task tracking — they often encode scope and prior decisions that change the design.
+- Look up codebase facts yourself before formulating questions. If you can answer something by reading a file, read it — don't ask. Questions are for decisions that require user judgment (scope, priorities, UX direction, product trade-offs), not for facts you can discover.
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
 - If the project is too large for a single design, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own dex epic → subtasks → implementation cycle.
 - For appropriately-scoped projects, ask questions one at a time to refine the idea
@@ -154,6 +155,16 @@ After the self-check passes, ask the user to review the task tree:
 > "Task tree created under dex epic `<id>`. Run `dex show <epic-id> --expand` to review. Let me know if you want to make any changes before we start implementation."
 
 Wait for the user's response. If they request changes, make them and re-run the self-check. Only proceed once the user approves.
+
+## Surfacing Open Questions
+
+Before listing anything as an open question, apply this filter:
+
+- **Can I answer this by reading the codebase?** (Does this file exist? What pattern does the existing code use? What does service X look like?) If yes — read it and answer it yourself. Don't present a lookup as a question.
+- **Am I asking the user to confirm a recommendation I've already made?** If yes — don't ask. State your recommendation and proceed. The user will object if they disagree.
+- **Does this require product judgment the user holds?** (Scope trade-offs, UX direction, priority calls, decisions about what "basic" means for this feature.) If yes — ask.
+
+The goal is to present the user with decisions they need to make, not a mix of real decisions and things you could have looked up.
 
 ## Key Principles
 
