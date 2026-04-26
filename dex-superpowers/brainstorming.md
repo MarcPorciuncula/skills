@@ -2,7 +2,7 @@
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval. Then decompose the design into a dex task tree.
+Work through the phases below in order. Each phase has an explicit gate — do not advance until it is met. If a later phase raises a question that alters an earlier phase's decisions, step back explicitly to that phase, re-lock it, then re-enter.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
@@ -12,99 +12,135 @@ Do NOT invoke any implementation skill, write any code, scaffold any project, or
 
 Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
 
-## Checklist
+## Phases
 
-Complete these steps in order:
-
-1. **Explore project context** — check files, docs, recent commits
-2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-3. **Propose 2-3 approaches** — with trade-offs and your recommendation
-4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Create dex epic** — save the validated design as a dex epic description (see below)
-6. **Decompose into dex subtasks** — break the design into implementation tasks with blocking dependencies (see below)
-7. **Plan review (subagent)** — dispatch a reviewer subagent to check the task tree for dependency accuracy, research gaps, granularity, and completeness (see below)
-8. **User reviews task tree** — ask user to review the dex tasks before proceeding
-9. **Transition to execution** — load `execution.md` to begin implementation
-
-## Process Flow
-
-```dot
-digraph brainstorming {
-    "Explore project context" [shape=box];
-    "Ask clarifying questions" [shape=box];
-    "Propose 2-3 approaches" [shape=box];
-    "Present design sections" [shape=box];
-    "User approves design?" [shape=diamond];
-    "Create dex epic" [shape=box];
-    "Decompose into subtasks" [shape=box];
-    "Dispatch plan reviewer subagent\n(./plan-reviewer-prompt.md)" [shape=box];
-    "Reviewer approves plan?" [shape=diamond];
-    "Fix issues" [shape=box];
-    "User reviews task tree?" [shape=diamond];
-    "Load execution.md" [shape=doublecircle];
-
-    "Explore project context" -> "Ask clarifying questions";
-    "Ask clarifying questions" -> "Propose 2-3 approaches";
-    "Propose 2-3 approaches" -> "Present design sections";
-    "Present design sections" -> "User approves design?";
-    "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Create dex epic" [label="yes"];
-    "Create dex epic" -> "Decompose into subtasks";
-    "Decompose into subtasks" -> "Dispatch plan reviewer subagent\n(./plan-reviewer-prompt.md)";
-    "Dispatch plan reviewer subagent\n(./plan-reviewer-prompt.md)" -> "Reviewer approves plan?";
-    "Reviewer approves plan?" -> "Fix issues" [label="no"];
-    "Fix issues" -> "User reviews task tree?";
-    "Reviewer approves plan?" -> "User reviews task tree?" [label="yes"];
-    "User reviews task tree?" -> "Decompose into subtasks" [label="changes requested"];
-    "User reviews task tree?" -> "Load execution.md" [label="approved"];
-}
+```
+Phase 1 — Domain Interview
+  ├── 1. Explore project context
+  ├── 2. Ask domain questions (one at a time, dependency order)
+  └── Gate: state domain summary → user confirms
+         │
+         ▼  [if Phase 2 reopens a domain question → return here]
+Phase 2 — Design
+  ├── 3. Present design (architecture, components, data flow)
+  │       explore approach forks inline as they arise
+  └── Gate: user approves design
+         │
+         ▼  [if Phase 3 reopens a design or domain question → return to that phase]
+Phase 3 — Implementation Choices  [skip if no genuine open choices]
+  ├── 4. Surface implementation choices
+  └── Gate: user confirms
+         │
+         ▼
+Phase 4 — Decomposition
+  ├── 5. Create dex epic
+  ├── 6. Decompose into subtasks
+  ├── 7. Plan review (subagent)
+  ├── 8. User reviews task tree
+  └── Gate: user approves → load execution.md
 ```
 
 **The terminal state is loading `execution.md`.** Do NOT load any other phase document. The ONLY next step after brainstorming is execution.
 
-## The Process
+---
 
-**Understanding the idea:**
+## Phase 1 — Domain Interview
 
-- Check out the current project state first: source files, `docs/`, any knowledge base, recent commits, and existing task tracking (`dex list`). Don't skip docs or task tracking — they often encode scope and prior decisions that change the design.
-- Look up codebase facts yourself before formulating questions. If you can answer something by reading a file, read it — don't ask. Questions are for decisions that require user judgment (scope, priorities, UX direction, product trade-offs), not for facts you can discover.
-- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
-- If the project is too large for a single design, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own dex epic → subtasks → implementation cycle.
-- For appropriately-scoped projects, ask questions one at a time to refine the idea
-- Prefer multiple choice questions when possible, but open-ended is fine too
-- Only one question per message - if a topic needs more exploration, break it into multiple questions
-- Focus on understanding: purpose, constraints, success criteria
+The goal is to understand what the system does before thinking about how to build it. Implementation decisions made before domain is locked are at risk of being thrown away — if the domain changes, any implementation discussion up to that point was wasted work.
 
-**Exploring approaches:**
+**Explore project context first:**
+- Read source files, `docs/`, any knowledge base, recent commits, and `dex list`. Don't skip docs or task tracking — they often encode scope and prior decisions that change the design.
+- Look up codebase facts yourself before formulating questions. If you can answer something by reading a file, read it — don't ask. Questions are for decisions that require user judgment (scope, priorities, UX direction, product trade-offs), not facts you can discover.
+- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first. Help the user identify the independent pieces, how they relate, and what order to build them. Each sub-project gets its own dex epic → subtasks → implementation cycle.
 
-- Propose 2-3 different approaches with trade-offs
-- Present options conversationally with your recommendation and reasoning
-- Lead with your recommended option and explain why
+**Asking domain questions:**
+- Present as much context and mapping as is useful before asking — showing the full picture is not restricted. A surface map, a list of actors, a breakdown of every path that touches the problem: all of this helps the user give a richer answer and should not be withheld to keep messages short.
+- Ask one question per message — the most foundational unresolved one. The user's response may resolve several other questions implicitly, open a tangent that changes the design, or prompt further exploration. Follow that; don't mechanically advance to the next queued question.
+- After any tangent or extended discussion, re-orient: state what was resolved, what's still open, and what the next question is. The user shouldn't have to track which thread you're on.
+- Ask in dependency order: before asking any question, check whether there's another unresolved domain question it depends on. If yes, ask that one first. Questions about error handling depend on questions about visibility. Questions about cascade behavior depend on questions about reversibility. Work from foundational to derived.
+- Prefer multiple choice when options are known: `A: ... B: ...` — open-ended is fine when they aren't.
+- Focus on: what the system does, who the actors are, what happens in each case, what the observable behaviors and constraints are.
+
+**What counts as a domain question:**
+- "Should takedown be reversible?"
+- "What should a consumer see when they try to access taken-down content?"
+- "Should purging blobs be a separate action from hiding content?"
+
+**What does NOT belong in Phase 1** — these go in Phase 3:
+- Where does the predicate live?
+- Should we use a shared service or inline the check?
+- Which approach to the dedup query?
+
+**Filter before asking anything:**
+- Can I answer this by reading the codebase? → Read it; don't ask.
+- Am I asking the user to confirm a recommendation I've already made? → Don't ask. State it and proceed.
+- Is this a process or methodology decision covered by other instructions? → Don't ask. Declare how you'll proceed.
+- Does this require product judgment the user holds? (Scope trade-offs, UX direction, priority calls, decisions about what "basic" means for this feature.) → Ask.
+
+**Gate:** Before advancing to Phase 2, write a brief domain summary (actors, behaviors, constraints) and get explicit user confirmation that it is complete and correct.
+
+---
+
+## Phase 2 — Design
+
+With the domain locked, design the system: architecture, components, data flow, error handling, testing approach.
 
 **Presenting the design:**
+- Present in sections scaled to their complexity: a few sentences if straightforward, up to 200-300 words if nuanced.
+- Ask after each section whether it looks right. Revise before continuing.
+- Cover: architecture, components, data flow, error handling, testing.
 
-- Once you believe you understand what you're building, present the design
-- Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
-- Ask after each section whether it looks right so far
-- Cover: architecture, components, data flow, error handling, testing
-- Be ready to go back and clarify if something doesn't make sense
+**Approach forks:**
+When the design reaches a genuine fork — a decision where multiple approaches are viable and the choice materially affects the design — explore the options at that point before continuing:
+- Identify all viable options; present the ones worth considering with trade-offs.
+- If only one approach makes sense, say so and briefly note what you considered and ruled out.
+- Lead with your recommended option and explain why.
+
+Don't manufacture a forced alternatives menu at the start of design. Forks appear inside the design as you work through it — explore them when they arise, not upfront.
 
 **Design for isolation and clarity:**
-
-- Break the system into smaller units that each have one clear purpose, communicate through well-defined interfaces, and can be understood and tested independently
+- Break the system into smaller units that each have one clear purpose, communicate through well-defined interfaces, and can be understood and tested independently.
 - For each unit, you should be able to answer: what does it do, how do you use it, and what does it depend on?
 - Can someone understand what a unit does without reading its internals? Can you change the internals without breaking consumers? If not, the boundaries need work.
-- Smaller, well-bounded units are also easier for you to work with - you reason better about code you can hold in context at once, and your edits are more reliable when files are focused. When a file grows large, that's often a signal that it's doing too much.
+- Smaller, well-bounded units are easier to work with — you reason better about code you can hold in context at once, and edits are more reliable when files are focused. When a file grows large, that's often a signal it's doing too much.
 
 **Working in existing codebases:**
-
 - Explore the current structure before proposing changes. Follow existing patterns.
-- Where existing code has problems that affect the work (e.g., a file that's grown too large, unclear boundaries, tangled responsibilities), include targeted improvements as part of the design - the way a good developer improves code they're working in.
+- Where existing code has problems that affect the work (e.g., a file that's grown too large, unclear boundaries, tangled responsibilities), include targeted improvements as part of the design — the way a good developer improves code they're working in.
 - Don't propose unrelated refactoring. Stay focused on what serves the current goal.
 
-## After the Design: Creating the Dex Task Tree
+**Gate:** User explicitly approves the full design before proceeding.
 
-### Step 6: Create Dex Epic
+**Back-transition:** If any design question turns out to depend on an unresolved domain question, stop. Step back to Phase 1, re-lock the domain, then re-enter Phase 2.
+
+---
+
+## Phase 3 — Implementation Choices
+
+Surface choices that are genuinely open and not already determined by codebase patterns or process defaults. This phase can be empty — if everything is resolved by the domain, design, and existing conventions, skip it.
+
+**What belongs here:**
+- A structural choice the design doesn't resolve (e.g., inline predicate vs. shared helper function).
+- A decision with meaningful trade-offs between valid implementations.
+
+**What does NOT belong here:**
+- Process defaults: TDD approach, commit strategy, task tracking. State these as declarations ("I'll follow red-green per the TDD skill"), not questions.
+- Codebase patterns: if existing code establishes the convention, follow it.
+- Confirmations of recommendations already made: proceed; the user will push back if they disagree.
+
+**Format each question:**
+- Write it as a question — end with `?`
+- Enumerate options: `A: ... B: ...`
+- State your recommendation and one-sentence rationale on a separate line
+- One sentence of context before the question if needed; don't mix explanation and caveats into the question itself
+
+**Back-transition:** If any implementation choice turns out to depend on an unresolved design or domain question, stop. Step back to the appropriate phase, re-lock it, then re-enter.
+
+---
+
+## Phase 4 — Decomposition
+
+### Create Dex Epic
 
 Save the validated design as a dex epic:
 
@@ -114,7 +150,7 @@ dex create "Feature name" --description "Full design text..."
 
 The epic description should contain the complete design — architecture, components, data flow, error handling approach, and testing strategy. This is the authoritative reference for the implementation.
 
-### Step 7: Decompose Into Subtasks
+### Decompose Into Subtasks
 
 Break the design into implementation tasks under the epic:
 
@@ -142,40 +178,28 @@ dex edit <task-id> --add-blocker <dependency-id>  # for sequential dependencies
 - Large initiative (5+ independent tasks) → Epic with tasks
 - 3-7 children per parent is optimal. Don't over-decompose.
 
-### Step 8: Plan Review (Subagent)
+### Plan Review (Subagent)
 
 **Do NOT self-check the plan.** The agent who built the plan sees what it intended, not what it wrote. Dispatch a reviewer subagent using `plan-reviewer-prompt.md` with the epic ID. The reviewer reads the tasks from dex directly.
 
-If the reviewer finds issues, fix them. No need to re-review after fixing — the user review gate (Step 9) follows immediately.
+If the reviewer finds issues, fix them. No need to re-review after fixing — the user review gate follows immediately.
 
-### Step 9: User Review Gate
+### User Review Gate
 
-After the self-check passes, ask the user to review the task tree:
+After the plan review, ask the user to review the task tree:
 
 > "Task tree created under dex epic `<id>`. Run `dex show <epic-id> --expand` to review. Let me know if you want to make any changes before we start implementation."
 
 Wait for the user's response. If they request changes, make them and re-run the self-check. Only proceed once the user approves.
 
-## Surfacing Open Questions
-
-Before listing anything as an open question, apply this filter:
-
-- **Can I answer this by reading the codebase?** (Does this file exist? What pattern does the existing code use? What does service X look like?) If yes — read it and answer it yourself. Don't present a lookup as a question.
-- **Am I asking the user to confirm a recommendation I've already made?** If yes — don't ask. State your recommendation and proceed. The user will object if they disagree.
-- **Does this require product judgment the user holds?** (Scope trade-offs, UX direction, priority calls, decisions about what "basic" means for this feature.) If yes — ask.
-
-The goal is to present the user with decisions they need to make, not a mix of real decisions and things you could have looked up.
+---
 
 ## Key Principles
 
-- **One question at a time** - Don't overwhelm with multiple questions
-- **Multiple choice preferred** - Easier to answer than open-ended when possible
-- **Consider YAGNI** - Don't add speculative features nobody asked for
-- **Correctness is non-negotiable** - Code is cheap. If something is critical to the system working correctly, it stays in the design. Never cut correctness requirements to reduce effort.
-- **Escalate scope reductions, don't decide them** - You can recommend cutting something, but the user decides. Never present a reduced scope as a fait accompli.
-- **Explore alternatives** - Always propose 2-3 approaches before settling
-- **Incremental validation** - Present design, get approval before moving on
-- **Be flexible** - Go back and clarify when something doesn't make sense
+- **Consider YAGNI** — Don't add speculative features nobody asked for. YAGNI does not apply to requirements that ensure the system works correctly.
+- **Correctness is non-negotiable** — Code is cheap. If something is critical to the system working correctly, it stays in the design. Never cut correctness requirements to reduce effort.
+- **Escalate scope reductions, don't decide them** — You can recommend cutting something, but the user decides. Never present a reduced scope as a fait accompli.
+- **Be flexible** — Go back and clarify when something doesn't make sense.
 
 ## Red Flags — Scope Reduction
 
