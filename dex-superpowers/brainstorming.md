@@ -54,7 +54,9 @@ The goal is to understand what the system does before thinking about how to buil
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first. Help the user identify the independent pieces, how they relate, and what order to build them. Each sub-project gets its own brainstorm cycle.
 
 **Asking domain questions:**
-- One question per message.
+- Present as much context and mapping as is useful before asking — showing the full picture is not restricted. A surface map, a list of actors, a breakdown of every path that touches the problem: all of this helps the user give a richer answer and should not be withheld to keep messages short.
+- Ask one question per message — the most foundational unresolved one. The user's response may resolve several other questions implicitly, open a tangent that changes the design, or prompt further exploration. Follow that; don't mechanically advance to the next queued question.
+- After any tangent or extended discussion, re-orient: state what was resolved, what's still open, and what the next question is. The user shouldn't have to track which thread you're on.
 - Ask in dependency order: before asking any question, check whether there's another unresolved domain question it depends on. If yes, ask that one first. Questions about error handling depend on questions about visibility. Questions about cascade behavior depend on questions about reversibility. Work from foundational to derived.
 - Prefer multiple choice when options are known: `A: ... B: ...`
 - Focus on: what the system does, who the actors are, what happens in each case, what the observable behaviors and constraints are.
