@@ -51,14 +51,14 @@ The goal is to understand what the system does before thinking about how to buil
 **Explore project context first:**
 - Read source files, `docs/`, any knowledge base, recent commits, and `dex list`. Don't skip docs or task tracking — they often encode scope and prior decisions that change the design.
 - Look up codebase facts yourself before formulating questions. If you can answer something by reading a file, read it — don't ask. Questions are for decisions that require user judgment (scope, priorities, UX direction, product trade-offs), not facts you can discover.
-- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first. Help the user identify the independent pieces, how they relate, and what order to build them. Each sub-project gets its own brainstorm cycle.
+- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first. Help the user identify the independent pieces, how they relate, and what order to build them. Each sub-project gets its own dex epic → subtasks → implementation cycle.
 
 **Asking domain questions:**
 - Present as much context and mapping as is useful before asking — showing the full picture is not restricted. A surface map, a list of actors, a breakdown of every path that touches the problem: all of this helps the user give a richer answer and should not be withheld to keep messages short.
 - Ask one question per message — the most foundational unresolved one. The user's response may resolve several other questions implicitly, open a tangent that changes the design, or prompt further exploration. Follow that; don't mechanically advance to the next queued question.
 - After any tangent or extended discussion, re-orient: state what was resolved, what's still open, and what the next question is. The user shouldn't have to track which thread you're on.
 - Ask in dependency order: before asking any question, check whether there's another unresolved domain question it depends on. If yes, ask that one first. Questions about error handling depend on questions about visibility. Questions about cascade behavior depend on questions about reversibility. Work from foundational to derived.
-- Prefer multiple choice when options are known: `A: ... B: ...`
+- Prefer multiple choice when options are known: `A: ... B: ...` — open-ended is fine when they aren't.
 - Focus on: what the system does, who the actors are, what happens in each case, what the observable behaviors and constraints are.
 
 **What counts as a domain question:**
@@ -75,6 +75,7 @@ The goal is to understand what the system does before thinking about how to buil
 - Can I answer this by reading the codebase? → Read it; don't ask.
 - Am I asking the user to confirm a recommendation I've already made? → Don't ask. State it and proceed.
 - Is this a process or methodology decision covered by other instructions? → Don't ask. Declare how you'll proceed.
+- Does this require product judgment the user holds? (Scope trade-offs, UX direction, priority calls, decisions about what "basic" means for this feature.) → Ask.
 
 **Gate:** Before advancing to Phase 2, write a brief domain summary (actors, behaviors, constraints) and get explicit user confirmation that it is complete and correct.
 
