@@ -48,7 +48,7 @@ Does NOT include: `SKILL.md`, `brainstorming.md`, `execution.md`, `implementer-p
 Created `file-superpowers/` with the eight verbatim phase doc copies (each `diff` clean against its `dex-superpowers/` source) and `code-review.md` with the three specified line replacements (`git diff --no-index` shows exactly those three substitutions). Note: `grep -i dex` on the resulting `code-review.md` returns two false-positive matches against the substring "index" inside `conversation index` / `verifyIndex()` / `repairIndex()` — these are example-payload lines that exist verbatim in the source and are not real dex references; rewording them was outside the task spec's scope. Commit: 2578b4e
 
 ## Task 2: Author SKILL.md
-- [ ] Status
+- [x] Status
 
 ### Scope
 Create `file-superpowers/SKILL.md` from scratch as the phase router. The file must read as standalone — no references to dex anywhere.
@@ -134,6 +134,9 @@ The file must contain no references to dex anywhere.
 - Phase Routing table has exactly 8 rows
 - Supporting References table has exactly 6 rows
 - Plan File Quick Reference shows at least one task with all four sub-sections (Scope, Approach, Files, Done criteria) and an example second task with a `Depends on:` line
+
+### Result
+Authored `file-superpowers/SKILL.md` from scratch with all seven sections in order (frontmatter, title+intro, persistence paragraph, HARD-GATE, Phase Routing with 8 rows, Plan File Quick Reference with the two-task example, Supporting References with 6 rows). `grep -iE '\bdex\b'` returns no matches; the file reads as standalone. Commit: 6676534
 
 ## Task 3: Author brainstorming.md
 - [ ] Status
