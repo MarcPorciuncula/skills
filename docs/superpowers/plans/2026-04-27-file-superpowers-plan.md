@@ -3,7 +3,7 @@
 Spec: docs/superpowers/specs/2026-04-27-file-superpowers-design.md
 
 ## Task 1: Bootstrap directory and copy dex-free phase docs
-- [ ] Status
+- [x] Status
 
 ### Scope
 Create the `file-superpowers/` directory at the repo root and populate it with the eight files that need no content changes from `dex-superpowers/`. Apply the targeted three-line edit to `code-review.md` and place it alongside.
@@ -43,6 +43,9 @@ Does NOT include: `SKILL.md`, `brainstorming.md`, `execution.md`, `implementer-p
 - `diff dex-superpowers/<file> file-superpowers/<file>` returns no output for each of the eight verbatim files
 - `grep -i dex file-superpowers/code-review.md` returns no matches
 - `git diff --no-index dex-superpowers/code-review.md file-superpowers/code-review.md` shows exactly the three-line replacement specified above
+
+### Result
+Created `file-superpowers/` with the eight verbatim phase doc copies (each `diff` clean against its `dex-superpowers/` source) and `code-review.md` with the three specified line replacements (`git diff --no-index` shows exactly those three substitutions). Note: `grep -i dex` on the resulting `code-review.md` returns two false-positive matches against the substring "index" inside `conversation index` / `verifyIndex()` / `repairIndex()` — these are example-payload lines that exist verbatim in the source and are not real dex references; rewording them was outside the task spec's scope. Commit: 2578b4e
 
 ## Task 2: Author SKILL.md
 - [ ] Status
