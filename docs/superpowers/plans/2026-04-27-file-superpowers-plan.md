@@ -326,7 +326,7 @@ Create `file-superpowers/execution.md`. Substantial rewrite of the Setup, Per-Ba
 Authored file-superpowers/execution.md fresh, drawing structure from dex-superpowers/execution.md but rewriting Setup, Per-Batch Flow, Context Pre-Curation, and Example Workflow for the file-based plan model; the remaining sections carry over with terminology swapped to task numbers, checkbox flips, and `### Result` appends. `grep -iE '\bdex\b'` returns no matches; all 10 required `##` sections are present in order, the Per-Batch Flow enumerates the seven specified steps, the Context Pre-Curation table includes all 6 required rows, and the Example Workflow walks two batches using plan-file paths and Task N references. Commit: 203dbd1
 
 ## Task 5: Author the three subagent prompt templates
-- [ ] Status
+- [x] Status
 Depends on: Task 1
 
 ### Scope
@@ -399,3 +399,6 @@ For all three files: no dex references; placeholders use literal `<placeholder>`
 - `implementer-prompt.md` includes the explicit instruction to amend plan changes into the task's implementation commit
 - `reviewer-prompt.md` explicitly forbids reading the plan file beyond the task excerpt
 - `plan-reviewer-prompt.md` explicitly states that reading the full plan and spec is required (siblings are the point)
+
+### Result
+Authored the three subagent prompt templates as fresh files in `file-superpowers/`, drawing structure (not text) from the dex-superpowers references. All sections are present in the specified order, all required placeholders (`<task-spec>`, `<plan-path>`, `<spec-path>`, `<skill-dir>`, `<base-sha>`, `<head-sha>`) appear in the right templates, and `grep -iE '\bdex\b'` across all three returns no matches. The implementer template carries the explicit amend instruction, the reviewer template forbids reading the plan beyond the excerpt, and the plan-reviewer template requires reading both files completely. Commit: cb2b50b
