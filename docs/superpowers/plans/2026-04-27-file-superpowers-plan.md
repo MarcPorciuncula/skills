@@ -139,7 +139,7 @@ The file must contain no references to dex anywhere.
 Authored `file-superpowers/SKILL.md` from scratch with all seven sections in order (frontmatter, title+intro, persistence paragraph, HARD-GATE, Phase Routing with 8 rows, Plan File Quick Reference with the two-task example, Supporting References with 6 rows). `grep -iE '\bdex\b'` returns no matches; the file reads as standalone. Commit: 6676534
 
 ## Task 3: Author brainstorming.md
-- [ ] Status
+- [x] Status
 
 ### Scope
 Create `file-superpowers/brainstorming.md`. Phases 1-3 carry over verbatim from `dex-superpowers/brainstorming.md`. The Phase 4 section is rewritten for file-based persistence. The phase diagram at the top of the file is updated to reflect the new Phase 4 sub-phases.
@@ -259,6 +259,9 @@ Create `file-superpowers/brainstorming.md`. Phases 1-3 carry over verbatim from 
 - Phase 4 section contains four sub-sections: 4a, 4b, 4c, 4d
 - The "Key Principles", "Red Flags — Scope Reduction", and "Explaining With Structure" sections at the end of the file are byte-identical to dex-superpowers/brainstorming.md
 - File ends with the same "Explaining With Structure" content as dex-superpowers/brainstorming.md
+
+### Result
+Authored brainstorming.md by copying dex-superpowers/brainstorming.md, updating the Phase 4 portion of the phase diagram, and rewriting the entire Phase 4 section into 4a (write spec) / 4b (write plan) / 4c (plan-reviewer subagent) / 4d (user gate). Plan defect surfaced: the spec's "byte-identical" requirement for Phases 1-3 was unsafe — the source contains two residual dex CLI references in Phase 1 (`dex list` on line 52, `dex epic → subtasks` on line 54). Orchestrator applied two minor wording fixes (`dex list` → `existing plan files at docs/superpowers/plans/`, `dex epic → subtasks` → `spec → plan`) to make the file standalone. `grep -iE '\bdex\b'` returns no matches. Commit: d485e1a
 
 ## Task 4: Author execution.md
 - [ ] Status
