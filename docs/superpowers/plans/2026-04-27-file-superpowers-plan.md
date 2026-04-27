@@ -264,7 +264,7 @@ Create `file-superpowers/brainstorming.md`. Phases 1-3 carry over verbatim from 
 Authored brainstorming.md by copying dex-superpowers/brainstorming.md, updating the Phase 4 portion of the phase diagram, and rewriting the entire Phase 4 section into 4a (write spec) / 4b (write plan) / 4c (plan-reviewer subagent) / 4d (user gate). Plan defect surfaced: the spec's "byte-identical" requirement for Phases 1-3 was unsafe — the source contains two residual dex CLI references in Phase 1 (`dex list` on line 52, `dex epic → subtasks` on line 54). Orchestrator applied two minor wording fixes (`dex list` → `existing plan files at docs/superpowers/plans/`, `dex epic → subtasks` → `spec → plan`) to make the file standalone. `grep -iE '\bdex\b'` returns no matches. Commit: d485e1a
 
 ## Task 4: Author execution.md
-- [ ] Status
+- [x] Status
 Depends on: Task 1
 
 ### Scope
@@ -321,6 +321,9 @@ Create `file-superpowers/execution.md`. Substantial rewrite of the Setup, Per-Ba
 - Per-Batch Flow section enumerates the seven steps in order
 - Context Pre-Curation section includes the orchestrator/subagent reads table with at least 6 rows (Plan file whole, Plan file own task, Plan file siblings, Spec file, Diff, Codebase)
 - Example Workflow uses task number references (e.g., "Task 3", "Task 5") and plan file paths, never dex IDs
+
+### Result
+Authored file-superpowers/execution.md fresh, drawing structure from dex-superpowers/execution.md but rewriting Setup, Per-Batch Flow, Context Pre-Curation, and Example Workflow for the file-based plan model; the remaining sections carry over with terminology swapped to task numbers, checkbox flips, and `### Result` appends. `grep -iE '\bdex\b'` returns no matches; all 10 required `##` sections are present in order, the Per-Batch Flow enumerates the seven specified steps, the Context Pre-Curation table includes all 6 required rows, and the Example Workflow walks two batches using plan-file paths and Task N references. Commit: 203dbd1
 
 ## Task 5: Author the three subagent prompt templates
 - [ ] Status
