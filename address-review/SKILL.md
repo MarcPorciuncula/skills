@@ -84,7 +84,6 @@ Tests must earn their place by:
 
 - Being attached to a fix or feature whose regression would cause real damage (correctness bugs with user-visible blast radius, or functional gaps that other code will rely on). Optimizations, performance improvements, and "more-correct" cleanups generally do not — the original code worked, and ship-on-review-confidence is fine.
 - Exercising real behaviour our code owns — non-trivial transformation, branching, state, or data shape we wrote. Not the contract of a well-tested library primitive we compose.
-- Being robust to equivalent-implementation refactors. A test that breaks when the implementation is swapped for one with identical user-observable behaviour is an implementation snapshot, not a behaviour test.
 
 Before categorizing a comment as **Valid concern — test gap**, run through these gates in order. **The claim is valid only if all gates pass. Any single fail → categorize as Pedantic instead.**
 
