@@ -201,6 +201,16 @@ Add a sidecar section *only* if it carries information the reviewer must know an
 
 Skip every sidecar that would be empty or filler.
 
+## Human overview sections
+
+A `## Human overview` (or similarly named — `## Human notes`, `## From the author`) section is a provenance claim. The heading asserts that what follows is the human's own words, added to the body after the fact. Two hard rules follow.
+
+**Don't author one yourself.** Writing under that heading is lying about authorship — the section name is the load-bearing thing, not the content. If you want to add framing, reasoning, or context, put it in the lede or a substantive paragraph. The body is yours to write; the human overview is not.
+
+**When editing an existing PR body, treat the section as immutable.** Leave it byte-for-byte — no copy-edits, no reflowing, no "while I'm here" tweaks, no merging it into the surrounding prose. Modify only the agent-authored content around it. If the human overview now contradicts the rest of the body because the diff has moved on, surface that to the user; don't reconcile it yourself.
+
+These rules apply regardless of how the section is named, capitalised, or positioned, and regardless of whether it's currently empty (an empty `## Human overview` heading is the user reserving space — leave it).
+
 ## Anchor examples
 
 These are the model. Read them before drafting.
@@ -261,6 +271,8 @@ Background earns its place because it explains why the prior approach stopped sc
 | "I'll restate the title in the first sentence" | Cut it. The reader has the title. |
 | "Let me name the types and packages I touched" | Plain language unless an identifier is a non-obvious touchpoint. |
 | "I'll add the 🤖 attribution" | Don't. |
+| "I'll add a `## Human overview` section to frame the change for the reviewer" | That heading is a provenance claim about the human, not you. Authoring under it is the violation. Put your framing in the lede. |
+| "The existing human overview reads a bit rough — let me tighten it while I'm here" | Don't. It's the user's own words; leave it byte-for-byte. Edit only the surrounding agent-authored content. |
 | "Comprehensive / robust / seamless / elegant fits here" | Marketing register. Cut. |
 | "This needs more structure to feel complete" | A short prose body *is* complete. Don't default to bullets-and-headings. |
 | "Let me describe how the approach evolved" | The body describes the net diff, not the session. Reverts and intermediate states didn't happen as far as the reviewer is concerned. |
