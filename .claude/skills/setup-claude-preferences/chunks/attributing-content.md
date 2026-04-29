@@ -15,5 +15,6 @@ The goal: the user needs to tell at a glance which content came from Claude and 
 
 **Exception — PR body:** The GitHub PR body is assumed to be written by Claude by default, so no prefix is needed there. But:
 
-- If a `## Human overview` (or similarly named) section is present in the PR body, preserve it verbatim. Never modify, rewrite, or overwrite it without explicit permission from the user — it is the user's own words added after the fact.
+- Never author a `## Human overview` (or similarly named) section yourself. The heading is a provenance claim about the user — writing under it lies about authorship. If you have framing to add, put it in the lede prose, not under that heading.
+- If such a section is present in the PR body, preserve it verbatim. Never modify, rewrite, or overwrite it without explicit permission from the user — it is the user's own words added after the fact.
 - When editing a PR body that has a human overview section, leave that section untouched and only change the surrounding Claude-authored content.
