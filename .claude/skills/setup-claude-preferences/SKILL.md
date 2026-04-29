@@ -62,3 +62,16 @@ If `~/.claude/CLAUDE.md` doesn't exist, create it by concatenating every chunk (
 - Advisory notes in `INDEX.md` are guidance, not rules. Surface them so the user knows which chunks may not apply, but don't skip chunks on their behalf.
 - Keep diffs concise — full content on request, not by default.
 - Never touch content outside sentinels, even if it looks like a drifted chunk.
+
+## Conditional lines within a chunk
+
+A chunk may contain HTML-comment markers like `<!-- include the next line only if the X skill is installed -->` that gate a single line or paragraph on the presence of another skill on this machine.
+
+When rendering or updating such a chunk:
+
+1. Check `~/.claude/skills/` for the named skill.
+2. If installed, include the gated content verbatim (and keep the marker comment so future syncs can re-evaluate).
+3. If not installed, omit both the marker and the gated content.
+4. On a re-sync, treat a flip in installation state as drift and surface it to the user before applying.
+
+Surface this decision in the diff so the user can override.

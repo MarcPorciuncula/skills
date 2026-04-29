@@ -1,10 +1,15 @@
 ---
 name: writing-pr-bodies
 description: >
-  Use when writing or improving a pull request body / description — including
-  the body produced as part of `gh pr create`. Produces a short, prose-led
-  description aimed at a human reviewer about to read the diff, not a re-
-  narration of the diff itself.
+  Produces a short, prose-led PR description aimed at a human reviewer about
+  to read the diff, not a re-narration of the diff itself.
+  TRIGGER before any `gh pr create`, `gh pr edit --body`, `gs branch submit`,
+  `git spice branch submit`, or other command that opens or updates a pull
+  request body — including autonomous PR-creation flows where the user did
+  not explicitly ask for a body. Also trigger when the user asks to write,
+  rewrite, tighten, or review a PR description / title.
+  SKIP for non-body PR operations (e.g. `gh pr ready`, `gh pr merge`, label
+  or reviewer changes) and for commit messages.
 ---
 
 # Writing PR Bodies

@@ -21,6 +21,9 @@ When you push a branch with the intent of getting it reviewed, the PR-creation b
 4. For `draft` and `auto-ready`: open the PR as draft (`gh pr create --draft`) on the same turn as the first push. Don't wait for the work to be complete.
 5. For `auto-ready`: when the work is complete and the final commit is pushed, mark the PR ready (`gh pr ready`).
 
+<!-- include the next line only if the `writing-pr-bodies` skill is installed on this machine. The sync agent decides whether to include it; remove it (and this comment) otherwise. -->
+**PR body authoring.** Before running any command that opens or updates a PR body (`gh pr create`, `gh pr edit --body`, `gs branch submit`), invoke the `writing-pr-bodies` skill to draft the body. This applies to autonomous PR creation, not just when the user asks for a body.
+
 **Self-update.** When the user says something like "for this repo, always open auto-ready PRs" or "stop auto-creating PRs here," edit the list below to match. Only act on explicit directives — do not infer mode changes from indirect signals.
 
 <!-- customisable: edit the lists below per machine. Repos may be listed by `owner/name` (matched against the `origin` remote) or by absolute local path. -->
