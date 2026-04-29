@@ -43,15 +43,16 @@ body
 
 ## Process
 
-1. Read `chunks/INDEX.md` and each `chunks/<id>.md`.
-2. Read `~/.claude/CLAUDE.md` if it exists.
-3. For each chunk, locate its `<!-- chunk:<id> -->` … `<!-- /chunk:<id> -->` pair in the live file:
+1. Run `check-sync.py` to get a preliminary status report (MATCH / DRIFT / MISSING / ORPHAN). Treat its output as advisory: a DRIFT may be a false positive caused by conditional include markers (see below), and you should re-verify any chunk you intend to act on. Do **not** trust MATCH/MISSING blindly either if something looks off — re-read the live file when in doubt.
+2. Read `chunks/INDEX.md` so you have the descriptions and advisory notes.
+3. Read each chunk file the script flagged DRIFT or MISSING (and the corresponding region of the live file for DRIFT).
+4. For each chunk:
    - **Match** — no action.
    - **Drift** — show a concise diff. Make an educated guess about which version is newer (git log on the chunk file vs. file mtime on the live copy) and recommend a direction, but defer to the user. Options: keep live, overwrite with chunk, or hand-edit.
    - **Missing** — offer to insert. Show the live file's existing H2 headings and ask where to place the new chunk (default: append at end).
-4. List H2 sections in the live file that sit outside any sentinel. Leave them untouched, but surface the list so the user can decide whether to extract any into new chunks.
-5. Apply the user's choices. Each inserted or replaced chunk is written wrapped in its sentinels, preserving the chunk-file body verbatim.
-6. Summarise what changed.
+5. Surface the ORPHAN H2 list so the user can decide whether to extract any into new chunks. Leave the content itself untouched.
+6. Apply the user's choices. Each inserted or replaced chunk is written wrapped in its sentinels, preserving the chunk-file body verbatim.
+7. Summarise what changed.
 
 ## Creating the file from scratch
 
