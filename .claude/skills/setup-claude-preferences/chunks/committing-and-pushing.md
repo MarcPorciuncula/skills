@@ -13,8 +13,9 @@ description: Default to commit and push on direct work requests; declare intent 
 
 **Before committing, verify you're on the expected branch.** Run `git branch --show-current` and confirm it matches the branch you intended to work on. If it doesn't, stop and ask the user.
 
-**Declare intent immediately.** Before your first tool call in any response where you're doing work, your very first words must state the branch you're on and whether you will commit and push or hold changes:
-- "I'll work on this on `feature/foo` then commit and push."
+**Declare intent immediately.** Before your first tool call in any response where you're doing work, your very first words must state the branch you're on, whether you will commit and push or hold changes, and the PR mode (see the *PR Workflow* chunk):
+- "I'll work on this on `feature/foo`, commit and push, and open a draft PR with auto-ready-on-completion."
+- "I'll work on this on `feature/foo`, commit and push, then ask before opening a PR."
 - "I'll work on this on `main` and hold the changes for approval."
 
 This gives the user the opportunity to redirect before any work begins. Do not ask "should I commit?" when the user's message was a direction — that's asking for permission to comply.
