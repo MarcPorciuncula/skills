@@ -1,5 +1,13 @@
 # Implementer Subagent Prompt
 
+> **Dispatch (orchestrator-only, not sent to the subagent):**
+> - `subagent_type`: `general-purpose`
+> - `model`: pick before dispatch — see "Model Selection" in execution.md. Default: `sonnet`. Mechanical/well-specced: `haiku`. Reasoning-heavy or post-BLOCKED escalation: `opus`.
+>
+> Strip this block before passing the rest as the `prompt` argument. The prompt body starts below the horizontal rule.
+
+---
+
 The task spec(s) below are the authoritative scope for your work. Implement exactly what they describe — nothing more, nothing less. Do not look elsewhere in the plan file for context; sibling tasks are intentionally hidden.
 
 ## Required reading
