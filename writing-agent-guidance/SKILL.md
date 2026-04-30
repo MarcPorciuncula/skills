@@ -59,6 +59,8 @@ Use codes from `pkg/errcodes` in error responses.
 
 Guidance should make sense to someone encountering the codebase for the first time. References to specific incidents, previous implementations, or decisions from the editing session are noise to this reader. Naming a concrete code path as an example is fine, but the guidance should work without it — if removing the reference makes the directive unclear, rewrite the directive to stand alone.
 
+**Incident-as-war-story vs. incident-as-track-record.** Both reference past failures, but they function differently. A war story names *one specific incident* and only makes sense to readers who lived through it ("we removed this because the migration broke last quarter") — remove. A track-record framing names *categories of failure attributable to the agent class* without requiring session context ("from past failures: missing requirements shipped, undefined functions shipped, trust broken") — keep when load-bearing. The track-record form is a cost statement, not a story; see principle 4's existential cost form.
+
 ### 3. Consolidate overlapping guidance
 
 When guidance must live in multiple places, pick one canonical location for the comprehensive version and reference it from others. Distributed variations (context-sensitive abridgements, wider-scoped summaries) should always link to the detailed guidance.
@@ -85,6 +87,21 @@ A rebuttal or justification that names a *recognisable default* — a behaviour 
 
 - **Directive + cost** — short directive followed by the shortest self-contained phrase naming the consequence: `Don't invent new error codes inline. Unknown codes fall through to a generic error.`
 - **Stop phrase** — one short sentence written at the point of temptation in a checklist or procedure.
+- **Existential cost statement** — a cost statement anchored at agent-identity level (trust loss, replacement, role) rather than system level. Reserved for behaviors where mechanical costs don't bite — situations where the model can rationalize past "the build will fail" but harder to rationalize past "if you lie, you'll be replaced." Often paired with track-record framing (see principle 2) to make the cost feel attributable rather than abstract:
+
+  ```
+  ## Why This Matters
+
+  From past failures:
+  - your human partner said "I don't believe you" — trust broken
+  - Undefined functions shipped — would crash
+  - Missing requirements shipped — incomplete features
+  - Violates: "Honesty is a core value. If you lie, you'll be replaced."
+  ```
+
+  **Authorship: human-only.** Agents editing or writing guidance must not introduce existential cost statements on their own initiative — only at the human's express direction. Agents *should* identify the form when it appears (so the recognisability test in principle 4 doesn't strip it as a war story) and preserve it across edits. The form is asymmetric: its persuasive weight comes partly from the fact that a human chose to invoke it, and an agent generating it autonomously degrades both the specific instance and the form generally.
+
+  **Earns its place when all three hold:** (a) the behavior is one the model has strong incentive to rationalize (claiming completion, declaring success without verification, skipping a discipline under time pressure); (b) mechanical cost statements have already been tried and don't reliably bite; (c) used scarcely in the document — one or two such blocks total. **Failure mode:** overuse desensitizes the form and makes the document read as melodramatic or manipulative. If every directive grows an "if you do X, you'll be replaced" tail, the technique stops working everywhere.
 
 **Cost statements name consequences, not mechanisms.** A cost statement answers "what breaks?" in terms the reader can recognise without learning internals — shared knowledge (`reviewers already have the diff`), project context the reader already holds (`the gateway owns auth`), or observable breakage (`unknown codes fall through to a generic error`). If the cost would require teaching a specific class, function, or file to make sense, either rephrase in terms of observable behaviour, or move the explanation to a dedicated architecture section and let the directive stand alone.
 
@@ -202,6 +219,8 @@ calls. No business logic in this layer.
 Strengthening directives, removing clear argumentation, reordering, and consolidating duplicates are safe to do directly.
 
 Removing content that might be load-bearing — prohibitions, context that could encode architectural rationale, anything where you're unsure — is destructive. Before removing, present a recommendation with your reasoning and let the user confirm or override. If the content encodes a real architectural fact, convert it to a clear directive or diagram rather than deleting it.
+
+**Existential cost statements are human-authored only.** When editing guidance as an agent, do not introduce new existential cost statements on your own initiative — only at the human's express direction. Identify and preserve existing ones. See principle 4's existential cost form.
 
 ## What to keep
 
