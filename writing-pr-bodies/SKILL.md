@@ -40,7 +40,15 @@ One short paragraph in plain prose. Use when one or two sentences carry the whol
 
 ### Problem / Change
 
-A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does. Use when the *why* takes more than half a sentence, or when the contrast between problem and change is what makes the diff legible.
+A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does.
+
+**Use only when this PR closes a bug.** Concrete tests:
+
+- The change has (or would have) a `fix:` prefix in conventional-commit style, not `feat:` / `improve:` / `refactor:`.
+- The work was motivated by a bug report or user complaint about something not behaving as intended, not by a desire to add capability.
+- A teammate hearing about the change would say "oh, that bug" — not "oh, that improvement".
+
+The contrast between problem and change is the legibility lever; that lever only works if there *is* a bug.
 
 > ## Problem
 >
@@ -51,6 +59,25 @@ A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Ch
 > A new pass in the same plugin walks in-window refs, asks filestore what's current, and appends a short note to the most recent user turn naming the changed paths. The agent decides whether to re-read; the hint is informational, not a task list.
 
 Heading pairs can be `## Problem` / `## Change`, `## Why` / `## What`, or any pair that names this PR's beats. Don't reach for `## Summary` — it opens the door to bullet-inventory bodies.
+
+**Don't use Problem/Change for `feat:` / `improve:` / `refactor:` work.** The shape forces a "what was broken" frame, and forcing it onto a non-bug pathologises prior decisions that were deliberate. Use *Feature lede* (next) instead.
+
+### Feature lede
+
+For PRs that add new behaviour, improve a UX, or refactor — anything that would naturally be `feat:` / `improve:` / `refactor:` rather than `fix:`. The prior state isn't being treated as a bug; this change adds to it or makes it better.
+
+Lead with what the change *adds* or *improves*, in present tense, with the prior state as a comparison point if useful. The reader experiences the prior state as "what is" (not "what was broken"), and the new state as "what's now possible".
+
+> Adds upload progress indicators to the attachment picker. Instead of a single spinner that hides everything in flight, each file shows its own progress bar and a cancel button. Failed uploads stay in the picker with a retry option rather than disappearing silently.
+
+Two contrasted framings of broadly similar PRs:
+
+| Frame | Trigger | Lede |
+|---|---|---|
+| **Feature** | `feat:` / `improve:` / `refactor:` — work motivated by adding capability | "Adds upload progress indicators to the attachment picker. Each file shows its own progress bar and a cancel button; failed uploads stay in the picker with a retry option." |
+| **Bug fix** | `fix:` — work motivated by a bug report | "Fixes the attachment picker so failed uploads no longer disappear silently. Previously a failed upload was removed from the UI with no error; now it stays with a retry button." |
+
+Anchor on the work's motivation (commit prefix, ticket type, what prompted the work), not on a judgment about whether the prior state was good or bad. Almost any prior state has *some* undesirable property — that doesn't make it a bug. If you find yourself reaching for "well, the prior state was actually wrong because…" to justify Problem/Change on improvement work, you're rationalising. The diagnostic: if you naturally write "X became Y" / "Y was lost" / "Z surfaced as a toast" (past tense, pathologising), you're framing as a bug fix; if you naturally write "X creates Y" / "the picker shows Z" (present tense, descriptive), you're framing as a feature. Match the frame to the work's motivation, not to the most prescribed shape.
 
 ### Lede + sidecars
 
@@ -104,6 +131,10 @@ Peer engineer. State facts. Acknowledge limits honestly. Don't sell.
 
 No jokes, colloquialisms, or stylised asides. They read as performance.
 
+**Verb tense is a framing diagnostic.** Past tense ("X became Y", "Y was lost", "Z surfaced as a toast") narrates a failure — use it for genuine bug fixes (`fix:` work). Present tense ("X creates Y", "the picker shows Z") describes existing behaviour without judging it — use it for feature work (`feat:` / `improve:` / `refactor:`). If you find yourself reaching for past tense to describe behaviour that wasn't a bug, the frame is wrong; switch to *Feature lede*.
+
+**Use user-visible language for user-visible changes.** "Multipart upload to S3 with chunked transfer encoding" describes the data flow; "each file shows its own progress bar as it uploads" describes what the user sees. For UX-affecting PRs, lead with what the user does and notices ("drag a file in", "see the progress bar", "cancel mid-upload") rather than the implementation flow.
+
 State the mechanism in plain language, not type names. "Adds an HTTP endpoint for updating an existing record by ID, with optional version-conflict checking" beats "Implements `PUT /resource/{id}` via `HandleUpdate` calling `UpdateResource`". Reach for identifier names only when the identifier is itself a non-obvious touchpoint a reviewer needs to find.
 
 The same rule applies to **file paths**. Don't write narrative prose like "`pkg/server/webhooks.go` retyped the parameter; meanwhile `pkg/simplejobs/worker/worker.go` was already passing the constructor's return value as of #1209" — that's code archaeology. Name a file path only when the reviewer needs to *find* something the diff doesn't surface.
@@ -119,6 +150,7 @@ Words and phrases to cut:
 - **Redundant self-reference** — *This change, This PR, This refactor* as the subject of every sentence. "This adds X" → "Adds X."
 - **Explainer-mode openers** — *Let me explain, Let's walk through, To understand this, The way this works is*.
 - **Empty contrasts** — *At the same time, On the other hand, That said* when nothing actually contrasts.
+- **Count-signalling lead-ins** — *Three failure modes followed: …, There are two reasons: …, The change has the following implications: …*. Useless signalling — the reader will count. Drop the count and the colon: state the items directly. If they're genuinely parallel and individually reviewable, use bullets; otherwise integrate into prose.
 - **Throat-clearing parentheticals** — recapping structural detail in parens. State the *consequence*, not the inventory.
 
 | Before | After |
@@ -127,6 +159,7 @@ Words and phrases to cut:
 | "It's worth noting that the worker now retries on transient failures." | "The worker now retries on transient failures." |
 | "Basically, the previous approach was leaking goroutines on shutdown." | "The previous approach leaked goroutines on shutdown." |
 | "Let me explain how this works: when a request comes in, we first authenticate, then dispatch." | "On request: authenticate, then dispatch." |
+| "The notification poller had three issues: it kept running after sign-out, backed off too aggressively after one 503, and logged every retry at error level." | "The notification poller kept running after sign-out, backed off too aggressively after one 503, and logged every retry at error level." |
 | "The struct itself is now unexported, so `Foo{}` no longer compiles — that literal in `pkg/x/y.go` was the bug #1209 just fixed by hand, and the shape that allowed it (exported struct with an unexported field, plus a nil-tolerant constructor and a `reconciler()` fallback to `UnavailableFoo`) only converted the misuse into a per-call Sentry error rather than a compile failure." | "Closes the loophole behind #1209: the exported struct + nil-tolerant constructor turned this misuse into a runtime Sentry rather than a compile error." |
 
 **Fragments are OK when they save words.** "Follow-up to #1209." reads cleaner than "This is a follow-up to #1209." Trailing reference lines, stack pointers, and one-word qualifiers don't need to be wrapped in complete sentences.
@@ -283,6 +316,22 @@ A `## Human overview` (or `## Human notes`, `## From the author`) section is a p
 
 These rules apply regardless of the section's name, capitalisation, position, or whether it's currently empty (an empty heading is the user reserving space — leave it).
 
+## When revising an existing PR body
+
+Revision is not editing. The existing body is one input, not a baseline to preserve.
+
+When asked to "revise", "rewrite", "tighten", or "update" a PR body, the reflex is to read the existing content and treat it as ground truth — restructuring paragraphs, swapping headings, polishing sentences. That produces a body that *looks* improved but carries forward the same beats, the same padding, and the same length. Restructuring is not cutting.
+
+Apply the same discipline as a fresh draft:
+
+1. **Read the diff first, not the existing body.** Read `git diff <base>...HEAD` and the commit storyline. Form your one-sentence scope from the diff alone. Only then look at the existing body.
+2. **Treat the existing body as one input.** Use it to surface observations the diff doesn't carry — a constraint the original author flagged, a subtlety they identified. That content earns the same way as content you'd write fresh: only if a reviewer couldn't recover it from the diff.
+3. **Apply *earns its place* to existing paragraphs as ruthlessly as to new ones.** Inheriting prose because it was already there is the silent failure mode. If a paragraph wouldn't survive a from-scratch draft, cut it.
+4. **Don't merge in detail just because it was in the original.** Restructuring three dense paragraphs into Problem/Change/Subtleties keeps the same word count. The body is shorter, or it isn't revised.
+5. **Trust your tighter draft.** If your draft is shorter than the original, that's a likely correct outcome, not a sign you're missing something.
+
+The exception: a `## Human overview` section is immutable (see *Human overview sections*). Everything else in an agent-authored body is yours to cut.
+
 ## Drafting flow
 
 1. Read the full diff against base and the commit storyline.
@@ -299,7 +348,12 @@ These rules apply regardless of the section's name, capitalisation, position, or
 |---|---|
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
 | "I'll cram problem and change into one dense lede paragraph" | Headings before the lede aren't forbidden. Split with `## Problem` / `## Change`. The disease is inventory bullets, not headings. |
+| "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work — closing a bug ticket. If the work would be `feat:` / `improve:` / `refactor:`, use *Feature lede*. Past-tense pathologisation ("X became Y", "Y was lost") is the tell that you've misframed an improvement as a fix. |
+| "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property — that doesn't make it a bug. The criterion is the work's motivation (commit prefix, ticket type), not a retrospective judgment about whether the prior state was good. `feat:` / `improve:` / `refactor:` → *Feature lede*. `fix:` → Problem/Change. |
+| "I'll narrate this UX feature in implementation terms — `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | UX-affecting PRs read in user-visible language. "Drag a file in", "see per-file progress", "click cancel" — what the user does and notices. Implementation-flow framing is what a system architect would write, not what the reviewer reads first. |
 | "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. Parallel items → bullets. Non-parallel → drop the lead-in. |
+| "Three failure modes followed: …" / "There are two reasons: …" / "The change has the following implications: …" | Count-signalling. Useless — the reader will count. Drop the count and the colon: state the items directly, either inline or as bullets if genuinely parallel. |
+| "The user asked me to revise — I'll keep most of the original and restructure / polish" | Revision is not editing. The existing body is one input, not a baseline. Re-derive from the diff first; apply *earns its place* to existing paragraphs as ruthlessly as to new ones. Restructuring without cutting is not a revision. See *When revising an existing PR body*. |
 | "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split, not packed paragraph. |
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle and cut the others. |
 | "Let me narrate which files changed and what changed in each" | Code archaeology. Diff has it. Name a file path only when the reviewer needs to *find* something the diff doesn't surface. |
