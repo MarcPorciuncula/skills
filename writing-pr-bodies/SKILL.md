@@ -91,6 +91,31 @@ State the mechanism in plain language, not type names. "Adds an HTTP endpoint fo
 
 The same rule applies to **file paths**. Don't write narrative prose like "`pkg/server/webhooks.go` retyped the parameter to `MeetingEventPublisher`; meanwhile `pkg/simplejobs/worker/worker.go` was already passing the constructor's return value as of #1209" — that's code archaeology, not a reviewer handout. The diff already shows which files changed. Name a file path in the body only when the reviewer needs to *find* something the diff doesn't surface (e.g. "the contract is documented in `prompts/usage.md` next to the existing X section") — not when scene-setting a narrative about the change.
 
+### Cut padding
+
+LLM-generated prose accumulates connective tissue that adds words without information. Get the structure right (right shape, right beats) and the prose can still feel padded — that's the failure mode where a PR body reads as "overly prosed" even when the body-level rules pass. Cut at the sentence level too.
+
+Words and phrases that almost always belong on the cutting room floor:
+
+- **Hedges and intensifiers** — *just, simply, really, actually, basically, essentially, fundamentally, quite, rather, somewhat, fairly, particularly, clearly, obviously*. They never carry information; they only soften.
+- **Filler lead-ins** — *It's worth noting that, It should be noted, Notably, Interestingly, As mentioned, In particular, In essence, At a high level, To be clear*. Whatever follows reads stronger without them.
+- **Redundant self-reference** — *This change, This PR, This refactor* used as the subject of every sentence. The reader knows what they're reading. "This adds X" → "Adds X."
+- **Explainer-mode openers** — *Let me explain, Let's walk through, To understand this, The way this works is*. The body is a handout, not a tutorial.
+- **Empty contrasts** — *At the same time, On the other hand, That said* when nothing actually contrasts. If the next clause doesn't reverse the prior one, drop the connective.
+- **Throat-clearing parentheticals** — recapping structural detail in parens (`exported struct with an unexported field, plus a nil-tolerant constructor and a fallback to UnavailableFoo`). The diff has the structure. State the *consequence*, not the inventory.
+
+Same content, tightened:
+
+| Before | After |
+|---|---|
+| "This change essentially refactors the auth middleware to handle expired tokens more gracefully." | "Refactors the auth middleware to handle expired tokens." |
+| "It's worth noting that the worker now retries on transient failures." | "The worker now retries on transient failures." |
+| "Basically, the previous approach was leaking goroutines on shutdown." | "The previous approach leaked goroutines on shutdown." |
+| "Let me explain how this works: when a request comes in, we first authenticate, then dispatch." | "On request: authenticate, then dispatch." |
+| "The struct itself is now unexported, so `Foo{}` no longer compiles — that literal in `pkg/x/y.go` was the bug #1209 just fixed by hand, and the shape that allowed it (exported struct with an unexported field, plus a nil-tolerant constructor and a `reconciler()` fallback to `UnavailableFoo`) only converted the misuse into a per-call Sentry error rather than a compile failure." | "Closes the loophole behind #1209: the exported struct + nil-tolerant constructor turned this misuse into a runtime Sentry rather than a compile error." |
+
+**Fragments are OK when they save words.** "Follow-up to #1209." reads cleaner than "This is a follow-up to #1209." A trailing reference line, a stack pointer, or a one-word qualifier doesn't need to be wrapped in a complete sentence to be understood.
+
 ## Bullets vs paragraphs
 
 Within any shape:
@@ -300,6 +325,7 @@ These rules apply regardless of how the section is named, capitalised, or positi
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle and cut the others. If three angles all feel necessary, the underlying claim probably isn't load-bearing. |
 | "Let me narrate which files changed and what changed in each" | Code-archaeology prose. The diff already shows which files changed. Name a file path only when the reviewer needs to *find* something the diff doesn't surface — not when scene-setting a story about the change. |
 | "It's a 24-line PR but the lede is a 100-word sentence threading five things together" | Right-size the body to the diff. Tiny PRs with self-explanatory titles get one or two short sentences carrying whatever the title couldn't — a follow-up reference, a "why now", a constraint. Not a re-explanation of what the diff plainly shows. |
+| "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. See the *Cut padding* subsection under Voice for the full blacklist and concrete sentence-level rewrites. |
 | "## What's no longer public" / "## What was removed" + bulleted list of identifiers | Diff inventory dressed as a section. Cut. If a removal carries a non-obvious design decision (why this wrapper was deleted, why these peer types collapsed, why this option moved), promote that one decision into a sentence under `## Change` or alongside the relevant Before/After. The list itself is recoverable from the diff. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | File count and line count are recoverable from the PR header. They don't tell the reviewer where conflicts or regressions will show up. If the PR is cross-cutting enough to want a scope statement, write `## Areas touched` instead — name the subsystems impacted. |
 | "## Also in this PR — Docs: new CLAUDE.md walks through …" | Docs updates that follow mechanically from a code change don't earn an "Also in this PR" bullet. The diff has the file. Reserve the section for secondary *behavioural or API* consequences. |
