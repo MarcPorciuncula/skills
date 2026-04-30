@@ -14,6 +14,7 @@ Agent tool:
 
     Read these files now, before reading the rest of this prompt:
     - `<skill-dir>/tdd.md` — Required TDD process. Follow it exactly.
+    - `<skill-dir>/verification.md` — Verification discipline and scope of verification.
 
     [Replace <skill-dir> with the absolute path to the dex-superpowers skill directory.]
 
@@ -65,7 +66,7 @@ Agent tool:
     Once you're clear on requirements:
     1. Implement exactly what the task specifies
     2. Write tests following TDD (see tdd.md for the full process: understand the change, examine existing tests, plan verification strategy, then red-green-refactor)
-    3. Verify implementation works
+    3. Verify implementation works — scope verification proportionally to the change. The floor is the touched files and packages from the task description; extend to flow-on areas you'd reasonably expect to be affected (e.g. known callers of a shared helper you altered). State the scope you ran at when reporting status (e.g. "tests pass for `pkg/widget` (8/8)"). See `verification.md` "Scope of verification."
     4. Commit your work
     5. Self-review (see below)
     6. Report back
