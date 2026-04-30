@@ -119,6 +119,7 @@ Words and phrases to cut:
 - **Redundant self-reference** — *This change, This PR, This refactor* as the subject of every sentence. "This adds X" → "Adds X."
 - **Explainer-mode openers** — *Let me explain, Let's walk through, To understand this, The way this works is*.
 - **Empty contrasts** — *At the same time, On the other hand, That said* when nothing actually contrasts.
+- **Count-signalling lead-ins** — *Three failure modes followed: …, There are two reasons: …, The change has the following implications: …*. Useless signalling — the reader will count. Drop the count and the colon: state the items directly. If they're genuinely parallel and individually reviewable, use bullets; otherwise integrate into prose.
 - **Throat-clearing parentheticals** — recapping structural detail in parens. State the *consequence*, not the inventory.
 
 | Before | After |
@@ -127,6 +128,7 @@ Words and phrases to cut:
 | "It's worth noting that the worker now retries on transient failures." | "The worker now retries on transient failures." |
 | "Basically, the previous approach was leaking goroutines on shutdown." | "The previous approach leaked goroutines on shutdown." |
 | "Let me explain how this works: when a request comes in, we first authenticate, then dispatch." | "On request: authenticate, then dispatch." |
+| "Phase 1 shipped autosave to filestore. Three failure modes followed: every typing burst becomes a new version, tab close mid-typing loses edits, and 409s surface as ineffective toasts." | "Phase 1's per-keystroke autosave produced new filestore versions on every typing burst, lost post-debounce edits on tab close, and surfaced 409s as toasts that asked users to reload and discard their work." |
 | "The struct itself is now unexported, so `Foo{}` no longer compiles — that literal in `pkg/x/y.go` was the bug #1209 just fixed by hand, and the shape that allowed it (exported struct with an unexported field, plus a nil-tolerant constructor and a `reconciler()` fallback to `UnavailableFoo`) only converted the misuse into a per-call Sentry error rather than a compile failure." | "Closes the loophole behind #1209: the exported struct + nil-tolerant constructor turned this misuse into a runtime Sentry rather than a compile error." |
 
 **Fragments are OK when they save words.** "Follow-up to #1209." reads cleaner than "This is a follow-up to #1209." Trailing reference lines, stack pointers, and one-word qualifiers don't need to be wrapped in complete sentences.
@@ -283,6 +285,22 @@ A `## Human overview` (or `## Human notes`, `## From the author`) section is a p
 
 These rules apply regardless of the section's name, capitalisation, position, or whether it's currently empty (an empty heading is the user reserving space — leave it).
 
+## When revising an existing PR body
+
+Revision is not editing. The existing body is one input, not a baseline to preserve.
+
+When asked to "revise", "rewrite", "tighten", or "update" a PR body, the reflex is to read the existing content and treat it as ground truth — restructuring paragraphs, swapping headings, polishing sentences. That produces a body that *looks* improved but carries forward the same beats, the same padding, and the same length. Restructuring is not cutting.
+
+Apply the same discipline as a fresh draft:
+
+1. **Read the diff first, not the existing body.** Read `git diff <base>...HEAD` and the commit storyline. Form your one-sentence scope from the diff alone. Only then look at the existing body.
+2. **Treat the existing body as one input.** Use it to surface observations the diff doesn't carry — a constraint the original author flagged, a subtlety they identified. That content earns the same way as content you'd write fresh: only if a reviewer couldn't recover it from the diff.
+3. **Apply *earns its place* to existing paragraphs as ruthlessly as to new ones.** Inheriting prose because it was already there is the silent failure mode. If a paragraph wouldn't survive a from-scratch draft, cut it.
+4. **Don't merge in detail just because it was in the original.** Restructuring three dense paragraphs into Problem/Change/Subtleties keeps the same word count. The body is shorter, or it isn't revised.
+5. **Trust your tighter draft.** If your draft is shorter than the original, that's a likely correct outcome, not a sign you're missing something.
+
+The exception: a `## Human overview` section is immutable (see *Human overview sections*). Everything else in an agent-authored body is yours to cut.
+
 ## Drafting flow
 
 1. Read the full diff against base and the commit storyline.
@@ -300,6 +318,8 @@ These rules apply regardless of the section's name, capitalisation, position, or
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
 | "I'll cram problem and change into one dense lede paragraph" | Headings before the lede aren't forbidden. Split with `## Problem` / `## Change`. The disease is inventory bullets, not headings. |
 | "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. Parallel items → bullets. Non-parallel → drop the lead-in. |
+| "Three failure modes followed: …" / "There are two reasons: …" / "The change has the following implications: …" | Count-signalling. Useless — the reader will count. Drop the count and the colon: state the items directly, either inline or as bullets if genuinely parallel. |
+| "The user asked me to revise — I'll keep most of the original and restructure / polish" | Revision is not editing. The existing body is one input, not a baseline. Re-derive from the diff first; apply *earns its place* to existing paragraphs as ruthlessly as to new ones. Restructuring without cutting is not a revision. See *When revising an existing PR body*. |
 | "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split, not packed paragraph. |
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle and cut the others. |
 | "Let me narrate which files changed and what changed in each" | Code archaeology. Diff has it. Name a file path only when the reviewer needs to *find* something the diff doesn't surface. |
