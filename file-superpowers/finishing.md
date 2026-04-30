@@ -10,14 +10,7 @@ Guide completion of development work by presenting clear options and handling ch
 
 ### Step 1: Confirm Verification
 
-By the time you reach `finishing.md`, the work has already been verified at two layers:
-
-- Each task's per-batch verification by the implementer (proportional scope per `verification.md`)
-- The end-of-workflow adversarial pass against the integrated branch diff (`execution.md` "After All Tasks" → `adversarial-prompt.md`)
-
-CI will run the unbounded sweep when the PR opens.
-
-**Do not run a repo-wide test/lint/build command here.** It duplicates CI, contradicts the proportional scope used throughout the workflow, and burns time on large projects without adding signal.
+By the time you reach `finishing.md`, the work has already been verified at two layers: per-task verification by each implementer, and the end-of-workflow adversarial pass against the integrated branch diff. CI runs the unbounded sweep on PR open.
 
 Confirm the adversarial pass returned clean (or that flagged issues were fixed and re-checked). If it didn't, return to `execution.md` "After All Tasks" and address before proceeding.
 
@@ -123,10 +116,6 @@ git branch -D <feature-branch>
 
 ## Common Mistakes
 
-**Re-running the repo-wide suite here**
-- **Problem:** Duplicates CI, contradicts proportional verification, expensive on large projects
-- **Fix:** Trust the per-task and adversarial passes that already ran; CI does the unbounded sweep on PR open
-
 **Skipping the verification confirmation**
 - **Problem:** Merge work whose adversarial pass flagged unresolved issues
 - **Fix:** Confirm the adversarial pass returned clean before offering options
@@ -142,7 +131,6 @@ git branch -D <feature-branch>
 ## Red Flags
 
 **Never:**
-- Run a repo-wide test/lint/build command in this phase
 - Proceed with unresolved issues from the adversarial pass
 - Delete work without confirmation
 - Force-push without explicit request

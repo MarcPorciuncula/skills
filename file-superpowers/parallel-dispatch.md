@@ -73,7 +73,7 @@ Task("Fix tool-approval-race-conditions.test.ts failures")
 When agents return:
 - Read each summary
 - Verify fixes don't conflict
-- Run the tests for the files each agent touched plus any shared callers — proportional to the integrated scope, not the whole repo (see `verification.md`)
+- Run the tests for the files each agent touched plus any shared callers (see `verification.md` "Scope of verification")
 - Integrate all changes
 
 ## Agent Prompt Structure
@@ -164,7 +164,7 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 After agents return:
 1. **Review each summary** - Understand what changed
 2. **Check for conflicts** - Did agents edit same code?
-3. **Run the tests for the integrated scope** — files each agent touched plus shared callers, per `verification.md`. CI handles the unbounded sweep.
+3. **Run the tests for the integrated scope** — files each agent touched plus shared callers (see `verification.md` "Scope of verification")
 4. **Spot check** - Agents can make systematic errors
 
 ## Real-World Impact
