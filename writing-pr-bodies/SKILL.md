@@ -76,6 +76,28 @@ Background earns its place because it explains why the prior approach stopped sc
 
 The shapes can combine — Problem/Change with a How-to-test sidecar is common.
 
+#### Before/After code blocks for API-reshape refactors
+
+When the *value* of a refactor is the API delta — a public surface narrows, a constructor contract changes, a call pattern shifts — two short Before/After code blocks at the call-site level are the most legible artifact a reviewer can have. They make the rest of the diff mechanical.
+
+```go
+// Before
+sjSvc.RegisterKindForDispatch(KindFoo, FooOptions(2)...)
+fooDispatcher := NewFooDispatcher(sjSvc)
+```
+
+```go
+// After
+fooDispatcher := FooJob.Bind(sjSvc)
+```
+
+Keep them tight:
+- **Show a representative call site or two**, not the full type-signature surface. A reviewer reading two before/after snippets gets the shape; ten won't add information.
+- **Show what changes**, not what stays the same. Cut configuration boilerplate, unrelated setup, and members the refactor doesn't touch.
+- **Annotate only when needed.** A `// Before` / `// After` header is enough; longer commentary belongs in prose under `## Change`.
+
+This is the one place the "no code archaeology" rule yields. The rule is about narrative prose that tells a story of which files changed; a tight Before/After is the *opposite* — it shows the contested delta directly. If you find your Before/After block running past ~15 lines per side, you've reverted to dumping the type surface; trim to the call sites that demonstrate the change.
+
 ## Voice
 
 Peer engineer. State facts. Acknowledge limits honestly. Don't sell.
