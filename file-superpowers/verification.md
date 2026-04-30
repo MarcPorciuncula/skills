@@ -2,9 +2,11 @@
 
 ## Overview
 
-Claiming work is complete without evidence is dishonesty.
+Claiming work is complete without verification is dishonesty, not efficiency.
 
 **Core principle:** Evidence before claims, scoped proportionally to the change.
+
+**Violating the letter of this rule is violating the spirit of this rule.**
 
 ## The Iron Law
 
@@ -43,6 +45,8 @@ BEFORE claiming any status:
              - If NO: state actual status with evidence.
              - If YES: state claim WITH evidence and the scope it was run at.
 6. ONLY THEN: make the claim.
+
+Skip any step = lying, not verifying.
 ```
 
 ## Common Failures
@@ -55,11 +59,11 @@ BEFORE claiming any status:
 | Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
-| Requirements met | Line-by-line checklist against the task spec | Tests passing |
+| Requirements met | Line-by-line checklist | Tests passing |
 
 The claim names the scope it was checked at. "Tests pass for `pkg/widget`" is a real claim; "tests pass" without scope is hand-waving.
 
-## Red Flags — Stop
+## Red Flags - STOP
 
 - Using "should", "probably", "seems to"
 - Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
@@ -68,65 +72,81 @@ The claim names the scope it was checked at. "Tests pass for `pkg/widget`" is a 
 - Claiming "tests pass" when only some were run, without naming the scope
 - Thinking "just this once"
 - Tired and wanting work over
+- **ANY wording implying success without having run verification**
 
 ## Rationalization Prevention
 
 | Excuse | Reality |
 |--------|---------|
-| "Should work now" | Run the verification |
+| "Should work now" | RUN the verification |
 | "I'm confident" | Confidence ≠ evidence |
-| "Just this once" | No exceptions for skipping |
+| "Just this once" | No exceptions |
 | "Linter passed" | Linter ≠ compiler |
 | "Agent said success" | Verify independently |
 | "I'm tired" | Exhaustion ≠ excuse |
-| "Different words so the rule doesn't apply" | Spirit over letter |
+| "Different words so rule doesn't apply" | Spirit over letter |
 
 ## Key Patterns
 
 **Tests:**
 ```
 ✅ [Run targeted test command] [See: 12/12 pass in affected package] "Tests pass for <scope>"
-❌ "Should pass now"
+❌ "Should pass now" / "Looks correct"
 ```
 
 **Regression tests (TDD Red-Green):**
 ```
-✅ Write → Run (fail) → Implement → Run (pass) — failure must point at the missing behavior
-❌ "I've written a regression test" without seeing it fail first
+✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
+❌ "I've written a regression test" (without red-green verification)
 ```
 
 **Build:**
 ```
 ✅ [Build the affected package] [exit 0] "Build passes for <package>"
-❌ "Linter passed" (linter ≠ compiler)
+❌ "Linter passed" (linter doesn't check compilation)
 ```
 
 **Requirements:**
 ```
-✅ Re-read task spec → checklist → verify each → report gaps or completion
-❌ "Tests pass, task complete" (tests ≠ requirements)
+✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
+❌ "Tests pass, phase complete"
 ```
 
 **Agent delegation:**
 ```
-✅ Agent reports success → check VCS diff → verify changes → report actual state
+✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
 ❌ Trust agent report
 ```
+
+## Why This Matters
+
+From 24 failure memories:
+- your human partner said "I don't believe you" - trust broken
+- Undefined functions shipped - would crash
+- Missing requirements shipped - incomplete features
+- Time wasted on false completion → redirect → rework
+- Violates: "Honesty is a core value. If you lie, you'll be replaced."
 
 ## When To Apply
 
 **ALWAYS before:**
-- Any completion claim, in any wording
+- ANY variation of success/completion claims
+- ANY expression of satisfaction
+- ANY positive statement about work state
 - Committing, PR creation, task completion
-- Moving to the next task
-- Acting on a subagent's success report
+- Moving to next task
+- Delegating to agents
 
 **Rule applies to:**
 - Exact phrases
 - Paraphrases and synonyms
 - Implications of success
-- Any communication suggesting completion/correctness
+- ANY communication suggesting completion/correctness
 
 ## The Bottom Line
 
-**Pick the scope, run the command, read the output, state the claim with the scope it was run at.**
+**No shortcuts for verification.**
+
+Pick the scope, run the command, read the output, state the claim with the scope it was run at.
+
+This is non-negotiable.

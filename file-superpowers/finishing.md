@@ -131,6 +131,7 @@ git branch -D <feature-branch>
 ## Red Flags
 
 **Never:**
+- Proceed with failing tests
 - Proceed with unresolved issues from the adversarial pass
 - Delete work without confirmation
 - Force-push without explicit request
