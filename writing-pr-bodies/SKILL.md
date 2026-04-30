@@ -223,6 +223,15 @@ Add a sidecar section *only* if it carries information the reviewer must know an
 - **Deployability** — when the PR has a rollout dependency, migration ordering constraint, or merge gate.
 - **Stack** — when the PR is part of a stack and order matters.
 - **Differences from #N** — when the PR re-bases or re-baselines an earlier sibling.
+- **Areas touched** — for cross-cutting refactors and other PRs whose impact spans many packages or subsystems. Two or three lines naming *scope of impact* — which subsystems are affected, where conflicts with other in-flight work are likely, where to watch for regression after merge. The bar is "could a teammate predict where this PR collides with theirs without opening the diff?" Do *not* substitute a file count or a list of every file changed — those are recoverable from the diff and don't answer the conflict-and-regression question. Skip this for PRs scoped to a single package or subsystem; the title already conveys it.
+  ```
+  ## Areas touched
+
+  - `pkg/foo/*` — internal API reshape; no behaviour change.
+  - All composition roots (api, worker, periodic-runner) — call-site updates.
+  - `pkg/{bar,baz}/dispatch.go` — new descriptors; old wrappers removed.
+  ```
+- **Also in this PR** — for secondary changes that genuinely fell out of the same work but aren't part of the headline change. One bullet per item, each naming a specific behavioural or API consequence (not a docs update or a rename — those are diff-recoverable). Use this heading verbatim; avoid prose framings like "Other changes that fell out of the refactor" or "Miscellaneous" — they read as apologetic. If a secondary change is load-bearing enough to need a paragraph, fold it into the main section instead.
 - **Design** — a link to a design doc when one exists. Not a re-summary of it. Default to a single canonical link (the spec). Format as a `## Design` heading with the link on the line beneath:
   ```
   ## Design
@@ -284,6 +293,10 @@ These rules apply regardless of how the section is named, capitalised, or positi
 | "I'll cram problem and change into one dense lede paragraph because headings before the lede are forbidden" | They aren't. If problem and change are each their own beat, split them with `## Problem` / `## Change`. The disease was inventory bullets, not headings. |
 | "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. If the items are parallel enough to share a lead-in, make them bullets. If they aren't, drop the lead-in and weave the content into the surrounding prose. |
 | "The lede is fine, it's only four sentences" | Count the *beats*, not the sentences. If the lede has more than one beat (problem + change, current state + new state), it's better as a heading split than a packed paragraph. |
+| "## What's no longer public" / "## What was removed" + bulleted list of identifiers | Diff inventory dressed as a section. Cut. If a removal carries a non-obvious design decision (why this wrapper was deleted, why these peer types collapsed, why this option moved), promote that one decision into a sentence under `## Change` or alongside the relevant Before/After. The list itself is recoverable from the diff. |
+| "Net diff: 53 files, 1081 insertions, 1021 deletions" | File count and line count are recoverable from the PR header. They don't tell the reviewer where conflicts or regressions will show up. If the PR is cross-cutting enough to want a scope statement, write `## Areas touched` instead — name the subsystems impacted. |
+| "## Also in this PR — Docs: new CLAUDE.md walks through …" | Docs updates that follow mechanically from a code change don't earn an "Also in this PR" bullet. The diff has the file. Reserve the section for secondary *behavioural or API* consequences. |
+| "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing tracking, not reviewer artifacts. Skip. The Design sidecar is for the *spec* a reviewer would consult to evaluate the change, not the to-do list the author worked through. |
 | "I'll add a Test plan checkbox list" | If the change has behaviour a reviewer would reproduce, write `## How to test` instead — concrete steps, no checkboxes. Rewrite an existing checkbox plan as `## How to test` if the steps are already concrete; drop entirely if every step is a generic command (`task test`, `go vet`) — that's compliance theatre, not reproduction. |
 | "Let me list every changed file" | The diff has that. The body shouldn't. |
 | "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
