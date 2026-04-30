@@ -5,7 +5,7 @@ Use this template when dispatching an implementer subagent.
 ```
 Agent tool:
   subagent_type: general-purpose
-  model: <pick before dispatch — see "Model Selection" in execution.md. Default: sonnet. Mechanical/well-specced: haiku. Reasoning-heavy or post-BLOCKED escalation: opus.>
+  model: <pick before dispatch — see "Model Selection" in execution.md. Default: General-purpose. Mechanical/well-specced: Fast. Reasoning-heavy or post-BLOCKED escalation: High-reasoning. Substitute the concrete model identifier your runtime accepts.>
   description: "Implement dex task <id>: [task name]"
   prompt: |
     You are implementing dex task <id>: [task name]

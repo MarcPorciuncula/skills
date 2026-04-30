@@ -9,7 +9,7 @@ The orchestrator provides the commit range and task spec. The reviewer does all 
 ```
 Agent tool:
   subagent_type: general-purpose
-  model: <pick before dispatch — see "Model Selection" in execution.md. Default: sonnet for per-batch review. Use opus for the final cross-cutting review or when integration judgment is the point of this pass.>
+  model: <pick before dispatch — see "Model Selection" in execution.md. Default: General-purpose for per-batch review. Use High-reasoning for the final cross-cutting review or when integration judgment is the point of this pass. Substitute the concrete model identifier your runtime accepts.>
   description: "Review implementation for Task <id>"
   prompt: |
     You are reviewing an implementation for both spec compliance and code quality.

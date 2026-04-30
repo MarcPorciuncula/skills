@@ -2,7 +2,7 @@
 
 > **Dispatch (orchestrator-only, not sent to the subagent):**
 > - `subagent_type`: `general-purpose`
-> - `model`: pick before dispatch — see "Model Selection" in execution.md. Default: `sonnet`. Mechanical/well-specced: `haiku`. Reasoning-heavy or post-BLOCKED escalation: `opus`.
+> - `model`: pick before dispatch — see "Model Selection" in execution.md. Default: General-purpose. Mechanical/well-specced: Fast. Reasoning-heavy or post-BLOCKED escalation: High-reasoning. Substitute the concrete model identifier your runtime accepts.
 >
 > Strip this block before passing the rest as the `prompt` argument. The prompt body starts below the horizontal rule.
 

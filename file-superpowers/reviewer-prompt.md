@@ -2,7 +2,7 @@
 
 > **Dispatch (orchestrator-only, not sent to the subagent):**
 > - `subagent_type`: `general-purpose`
-> - `model`: pick before dispatch — see "Model Selection" in execution.md. Default: `sonnet` for per-batch review. Use `opus` for the final cross-cutting review or when integration judgment is the point of this pass.
+> - `model`: pick before dispatch — see "Model Selection" in execution.md. Default: General-purpose for per-batch review. Use High-reasoning for the final cross-cutting review or when integration judgment is the point of this pass. Substitute the concrete model identifier your runtime accepts.
 >
 > Strip this block before passing the rest as the `prompt` argument. The prompt body starts below the horizontal rule.
 
