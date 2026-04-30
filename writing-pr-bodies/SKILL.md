@@ -40,7 +40,9 @@ One short paragraph in plain prose. Use when one or two sentences carry the whol
 
 ### Problem / Change
 
-A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does. Use when the *why* takes more than half a sentence, or when the contrast between problem and change is what makes the diff legible.
+A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does.
+
+**Use only when the prior state was a bug, regression, or correctness failure** — something a reasonable reviewer would call broken. The contrast between problem and change is the legibility lever; that lever only works if there *is* a problem.
 
 > ## Problem
 >
@@ -51,6 +53,27 @@ A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Ch
 > A new pass in the same plugin walks in-window refs, asks filestore what's current, and appends a short note to the most recent user turn naming the changed paths. The agent decides whether to re-read; the hint is informational, not a task list.
 
 Heading pairs can be `## Problem` / `## Change`, `## Why` / `## What`, or any pair that names this PR's beats. Don't reach for `## Summary` — it opens the door to bullet-inventory bodies.
+
+**Don't use Problem/Change for additions, improvements, or refactors where the prior state was correct.** The shape forces a "what was broken" frame, and forcing it onto a non-bug pathologizes correct prior behaviour. Use *Feature lede* (next) instead.
+
+### Feature lede
+
+For PRs that add new behaviour, improve a UX, or refactor without fixing a bug — i.e. the prior state was correct but this change is better.
+
+Lead with what the change *adds* or *improves*, in present tense, with the prior state as a comparison point if useful. The reader experiences the prior state as "what is" (not "what was broken"), and the new state as "what's now possible".
+
+> Adds locally stored drafts to the agent chat markdown editor. Instead of autosave creating many intermediate filestore versions as you type, drafts commit only when you save or send a chat message that references the file.
+>
+> Closing and reopening the editor no longer loses unsaved changes.
+
+Same PR, same diff, contrasted shapes:
+
+| Frame | Lede |
+|---|---|
+| **Feature** (prior state correct, just improvable) | "Adds locally stored drafts to the agent chat markdown editor. Instead of autosave creating many intermediate filestore versions as you type, we only commit when you save or send a chat message." |
+| **Bug fix** (prior state broken) | "Fixes the 409 path so user drafts no longer disappear when the agent writes the same file. The reload-and-discard toast becomes a Discard / Overwrite / Open latest modal." |
+
+Pick the one that matches the actual prior state. The diagnostic: if you naturally write "X became Y" / "Y was lost" / "Z surfaced as a toast" (past tense, pathologizing), you're framing as a bug fix; if you naturally write "X creates many versions" / "the editor saves on Y" (present tense, descriptive), you're framing as a feature. Match the frame to the truth, not to the most prescribed shape.
 
 ### Lede + sidecars
 
@@ -103,6 +126,10 @@ Peer engineer. State facts. Acknowledge limits honestly. Don't sell.
 - "Introduces a more efficient batch-oriented approach to image transforms." — bad. Corporate.
 
 No jokes, colloquialisms, or stylised asides. They read as performance.
+
+**Verb tense is a framing diagnostic.** Past tense ("X became Y", "Y was lost", "Z surfaced as a toast") narrates a failure — use it for genuine bug fixes where the prior state was broken. Present tense ("X creates many versions", "the editor saves on save") describes existing behaviour without judging it — use it for feature framing where the prior state was correct. If you find yourself reaching for past tense to describe correct prior behaviour, the frame is wrong; switch to *Feature lede*.
+
+**Use user-visible language for user-visible changes.** "Per-keystroke autosave to filestore" describes the data flow; "autosave creating many filestore versions as you type" describes what the user sees. For UX-affecting PRs, lead with what the user does and notices ("click save", "send a chat message", "close and reopen the editor") rather than the implementation flow.
 
 State the mechanism in plain language, not type names. "Adds an HTTP endpoint for updating an existing record by ID, with optional version-conflict checking" beats "Implements `PUT /resource/{id}` via `HandleUpdate` calling `UpdateResource`". Reach for identifier names only when the identifier is itself a non-obvious touchpoint a reviewer needs to find.
 
@@ -317,6 +344,8 @@ The exception: a `## Human overview` section is immutable (see *Human overview s
 |---|---|
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
 | "I'll cram problem and change into one dense lede paragraph" | Headings before the lede aren't forbidden. Split with `## Problem` / `## Change`. The disease is inventory bullets, not headings. |
+| "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for cases where the *before was broken* — bug, regression, correctness failure. If the prior state was correct (just improvable), use *Feature lede*. Past-tense pathologization ("X became Y", "Y was lost") is the tell that you've misframed an improvement as a fix. |
+| "I'll narrate this UX feature in implementation terms — `per-keystroke writes to filestore`, `409 conflicts`, `pre-send hook`" | UX-affecting PRs read in user-visible language. "Click save", "send a chat message", "close and reopen the editor" — what the user does and notices. Implementation-flow framing is what a system architect would write, not what the reviewer reads first. |
 | "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. Parallel items → bullets. Non-parallel → drop the lead-in. |
 | "Three failure modes followed: …" / "There are two reasons: …" / "The change has the following implications: …" | Count-signalling. Useless — the reader will count. Drop the count and the colon: state the items directly, either inline or as bullets if genuinely parallel. |
 | "The user asked me to revise — I'll keep most of the original and restructure / polish" | Revision is not editing. The existing body is one input, not a baseline. Re-derive from the diff first; apply *earns its place* to existing paragraphs as ruthlessly as to new ones. Restructuring without cutting is not a revision. See *When revising an existing PR body*. |
