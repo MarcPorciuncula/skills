@@ -1,8 +1,8 @@
 ---
 name: writing-pr-bodies
 description: >
-  Produces a short, prose-led PR description aimed at a human reviewer about
-  to read the diff, not a re-narration of the diff itself.
+  Produces a PR description aimed at a human reviewer about to read the diff,
+  optimised for cold-read scannability — not a re-narration of the diff itself.
   TRIGGER before any `gh pr create`, `gh pr edit --body`, `gs branch submit`,
   `git spice branch submit`, or other command that opens or updates a pull
   request body — including autonomous PR-creation flows where the user did
@@ -16,13 +16,63 @@ description: >
 
 A PR body is a handout for a reviewer who is about to read the diff.
 
-## Iron Law
+## The principle
 
-**LEAD WITH PROSE. THE FIRST THING A REVIEWER SEES IS 1–4 SENTENCES IN PLAIN LANGUAGE STATING WHAT THE CHANGE DOES AND WHY.**
+The bar is **cold-read scannability**. A reviewer landing on this PR with no context should grasp what the change is and why within 30 seconds, before deciding how deeply to engage. Everything else in this skill serves that test.
 
-No bullets in the lede. No headings before the lede. No `## Summary` opening with `- Adds X` `- Refactors Y`. The reader gets the gist as a paragraph, in the voice of a peer at standup, before any structure appears.
+A scannable body is one where:
 
-If the lede paragraph alone is enough — for a small PR — that's the whole body.
+- The change and its motivation are findable immediately — in the first paragraph or first heading, not buried mid-prose.
+- The eye has anchor points. Paragraph breaks, headings where the PR has more than one beat, parallel bullets where items are genuinely parallel.
+- Every line earns its place against the diff. Inventory restatement, marketing prose, and session journey all fail this test.
+
+**Form serves the principle.** There is no single mandated shape — pick the one that lets *this* PR's reader get oriented fastest. The shapes below cover most cases.
+
+## Shapes that often fit
+
+Pick by complexity, not by reflex.
+
+### Lede only
+
+A single short paragraph in plain prose. Right when one or two sentences carry the whole picture.
+
+> Narrows the scope of pre-commit self-checks (lint, type-check) so they target only changed packages instead of the full repo. The repo-wide pass is slow and CI runs it anyway — the local pass exists for fast iteration, not coverage.
+
+That's the whole body. The diff is a build-config change and a contributing-docs update — the reviewer doesn't need anything more to read it fluently.
+
+### Problem / Change
+
+A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does. Right when the *why* takes more than a half-sentence to state, or when the contrast between problem and change is what makes the diff make sense.
+
+> ## Problem
+>
+> The file-hydration pass re-fetches each `filestore://<id>/v<N>` reference at the *pinned* version on every turn. When a user edits a file between turns — increasingly common now that the markdown panel auto-saves edits back to filestore — the operator agent silently keeps quoting stale content.
+>
+> ## Change
+>
+> A new pass in the same plugin walks in-window refs, asks filestore what's current, and appends a short note to the most recent user turn naming the changed paths. The agent decides whether to re-read; the hint is informational, not a task list.
+
+The headings can be `## Problem` / `## Change`, `## Why` / `## What`, or any pair that names this PR's beats. Don't reach for `## Summary` — that opens the door to bullet-inventory bodies.
+
+### Lede + sidecars
+
+A short prose lede, then named sections for material the reviewer must know but that doesn't fit the lede: deployability, stack ordering, design link, references, how to test.
+
+> Switches the scheduled-job runner from in-process timers to a Postgres-backed leader-elected scheduler. A single instance acquires the lease and dispatches due jobs; other instances stay idle and only take over if the lease lapses. Existing job code is unchanged — only the dispatch surface moves.
+>
+> The interesting subtlety is in the lease semantics: leases are renewed every 10s and expire after 30s, so a leader that goes silent (network partition, pause-the-world GC) loses dispatch authority before any other instance picks it up. During that gap, scheduled jobs may briefly miss their slot — the scheduler is "at-most-once per slot", not "exactly-once". Jobs that need at-least-once semantics already wrap themselves in idempotent retries; the scheduler does not try to add a layer on top.
+>
+> ## Background
+>
+> The previous in-process timer fired on every instance, and we relied on each handler's own dedupe to collapse the duplicate runs into one. That worked when there were three instances; under the current autoscaling profile (up to thirty), the dedupe write contention itself became the dominant cost. Moving dispatch to a single leader removes the contention entirely.
+>
+> ## Stack
+>
+> Stacked on #N. Merges after the lease-table migration in #N is applied to all environments.
+
+Background earns its place because it explains why the prior approach stopped scaling — that's the reasoning that motivates the whole PR, and it's not in the commits. Stack earns its place because order matters for merging.
+
+The shapes can combine — Problem/Change with a How-to-test sidecar is common.
 
 ## Voice
 
@@ -36,6 +86,16 @@ Peer engineer. State facts. Acknowledge limits honestly. Don't sell.
 Don't inject jokes, colloquialisms, or stylised asides to make the body feel human-written. They read as performance.
 
 State the mechanism in plain language, not type names. "Adds an HTTP endpoint for updating an existing record by ID, with optional version-conflict checking so the client can detect a stale base" beats "Implements `PUT /resource/{id}` via `HandleUpdate` calling `UpdateResource`, which delegates through `loadAndCheckVersion` → `commitVersion`." Reach for identifier names only when an identifier is itself a non-obvious touchpoint a reviewer will need to find.
+
+## Bullets vs paragraphs
+
+Within any shape:
+
+- **Bullets when items are genuinely parallel** — three or more correctness subtleties to flag, several review-handoff observations, multiple constraints. Each bullet can run a sentence or two; what matters is that the items share shape and the reader benefits from scanning them at once.
+- **Paragraphs when items aren't parallel** — when one builds on another, when one is much weightier than the rest, when the reasoning flows.
+- **Avoid the lead-in-then-paragraphs pattern.** "Two correctness subtleties worth flagging:" followed by two long prose paragraphs is a tell — if the items are parallel enough to deserve a lead-in, they're parallel enough to be bullets. If they're not, drop the lead-in and integrate the content into the surrounding prose.
+
+The disease was never bullets; it was *bullet inventories of the diff* under `## Summary`. Parallel observations belong in bullets.
 
 ## PR titles
 
@@ -105,7 +165,7 @@ Users identify PRs by their titles. Frequent or dramatic title changes make a PR
 
 ## Form the picture before drafting
 
-Three disciplines apply before you write the lede.
+Three disciplines apply before you write.
 
 ### State what the change is, in one sentence
 
@@ -125,19 +185,11 @@ Mid-session, the live memory of the approach evolving will pull the body toward 
 
 Run the self-test from `## PR titles` against the existing title. If it fails, follow the protocol there — surface a recommended rewrite, don't change the title autonomously.
 
-## Anatomy
+## What goes in the body
 
-Three layers, in order. Each layer is optional past the first; only include a layer if it earns its place.
+After the lede (or problem/change pair), include only the material a reviewer needs that they couldn't get from the diff or commit messages.
 
-### 1. Lede paragraph (always)
-
-1–4 sentences in plain prose. What the change does, why it exists, in language a peer would use. Trust the principle on length — write what's needed and stop.
-
-The lede answers the reviewer's first question: *what am I about to read, and why does it exist?* It does not list files, restate the title, or narrate the diff.
-
-### 2. Substantive details (when needed)
-
-For non-trivial PRs, the observations a reviewer needs to read the diff fluently. One observation per *thing that isn't obvious from the diff*.
+### Observations the diff doesn't carry
 
 An observation earns its place if it carries one of:
 - A non-obvious design decision and why it was made
@@ -146,15 +198,13 @@ An observation earns its place if it carries one of:
 - A constraint, invariant, or assumption the change rests on
 - A diff-shape signal that would surprise a reviewer if not flagged (e.g. unusually large churn from a mechanical reshape, a test file restructured for a non-obvious reason, a vendored file regenerated)
 
-An observation does *not* earn its place if it:
+It does *not* earn its place if it:
 - Lists files that changed (the diff has this)
 - Restates an identifier rename / move ("renamed X to Y")
 - Says "Adds tests for X" (the test files are visible)
 - Recapitulates the lede in different words
 
 If you can't write the observation without typing identifier names or file paths, that's a signal it doesn't belong in the body — it belongs in the diff or the commit message.
-
-**Prefer paragraphs over bullets once an item runs past one or two sentences.** Reach for bullets only for three-plus genuinely parallel short items. The medium anchor below is the model — paragraphs with line breaks, no bullets.
 
 #### A worked borderline example
 
@@ -166,9 +216,9 @@ Cut it. It looks like it satisfies "non-obvious design decision and why" — fai
 
 The test: imagine the reviewer reading the PR with the body collapsed. Which paragraphs would they reach for to make sense of what they're seeing? Those are the ones that earn their place.
 
-### 3. Sidecars (only when load-bearing)
+### Sidecars (only when load-bearing)
 
-Add a sidecar section *only* if it carries information the reviewer must know and that doesn't fit in the lede or substantive bullets. Common ones:
+Add a sidecar section *only* if it carries information the reviewer must know and that doesn't fit elsewhere. Common ones:
 
 - **Deployability** — when the PR has a rollout dependency, migration ordering constraint, or merge gate.
 - **Stack** — when the PR is part of a stack and order matters.
@@ -216,60 +266,24 @@ A `## Human overview` (or similarly named — `## Human notes`, `## From the aut
 
 These rules apply regardless of how the section is named, capitalised, or positioned, and regardless of whether it's currently empty (an empty `## Human overview` heading is the user reserving space — leave it).
 
-## Anchor examples
-
-These are the model. Read them before drafting.
-
-All anchor examples below are illustrative — synthesized to demonstrate structural patterns, not lifted from any real PR. Don't treat the wording as templates to copy; treat the *shape* as the lesson.
-
-### Small PR (lede only is enough)
-
-> Narrows the scope of pre-commit self-checks (lint, type-check) so they target only changed packages instead of the full repo. The repo-wide pass is slow and CI runs it anyway — the local pass exists for fast iteration, not coverage.
-
-That's the whole body. The diff is a build-config change and a contributing-docs update — the reviewer doesn't need anything more to read it fluently.
-
-### Medium PR (multi-paragraph prose lede)
-
-> Adds an `Idempotency-Key` header on `POST /checkout` so a retrying client lands on the same charge instead of creating a new one. The gateway records the first request's response under that key and replays it for matching subsequent requests.
->
-> The store is keyed on `(merchant_id, idempotency_key)` and expires after 24 hours — long enough to cover client retry policies, short enough that the table stays bounded.
->
-> Replays return the original status and body, with a `Idempotent-Replayed: true` header so a merchant's retry tooling can distinguish a fresh charge from a deduplicated one in their logs. That visibility is the only behavioural difference between a replay and a first-time request.
->
-> The implementation matches the documented header semantics most of our merchants are migrating from. The test suite covers the cases an integration written against that pattern relies on; it does not try to cover every edge case in the upstream documentation.
-
-Multiple short paragraphs, no bullets, no headings. Each paragraph is one observation a reviewer needs. The closing sentence is load-bearing — it tells the reviewer the bar this PR clears, and what's deliberately out of scope.
-
-### Larger PR (lede + sidecar)
-
-> Switches the scheduled-job runner from in-process timers to a Postgres-backed leader-elected scheduler. A single instance acquires the lease and dispatches due jobs; other instances stay idle and only take over if the lease lapses. Existing job code is unchanged — only the dispatch surface moves.
->
-> The interesting subtlety is in the lease semantics: leases are renewed every 10s and expire after 30s, so a leader that goes silent (network partition, pause-the-world GC) loses dispatch authority before any other instance picks it up. During that gap, scheduled jobs may briefly miss their slot — the scheduler is "at-most-once per slot", not "exactly-once". Jobs that need at-least-once semantics already wrap themselves in idempotent retries; the scheduler does not try to add a layer on top.
->
-> ## Background
->
-> The previous in-process timer fired on every instance, and we relied on each handler's own dedupe to collapse the duplicate runs into one. That worked when there were three instances; under the current autoscaling profile (up to thirty), the dedupe write contention itself became the dominant cost. Moving dispatch to a single leader removes the contention entirely.
->
-> ## Stack
->
-> Stacked on #N. Merges after the lease-table migration in #N is applied to all environments.
-
-Background earns its place because it explains why the prior approach stopped scaling — that's the reasoning that motivates the whole PR, and it's not in the commits. Stack earns its place because order matters for merging.
-
 ## Drafting flow
 
 1. Read the full diff against base and the commit storyline before writing anything.
 2. State what the change is, in one sentence. Don't start drafting until the sentence holds.
-3. Write the lede. For most PRs, this is the whole body.
-4. If the PR is non-trivial, add only the substantive observations a reviewer needs to read the diff fluently. Apply the "earns its place" filter to each.
-5. Add sidecars only if load-bearing.
-6. Reread. Cut anything that hits a Red flag.
+3. Pick a shape — lede only, problem/change, or lede + sidecars — by the complexity of *this* PR.
+4. Write the body in that shape.
+5. Apply the cold-read test: would a reviewer with no context know what the PR is and why within 30 seconds of landing on it? If not, restructure — usually the change is to split a dense lede into problem/change, or to surface a buried observation as its own paragraph or bullet list.
+6. Add only observations that earn their place. Add sidecars only if load-bearing.
+7. Reread. Cut anything that hits a Red flag.
 
 ## Red flags — STOP
 
 | Thought | Reality |
 |---|---|
-| "Let me start with `## Summary`" | The lede is prose, not a heading. Don't open with bullets. |
+| "Let me start with `## Summary`" + bullets of changed files | Inventory of the diff. Don't. The reviewer has the diff. Use a prose lede or `## Problem` / `## Change`. |
+| "I'll cram problem and change into one dense lede paragraph because headings before the lede are forbidden" | They aren't. If problem and change are each their own beat, split them with `## Problem` / `## Change`. The disease was inventory bullets, not headings. |
+| "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. If the items are parallel enough to share a lead-in, make them bullets. If they aren't, drop the lead-in and weave the content into the surrounding prose. |
+| "The lede is fine, it's only four sentences" | Count the *beats*, not the sentences. If the lede has more than one beat (problem + change, current state + new state), it's better as a heading split than a packed paragraph. |
 | "I'll add a Test plan checkbox list" | If the change has behaviour a reviewer would reproduce, write `## How to test` instead — concrete steps, no checkboxes. Rewrite an existing checkbox plan as `## How to test` if the steps are already concrete; drop entirely if every step is a generic command (`task test`, `go vet`) — that's compliance theatre, not reproduction. |
 | "Let me list every changed file" | The diff has that. The body shouldn't. |
 | "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
@@ -279,7 +293,8 @@ Background earns its place because it explains why the prior approach stopped sc
 | "I'll add a `## Human overview` section to frame the change for the reviewer" | That heading is a provenance claim about the human, not you. Authoring under it is the violation. Put your framing in the lede. |
 | "The existing human overview reads a bit rough — let me tighten it while I'm here" | Don't. It's the user's own words; leave it byte-for-byte. Edit only the surrounding agent-authored content. |
 | "Comprehensive / robust / seamless / elegant fits here" | Marketing register. Cut. |
-| "This needs more structure to feel complete" | A short prose body *is* complete. Don't default to bullets-and-headings. |
+| "This needs more structure to feel complete" | A short prose body *is* complete for a small PR. Don't add structure to look thorough. |
+| "Plain prose only, no headings, structure is bullet-inventory" | Overcorrection. The disease is inventory; structure that anchors the reader (problem/change, parallel bullets for parallel items) serves the cold-read test. |
 | "Let me describe how the approach evolved" | The body describes the net diff, not the session. Reverts and intermediate states didn't happen as far as the reviewer is concerned. |
 | "I'll start writing once I've read the recent commits" | Read the full diff against base first. Recent-commit bias skews the body toward what was done last instead of what the PR is. |
 | "The title's a bit off but I'll just rewrite it while I'm here" | Don't change the title autonomously. Surface a recommended rewrite (`current → proposed`) to the user. Title churn makes the PR hard to recognise across review cycles. See `## PR titles`. |
