@@ -120,17 +120,9 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 ## After All Tasks
 
-The end-of-workflow has three distinct roles, in order. Each does one job — don't conflate them.
-
-| Role | What it does | Reads | Runs |
-|---|---|---|---|
-| Final cross-cutting reviewer | Reads integrated diff, judges integration and quality | Diff | Nothing |
-| Adversarial verifier | Probes for breakage in the integrated diff at proportional scope | Diff | Targeted, justified checks |
-| CI (on PR open) | Unbounded sweep | Everything | Everything |
-
-1. **Dispatch final cross-cutting reviewer** for the entire implementation (full diff from branch point). Catches integration issues between tasks that per-batch reviews can't see. Use the `reviewer-prompt.md` template with the full branch diff range. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list); the reviewer's job here is integration, not per-task spec compliance, which the per-batch reviews already covered.
+1. **Dispatch final cross-cutting reviewer** with the full branch diff range. Use `reviewer-prompt.md`. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list).
 2. **Address any issues** from the cross-cutting review.
-3. **Dispatch adversarial verifier** against the integrated branch diff. A targeted, proportional probe for breakage — the bridge between per-task verification (narrow) and CI (unbounded). Use `adversarial-prompt.md` with the same base/head SHAs and a brief summary of the work. The verifier reads the diff, identifies high-yield places where a fault would surface, and runs justified checks within the change's blast radius.
+3. **Dispatch adversarial verifier** with the same base/head SHAs and a brief summary of the work. Use `adversarial-prompt.md`.
 4. **Address any breakage** the adversarial pass found. Re-dispatch implementer to fix; re-run the adversarial pass against the new HEAD.
 5. **Load `finishing.md`** to complete the branch.
 
