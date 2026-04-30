@@ -125,7 +125,7 @@ Vague name, tests mock not code
 ## Green phase
 
 1. Write the **minimum code** to make the failing tests pass. No speculative code, no extra features.
-2. Run the full test suite — all tests must pass, not just the new ones.
+2. Run the tests for the code you changed and any tests you'd reasonably expect to be affected (the file/package under change, plus known callers of anything you touched). Don't reach for the repo-wide suite — CI handles that, and the end-of-workflow adversarial pass probes integrated breakage. See `verification.md` "Scope of verification."
 3. Commit the implementation with a normal descriptive message, e.g. `Implement batch deduplication` or `Add input validation for expired tokens`.
 
 <Good>
@@ -373,7 +373,7 @@ Before marking work complete:
 - [ ] Watched each test fail before implementing
 - [ ] Each test failed for expected reason (feature missing, not typo)
 - [ ] Wrote minimal code to pass each test
-- [ ] All tests pass
+- [ ] Tests for the code under change pass (proportional scope per `verification.md`)
 - [ ] Output pristine (no errors, warnings)
 - [ ] Tests use real code (mocks only if unavoidable)
 - [ ] Edge cases and errors covered

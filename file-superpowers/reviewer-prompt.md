@@ -41,6 +41,8 @@ Run: `git diff <base-sha>..<head-sha>`
 
 Ground your review in this diff. Do not browse the wider codebase unless the diff or spec leads you there.
 
+**Do not re-run the test/lint/build suite.** Your job is to read the diff and judge spec compliance and code quality. The implementer already verified the change at proportional scope; CI will run the unbounded sweep on PR open; the end-of-workflow adversarial pass probes integrated breakage. If something in the diff makes you suspect the implementer's verification was wrong or insufficient, flag it — don't re-execute it.
+
 ## Output
 
 Report:

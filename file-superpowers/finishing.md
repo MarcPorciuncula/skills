@@ -4,31 +4,33 @@
 
 Guide completion of development work by presenting clear options and handling chosen workflow.
 
-**Core principle:** Verify tests → Present options → Execute choice.
+**Core principle:** Confirm verification is complete → Present options → Execute choice.
 
 ## The Process
 
-### Step 1: Verify Tests
+### Step 1: Confirm Verification
 
-**Before presenting options, verify tests pass:**
+By the time you reach `finishing.md`, the work has already been verified at two layers:
 
-```bash
-# Run project's test suite
-npm test / cargo test / pytest / go test ./...
+- Each task's per-batch verification by the implementer (proportional scope per `verification.md`)
+- The end-of-workflow adversarial pass against the integrated branch diff (`execution.md` "After All Tasks" → `adversarial-prompt.md`)
+
+CI will run the unbounded sweep when the PR opens.
+
+**Do not run a repo-wide test/lint/build command here.** It duplicates CI, contradicts the proportional scope used throughout the workflow, and burns time on large projects without adding signal.
+
+Confirm the adversarial pass returned clean (or that flagged issues were fixed and re-checked). If it didn't, return to `execution.md` "After All Tasks" and address before proceeding.
+
+**If anything from per-task or adversarial verification is unresolved:**
 ```
+Verification incomplete: <what's open>
 
-**If tests fail:**
-```
-Tests failing (<N> failures). Must fix before completing:
-
-[Show failures]
-
-Cannot proceed with merge/PR until tests pass.
+Cannot proceed with merge/PR until resolved.
 ```
 
 Stop. Don't proceed to Step 2.
 
-**If tests pass:** Continue to Step 2.
+**If verification is clean:** Continue to Step 2.
 
 ### Step 2: Determine Base Branch
 
@@ -70,10 +72,10 @@ git pull
 # Merge feature branch
 git merge <feature-branch>
 
-# Verify tests on merged result
-<test command>
+# If the merge introduced non-trivial changes (resolved conflicts, etc.),
+# re-run the adversarial pass against the merged result.
+# Otherwise, the prior verification stands.
 
-# If tests pass
 git branch -d <feature-branch>
 ```
 
@@ -121,9 +123,13 @@ git branch -D <feature-branch>
 
 ## Common Mistakes
 
-**Skipping test verification**
-- **Problem:** Merge broken code, create failing PR
-- **Fix:** Always verify tests before offering options
+**Re-running the repo-wide suite here**
+- **Problem:** Duplicates CI, contradicts proportional verification, expensive on large projects
+- **Fix:** Trust the per-task and adversarial passes that already ran; CI does the unbounded sweep on PR open
+
+**Skipping the verification confirmation**
+- **Problem:** Merge work whose adversarial pass flagged unresolved issues
+- **Fix:** Confirm the adversarial pass returned clean before offering options
 
 **Open-ended questions**
 - **Problem:** "What should I do next?" → ambiguous
@@ -136,12 +142,12 @@ git branch -D <feature-branch>
 ## Red Flags
 
 **Never:**
-- Proceed with failing tests
-- Merge without verifying tests on result
+- Run a repo-wide test/lint/build command in this phase
+- Proceed with unresolved issues from the adversarial pass
 - Delete work without confirmation
 - Force-push without explicit request
 
 **Always:**
-- Verify tests before offering options
+- Confirm verification is complete before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4

@@ -58,3 +58,5 @@ For DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED: what's blocking or unclear.
 ## Process
 
 Follow TDD per `tdd.md`. Verify per `verification.md` before reporting DONE.
+
+Scope your verification proportionally to the change. The floor is the touched files and packages from your task spec's `### Files` list; extend to flow-on areas you'd reasonably expect to be affected (e.g. known callers of a shared helper you altered). Do not run the repo-wide test/lint/build suite — that's CI's job, and the end-of-workflow adversarial pass probes integrated breakage across the branch. State the scope you ran at when reporting status (e.g. "tests pass for `pkg/widget` (8/8)").

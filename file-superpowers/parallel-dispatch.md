@@ -73,7 +73,7 @@ Task("Fix tool-approval-race-conditions.test.ts failures")
 When agents return:
 - Read each summary
 - Verify fixes don't conflict
-- Run full test suite
+- Run the tests for the files each agent touched plus any shared callers — proportional to the integrated scope, not the whole repo (see `verification.md`)
 - Integrate all changes
 
 ## Agent Prompt Structure
@@ -148,7 +148,7 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 - Agent 2: Fixed event structure bug (threadId in wrong place)
 - Agent 3: Added wait for async tool execution to complete
 
-**Integration:** All fixes independent, no conflicts, full suite green
+**Integration:** All fixes independent, no conflicts, tests for the integrated scope pass
 
 **Time saved:** 3 problems solved in parallel vs sequentially
 
@@ -164,7 +164,7 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 After agents return:
 1. **Review each summary** - Understand what changed
 2. **Check for conflicts** - Did agents edit same code?
-3. **Run full suite** - Verify all fixes work together
+3. **Run the tests for the integrated scope** — files each agent touched plus shared callers, per `verification.md`. CI handles the unbounded sweep.
 4. **Spot check** - Agents can make systematic errors
 
 ## Real-World Impact
