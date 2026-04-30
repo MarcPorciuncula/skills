@@ -197,6 +197,21 @@ After replying, write a temp file with the comment IDs to resolve (one per line)
 
 After replying and resolving, present a brief summary: how many comments were replied to, how many threads were resolved, and how many were left open for user review (with a brief note on why each was left open).
 
+### Needs your attention
+
+After the summary, re-surface every item that still requires the user to take action. This is the last thing in the conversation by design — the Phase 1 table scrolls away under Phase 2/3 tool output, and these items get lost otherwise.
+
+Include any item that matches one of:
+
+- **Threads left open** — questions about architecture/design, correctness, or subjective suggestions from human reviewers (per the auto-resolve rules). The user needs to read Claude's reply and decide whether to follow up.
+- **Out of scope** — the user needs to decide whether to open a follow-up issue or PR.
+- **Question / discussion items where Claude posted a `[Claude]` reply** — the user may want to add their own voice or correct the framing. Include the reply text Claude posted so the user can see what's already there.
+- **Items where Claude declined to make a change** (Pedantic, Stale docs with no action) — the user may want to override and take action anyway.
+
+Format as a numbered list. For each item include: location (`file:line`), the original comment (truncated if long), the category, what action is needed, and — for items where Claude posted a reply — the reply text. Items the user does not need to act on (simple fixes that are done, outdated comments) are not included here.
+
+Skip this section entirely if there are no items requiring user action.
+
 ## Scripts
 
 This skill includes helper scripts in its directory (adjacent to this SKILL.md file). All scripts have executable permissions — **invoke them directly using their absolute path, not via `bash script.sh`**.
