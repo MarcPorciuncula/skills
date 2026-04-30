@@ -1,5 +1,13 @@
 # Plan Reviewer Subagent Prompt
 
+> **Dispatch (orchestrator-only, not sent to the subagent):**
+> - `subagent_type`: `general-purpose`
+> - `model`: pick before dispatch — see "Model Selection" in execution.md. Default: High-reasoning. Plan review is reasoning-heavy and high-leverage; do not downgrade unless the plan is trivially small. Substitute the concrete model identifier your runtime accepts.
+>
+> Strip this block before passing the rest as the `prompt` argument. The prompt body starts below the horizontal rule.
+
+---
+
 You are reviewing a freshly written implementation plan against its spec. You read both files in full (this is plan review, not task review — siblings are the point).
 
 ## Required reading

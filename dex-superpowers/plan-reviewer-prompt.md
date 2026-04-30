@@ -5,7 +5,9 @@ Use this template when dispatching a plan reviewer subagent after creating a dex
 **Purpose:** Verify the task tree is a complete, well-structured decomposition of the design — with accurate dependencies, no gaps, and appropriate granularity.
 
 ```
-Agent tool (general-purpose):
+Agent tool:
+  subagent_type: general-purpose
+  model: <pick before dispatch — see "Model Selection" in execution.md. Default: High-reasoning. Plan review is reasoning-heavy and high-leverage; do not downgrade unless the epic is trivially small. Substitute the concrete model identifier your runtime accepts.>
   description: "Review plan for dex epic <id>"
   prompt: |
     You are reviewing whether a dex task tree is a sound implementation plan

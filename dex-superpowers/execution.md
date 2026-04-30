@@ -110,18 +110,27 @@ For **reviewers:** provide dex task IDs, the implementer's status report, and ba
 
 ## Model Selection
 
-Use the least powerful model that can handle each role to conserve cost and increase speed.
+You pick the subagent's model when you build the dispatch. Pick deliberately — the dispatch templates have a `model:` line and you fill it in before issuing the Agent call. Subagents do not pick their own model.
 
-**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model. Most implementation tasks are mechanical when the task description is well-specified.
+The plan you produced via `brainstorming.md` already does the hard reasoning upfront, so most implementer and reviewer dispatches do not need the highest tier.
 
-**Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
+| Tier | Use for | Signals |
+|------|---------|---------|
+| Fast | Mechanical, well-specced changes | Renames, mechanical refactors, single-file edits with a complete spec, glue/wiring, test scaffolding the spec describes line-by-line |
+| General-purpose | **Default** for implementer and per-batch reviewer | Multi-file work where the spec already named the files and approach; routine code review of a focused diff |
+| High-reasoning | Reasoning-heavy work | Plan review, final cross-cutting review, debugging across subsystems, tasks where the spec leaves design judgment, escalation after a General-purpose BLOCKED |
 
-**Architecture, design, and review tasks**: use the most capable available model.
+**Default to General-purpose.** Drop to Fast only when the task is mechanical and the spec is exhaustive. Use High-reasoning when the routing signals call for it or as an escalation tier.
 
-**Task complexity signals:**
-- Touches 1-2 files with a complete spec → cheap model
-- Touches multiple files with integration concerns → standard model
-- Requires design judgment or broad codebase understanding → most capable model
+**Mapping to concrete models.** These tiers are model-agnostic. For Anthropic, the families map as Fast → Haiku, General-purpose → Sonnet, High-reasoning → Opus — substitute the concrete model identifier your runtime accepts (e.g. the CLI shorthand `haiku` / `sonnet` / `opus`, or the latest `claude-*` ID). For other providers, map each tier to that provider's equivalent capability class.
+
+**Routing heuristic** when the task doesn't obviously match the table:
+
+| Heuristic | Route to |
+|---|---|
+| Spec names exact files, exact function signatures, no decisions deferred | Fast |
+| Spec names files but the approach is described, not prescribed | General-purpose |
+| Spec leaves design judgment, OR task spans 4+ files with integration concerns, OR a lower tier already returned BLOCKED on this task | High-reasoning |
 
 ## Handling Implementer Status
 
@@ -135,7 +144,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **BLOCKED:** The implementer cannot complete the task. Assess the blocker:
 1. If it's a context problem, provide more context and re-dispatch with the same model
-2. If the task requires more reasoning, re-dispatch with a more capable model
+2. If the blocker is reasoning (not missing context), re-dispatch one tier up: Fast → General-purpose → High-reasoning. Don't skip tiers. If General-purpose also returns BLOCKED, the spec is probably the problem, not the model
 3. If the task is too large, break it into smaller pieces
 4. If the task description itself is wrong, escalate to the human
 
