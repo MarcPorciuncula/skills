@@ -40,6 +40,8 @@ A single short paragraph in plain prose. Right when one or two sentences carry t
 
 That's the whole body. The diff is a build-config change and a contributing-docs update — the reviewer doesn't need anything more to read it fluently.
 
+**Right-size to the diff.** When the diff is small (≲ 50 lines) and the title is self-explanatory, the body's job is whatever the title couldn't carry — typically a follow-up reference, a one-sentence "why now", or a constraint a reviewer would otherwise miss — and nothing else. One or two short sentences is the target. A four-sentence lede on a 24-line PR is overwriting the title; a paragraph re-explaining what the diff plainly shows is the same anti-pattern as the dense lede on a medium PR, just at a smaller scale. If you find yourself reaching for a second paragraph on a tiny PR, check whether you're saying something new or restating the first one from a different angle.
+
 ### Problem / Change
 
 A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does. Right when the *why* takes more than a half-sentence to state, or when the contrast between problem and change is what makes the diff make sense.
@@ -86,6 +88,8 @@ Peer engineer. State facts. Acknowledge limits honestly. Don't sell.
 Don't inject jokes, colloquialisms, or stylised asides to make the body feel human-written. They read as performance.
 
 State the mechanism in plain language, not type names. "Adds an HTTP endpoint for updating an existing record by ID, with optional version-conflict checking so the client can detect a stale base" beats "Implements `PUT /resource/{id}` via `HandleUpdate` calling `UpdateResource`, which delegates through `loadAndCheckVersion` → `commitVersion`." Reach for identifier names only when an identifier is itself a non-obvious touchpoint a reviewer will need to find.
+
+The same rule applies to **file paths**. Don't write narrative prose like "`pkg/server/webhooks.go` retyped the parameter to `MeetingEventPublisher`; meanwhile `pkg/simplejobs/worker/worker.go` was already passing the constructor's return value as of #1209" — that's code archaeology, not a reviewer handout. The diff already shows which files changed. Name a file path in the body only when the reviewer needs to *find* something the diff doesn't surface (e.g. "the contract is documented in `prompts/usage.md` next to the existing X section") — not when scene-setting a narrative about the change.
 
 ## Bullets vs paragraphs
 
@@ -293,6 +297,9 @@ These rules apply regardless of how the section is named, capitalised, or positi
 | "I'll cram problem and change into one dense lede paragraph because headings before the lede are forbidden" | They aren't. If problem and change are each their own beat, split them with `## Problem` / `## Change`. The disease was inventory bullets, not headings. |
 | "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. If the items are parallel enough to share a lead-in, make them bullets. If they aren't, drop the lead-in and weave the content into the surrounding prose. |
 | "The lede is fine, it's only four sentences" | Count the *beats*, not the sentences. If the lede has more than one beat (problem + change, current state + new state), it's better as a heading split than a packed paragraph. |
+| "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle and cut the others. If three angles all feel necessary, the underlying claim probably isn't load-bearing. |
+| "Let me narrate which files changed and what changed in each" | Code-archaeology prose. The diff already shows which files changed. Name a file path only when the reviewer needs to *find* something the diff doesn't surface — not when scene-setting a story about the change. |
+| "It's a 24-line PR but the lede is a 100-word sentence threading five things together" | Right-size the body to the diff. Tiny PRs with self-explanatory titles get one or two short sentences carrying whatever the title couldn't — a follow-up reference, a "why now", a constraint. Not a re-explanation of what the diff plainly shows. |
 | "## What's no longer public" / "## What was removed" + bulleted list of identifiers | Diff inventory dressed as a section. Cut. If a removal carries a non-obvious design decision (why this wrapper was deleted, why these peer types collapsed, why this option moved), promote that one decision into a sentence under `## Change` or alongside the relevant Before/After. The list itself is recoverable from the diff. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | File count and line count are recoverable from the PR header. They don't tell the reviewer where conflicts or regressions will show up. If the PR is cross-cutting enough to want a scope statement, write `## Areas touched` instead — name the subsystems impacted. |
 | "## Also in this PR — Docs: new CLAUDE.md walks through …" | Docs updates that follow mechanically from a code change don't earn an "Also in this PR" bullet. The diff has the file. Reserve the section for secondary *behavioural or API* consequences. |
