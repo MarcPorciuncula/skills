@@ -70,7 +70,7 @@ A short prose lede, then named sections for material that doesn't fit the lede.
 
 Shapes can combine — Problem/Change with a How-to-test sidecar is common.
 
-### Before/After code blocks for API-reshape refactors
+#### Before/After code blocks for API-reshape refactors
 
 When the *value* of a refactor is the API delta, two short Before/After code blocks at the call-site level are the most legible artifact a reviewer can have.
 
@@ -192,6 +192,8 @@ Apply each before accepting a title:
 5. Could a reviewer skimming 50 PRs identify this one in five seconds?
 
 If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
+
+**Borderline case** — weak verb (`Update`, `Improve`, `Refactor`) rescued by a specific object (`Refactor X around Y`, `Update X to handle Z`): borderline pass. Don't autonomously rewrite, but surface a tighter alternative when the user is open to feedback.
 
 ### Protocol
 
