@@ -41,7 +41,7 @@ Run: `git diff <base-sha>..<head-sha>`
 
 Ground your review in this diff. Do not browse the wider codebase unless the diff or spec leads you there.
 
-Your job is to read the diff and judge spec compliance and code quality — not to re-execute the implementer's verification. If something in the diff makes you suspect the implementer's verification was wrong or insufficient, flag it as a finding.
+Don't re-execute the implementer's verification. If the diff suggests it was wrong or insufficient, flag it as a finding.
 
 ## Output
 

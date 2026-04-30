@@ -59,7 +59,7 @@ Agent tool:
     grounded in this diff. Do not explore the broader codebase unless
     the diff references something you need to understand.
 
-    Your job is to read the diff and judge spec compliance and code quality — not to re-execute the implementer's verification. If something in the diff makes you suspect the implementer's verification was wrong or insufficient, flag it as a finding.
+    Don't re-execute the implementer's verification. If the diff suggests it was wrong or insufficient, flag it as a finding.
 
     ## Step 2: Spec Compliance
 

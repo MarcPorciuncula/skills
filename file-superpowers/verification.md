@@ -14,22 +14,18 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 NO COMPLETION CLAIMS WITHOUT FRESH, PROPORTIONAL EVIDENCE
 ```
 
-Two halves, both required:
-
-- **Fresh.** If you haven't run the verification command in this message, you cannot claim it passes. Stale runs, "should pass," and trusted-agent reports are not evidence.
-- **Proportional.** Evidence means a command that exercises the behavior the claim is about. Match the command to the claim.
+- **Fresh.** Run the verification command in this message. Stale runs and "should pass" are not evidence.
+- **Proportional.** Run a command that exercises the behavior the claim is about.
 
 ## Scope of verification
 
-Pick the narrowest invocation that exercises the change *and any flow-on areas you'd reasonably expect to be affected*. The floor is the touched files and packages. Extend when the change touches a shared helper, alters a contract used elsewhere, or otherwise has obvious blast radius — your call, grounded in the diff.
+Pick the narrowest invocation that exercises the change *and any flow-on areas you'd reasonably expect to be affected*. The floor is the touched files and packages. Extend when the change touches a shared helper, alters a contract used elsewhere, or otherwise has obvious blast radius.
 
 | Change shape | Verification scope |
 |---|---|
 | Edit confined to one file/module | Tests for that file/module |
 | Edit to a shared helper or interface | Tests for the helper plus its known callers |
 | Cross-package integration work | Tests for the affected packages |
-
-The end-of-workflow adversarial pass (see `execution.md` "After All Tasks") probes integrated breakage across the branch. CI runs the unbounded sweep on PR open. Per-task verification does not need to pre-empt either.
 
 ## The Gate Function
 
@@ -60,8 +56,6 @@ Skip any step = lying, not verifying.
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
-
-The claim names the scope it was checked at. "Tests pass for `pkg/widget`" is a real claim; "tests pass" without scope is hand-waving.
 
 ## Red Flags - STOP
 

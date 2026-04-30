@@ -125,7 +125,7 @@ Vague name, tests mock not code
 ## Green phase
 
 1. Write the **minimum code** to make the failing tests pass. No speculative code, no extra features.
-2. Run the tests for the code you changed and any tests you'd reasonably expect to be affected — the file/package under change, plus known callers of anything you touched. See `verification.md` "Scope of verification."
+2. Run the tests for the file/package under change and known callers (see `verification.md` "Scope of verification").
 3. Commit the implementation with a normal descriptive message, e.g. `Implement batch deduplication` or `Add input validation for expired tokens`.
 
 <Good>

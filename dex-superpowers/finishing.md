@@ -10,11 +10,9 @@ Guide completion of development work by presenting clear options and handling ch
 
 ### Step 1: Confirm Verification
 
-By the time you reach `finishing.md`, the work has already been verified at two layers: per-task verification by each implementer, and the end-of-workflow adversarial pass against the integrated branch diff. CI runs the unbounded sweep on PR open.
+Confirm the adversarial pass from `execution.md` "After All Tasks" returned clean. If issues were flagged but not fixed, return to that step before proceeding.
 
-Confirm the adversarial pass returned clean (or that flagged issues were fixed and re-checked). If it didn't, return to `execution.md` "After All Tasks" and address before proceeding.
-
-**If anything from per-task or adversarial verification is unresolved:**
+**If verification is incomplete:**
 ```
 Verification incomplete: <what's open>
 
@@ -65,9 +63,7 @@ git pull
 # Merge feature branch
 git merge <feature-branch>
 
-# If the merge introduced non-trivial changes (resolved conflicts, etc.),
-# re-run the adversarial pass against the merged result.
-# Otherwise, the prior verification stands.
+# If the merge resolved conflicts, re-run the adversarial pass.
 
 git branch -d <feature-branch>
 ```
@@ -116,9 +112,9 @@ git branch -D <feature-branch>
 
 ## Common Mistakes
 
-**Skipping the verification confirmation**
-- **Problem:** Merge work whose adversarial pass flagged unresolved issues
-- **Fix:** Confirm the adversarial pass returned clean before offering options
+**Skipping verification confirmation**
+- **Problem:** Merge broken code, create failing PR
+- **Fix:** Always confirm verification before offering options
 
 **Open-ended questions**
 - **Problem:** "What should I do next?" → ambiguous
