@@ -59,6 +59,8 @@ Use codes from `pkg/errcodes` in error responses.
 
 Guidance should make sense to someone encountering the codebase for the first time. References to specific incidents, previous implementations, or decisions from the editing session are noise to this reader. Naming a concrete code path as an example is fine, but the guidance should work without it — if removing the reference makes the directive unclear, rewrite the directive to stand alone.
 
+**Incident-as-war-story vs. incident-as-track-record.** Both reference past failures, but they function differently. A war story names *one specific incident* and only makes sense to readers who lived through it ("we removed this because the migration broke last quarter") — remove. A track-record framing names *categories of failure attributable to the agent class* without requiring session context ("from past failures: missing requirements shipped, undefined functions shipped, trust broken") — keep when load-bearing. The track-record form is a cost statement, not a story; see principle 4's existential cost form.
+
 ### 3. Consolidate overlapping guidance
 
 When guidance must live in multiple places, pick one canonical location for the comprehensive version and reference it from others. Distributed variations (context-sensitive abridgements, wider-scoped summaries) should always link to the detailed guidance.
@@ -85,6 +87,29 @@ A rebuttal or justification that names a *recognisable default* — a behaviour 
 
 - **Directive + cost** — short directive followed by the shortest self-contained phrase naming the consequence: `Don't invent new error codes inline. Unknown codes fall through to a generic error.`
 - **Stop phrase** — one short sentence written at the point of temptation in a checklist or procedure.
+- **Existential cost statement** — a cost statement anchored at agent-identity level (trust loss, replacement, role) rather than system level. Reserved for behaviors where mechanical costs don't bite — situations where the model can rationalize past "the build will fail" but harder to rationalize past "if you lie, you'll be replaced." Often paired with track-record framing (see principle 2) to make the cost feel attributable rather than abstract:
+
+  ```
+  ## Why This Matters
+
+  From past failures:
+  - your human partner said "I don't believe you" — trust broken
+  - Undefined functions shipped — would crash
+  - Missing requirements shipped — incomplete features
+  - Violates: "Honesty is a core value. If you lie, you'll be replaced."
+  ```
+
+  **Authorship: human-only.** Agents editing or writing guidance must not introduce existential cost statements on their own initiative — only at the human's express direction. Agents *should* identify the form when it appears (so the recognisability test in principle 4 doesn't strip it as a war story) and preserve it across edits. The form is asymmetric: its persuasive weight comes partly from the fact that a human chose to invoke it, and an agent generating it autonomously degrades both the specific instance and the form generally.
+
+  **Earns its place when all three hold:** (a) the behavior is one the model has strong incentive to rationalize (claiming completion, declaring success without verification, skipping a discipline under time pressure); (b) mechanical cost statements have already been tried and don't reliably bite; (c) used scarcely in the document — one or two such blocks total. **Failure mode:** overuse desensitizes the form and makes the document read as melodramatic or manipulative. If every directive grows an "if you do X, you'll be replaced" tail, the technique stops working everywhere.
+
+- **Personality-setting directive** — invokes an archetype the agent can model its judgment on, paired with a directive that requires judgment calls the prompt can't enumerate: `Your job is to try to find breakage in the integrated branch diff. A disciplined engineer reviewing a colleague's branch picks the highest-yield places to probe and checks those. That's what you do.` The archetype is doing load-bearing work — it tells the agent how to make the judgment calls the directive leaves open.
+
+  **Authorship: human-only.** Same constraint as existential cost statements. Agents editing guidance must not introduce personality-setting directives on their own initiative — only at the human's express direction. Identify and preserve existing ones.
+
+  **Earns its place when all three hold:** (a) the directive requires judgment the prompt can't enumerate (e.g. "high-yield places", "the right level of detail"); (b) there's a recognizable archetype the agent can model on; (c) the archetype is specific enough to constrain behavior — "a disciplined engineer" is more constraining than "a thoughtful person". **Failure mode:** generic archetypes that describe nothing ("a careful agent would..."), archetypes wrapped around mechanical directives that don't need them, archetypes used as decoration rather than as a judgment anchor.
+
+**Heavy forms scope.** Existential cost statements and personality-setting directives are more apt for top-level agent guidance (CLAUDE.md, system prompts, subagent prompt templates) than for procedural skills. Top-level guidance establishes the agent's operating posture across many tasks; skills tell the agent what to do for a specific task. Posture-shaping forms make sense in posture-shaping contexts. A skill that says "use this command to set up a hook" doesn't need either form.
 
 **Cost statements name consequences, not mechanisms.** A cost statement answers "what breaks?" in terms the reader can recognise without learning internals — shared knowledge (`reviewers already have the diff`), project context the reader already holds (`the gateway owns auth`), or observable breakage (`unknown codes fall through to a generic error`). If the cost would require teaching a specific class, function, or file to make sense, either rephrase in terms of observable behaviour, or move the explanation to a dedicated architecture section and let the directive stand alone.
 
@@ -101,6 +126,25 @@ reviewers can already see the diff on GitHub.
 PR bodies explain motivation and tradeoffs. Don't restate the diff —
 reviewers already have `git diff`.
 ```
+
+### 5. Strip alignment leakage
+
+When guidance is co-authored or refined through conversation — especially when an agent helped write it — the writing process produces content that reflects the *alignment conversation* rather than the agent's needs. The author and the agent reach a shared understanding of the design, and that understanding leaks into the document as recap, justification, or role disambiguation. The result reads as well-formed prose but speaks to the wrong audience: a human trying to understand the design, not the agent that will execute it.
+
+This is distinct from war stories (principle 2 — specific incidents) and weak justifications (principle 4 — rationale without recognizable failure mode). Alignment-leakage content is *true and well-formed*; the problem is audience.
+
+**Common forms:**
+
+- **Design recap the agent already has from upstream docs** — "By the time you reach `finishing.md`, the work has already been verified at two layers..." The agent loaded the upstream doc before getting here.
+- **Justification of why the directive exists** when the directive itself is enough — appending "CI runs the unbounded sweep on PR open" to a directive that already tells the agent what scope to use.
+- **Role disambiguation between adjacent agents** — "not for code quality or spec compliance, which the cross-cutting reviewer has already covered." Each agent's prompt sets its own role; agents don't need to know what other roles exist.
+- **Trust-boundary or architecture explanations** the agent doesn't act on — "Naming it makes the trust boundary with CI explicit." The agent acts within architecture, doesn't decide it.
+- **Conversational meta-talk** — illustrative comparisons that read as authorial commentary: "'Tests pass for `pkg/widget`' is a real claim; 'tests pass' without scope is hand-waving."
+- **Roles tables and ordered-flow disambiguation** that the orchestrator doesn't decide on — listing what each end-of-workflow role does when the orchestrator just dispatches them in order.
+
+**Diagnostic:** "Would this still be here if I had drafted this fresh, in one sitting, without the conversation that surfaced the design?" If no, it's leakage — cut.
+
+The failure compounds when the alignment conversation is long. The longer the conversation, the more shared understanding accumulates, and the more of it tries to follow the author into the document.
 
 ## Common violations
 
@@ -202,6 +246,8 @@ calls. No business logic in this layer.
 Strengthening directives, removing clear argumentation, reordering, and consolidating duplicates are safe to do directly.
 
 Removing content that might be load-bearing — prohibitions, context that could encode architectural rationale, anything where you're unsure — is destructive. Before removing, present a recommendation with your reasoning and let the user confirm or override. If the content encodes a real architectural fact, convert it to a clear directive or diagram rather than deleting it.
+
+**Existential cost statements are human-authored only.** When editing guidance as an agent, do not introduce new existential cost statements on your own initiative — only at the human's express direction. Identify and preserve existing ones. See principle 4's existential cost form.
 
 ## What to keep
 
