@@ -59,6 +59,8 @@ Agent tool:
     grounded in this diff. Do not explore the broader codebase unless
     the diff references something you need to understand.
 
+    Don't re-execute the implementer's verification. If the diff suggests it was wrong or insufficient, flag it as a finding.
+
     ## Step 2: Spec Compliance
 
     Compare the diff against the task spec, requirement by requirement:

@@ -120,9 +120,11 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 ## After All Tasks
 
-1. **Dispatch final reviewer** for the entire implementation (full diff from branch point). This is a cross-cutting review — it catches integration issues between tasks that per-batch reviews can't see. Use the same `reviewer-prompt.md` template with the full branch diff range. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list); the reviewer's job here is integration, not per-task spec compliance, which the per-batch reviews already covered.
-2. **Address any issues** from the final review.
-3. **Load `finishing.md`** to complete the branch.
+1. **Dispatch final cross-cutting reviewer** with the full branch diff range. Use `reviewer-prompt.md`. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list).
+2. **Address any issues** from the cross-cutting review.
+3. **Dispatch adversarial verifier** with the same base/head SHAs and a brief summary of the work. Use `adversarial-prompt.md`.
+4. **Address any breakage** the adversarial pass found. Re-dispatch implementer to fix; re-run the adversarial pass against the new HEAD.
+5. **Load `finishing.md`** to complete the branch.
 
 ## Example Workflow
 
@@ -197,8 +199,20 @@ Batch 2: Task 3 (own batch — unrelated reporting module)
 ...
 
 [After all batches]
-[Dispatch final reviewer for the full branch diff (a1b2c3d..HEAD)]
+[Dispatch final cross-cutting reviewer for the full branch diff (a1b2c3d..HEAD)]
 Final reviewer: ✅ Approved — integration is clean
+
+[Dispatch adversarial verifier with the same diff range + brief work summary]
+Adversarial verifier:
+  Probes run:
+    - `pnpm test pkg/widget` — touched in Task 1+2 — 8/8 pass
+    - `pnpm test pkg/registry` — wired in Task 2 — 4/4 pass
+    - `pnpm test pkg/reporting` — touched in Task 3 — 6/6 pass
+    - typecheck on pkg/widget, pkg/registry, pkg/reporting — clean
+    - manual: empty-manifest path (Task 1 changed fallback behavior) — hard-fails as specified
+  Coverage note: did not run pkg/cli or pkg/storage — diff doesn't touch their public
+    contracts or known callers. CI will sweep those.
+  ✅ Clean — no breakage found within proportional scope
 
 [Load finishing.md]
 ```

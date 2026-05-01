@@ -4,41 +4,54 @@
 
 Claiming work is complete without verification is dishonesty, not efficiency.
 
-**Core principle:** Evidence before claims, always.
+**Core principle:** Evidence before claims, scoped proportionally to the change.
 
 **Violating the letter of this rule is violating the spirit of this rule.**
 
 ## The Iron Law
 
 ```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+NO COMPLETION CLAIMS WITHOUT FRESH, PROPORTIONAL EVIDENCE
 ```
 
-If you haven't run the verification command in this message, you cannot claim it passes.
+- **Fresh.** Run the verification command in this message. Stale runs and "should pass" are not evidence.
+- **Proportional.** Run a command that exercises the behavior the claim is about.
+
+## Scope of verification
+
+Pick the narrowest invocation that exercises the change *and any flow-on areas you'd reasonably expect to be affected*. The floor is the touched files and packages. Extend when the change touches a shared helper, alters a contract used elsewhere, or otherwise has obvious blast radius.
+
+| Change shape | Verification scope |
+|---|---|
+| Edit confined to one file/module | Tests for that file/module |
+| Edit to a shared helper or interface | Tests for the helper plus its known callers |
+| Cross-package integration work | Tests for the affected packages |
 
 ## The Gate Function
 
 ```
-BEFORE claiming any status or expressing satisfaction:
+BEFORE claiming any status:
 
-1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
-3. READ: Full output, check exit code, count failures
-4. VERIFY: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. ONLY THEN: Make the claim
+1. IDENTIFY: What's the claim, and what command produces evidence for it?
+2. SCOPE:    What's the narrowest invocation that exercises the claim,
+             plus any flow-on areas you'd expect to be affected?
+3. RUN:      Execute that command fresh.
+4. READ:     Full output, exit code, failures.
+5. VERIFY:   Does output confirm the claim?
+             - If NO: state actual status with evidence.
+             - If YES: state claim WITH evidence and the scope it was run at.
+6. ONLY THEN: make the claim.
 
-Skip any step = lying, not verifying
+Skip any step = lying, not verifying.
 ```
 
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |
 |-------|----------|----------------|
-| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
-| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
-| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
+| Tests pass for the change | Targeted test command output: 0 failures | Previous run, "should pass" |
+| Linter clean for the touched files | Linter output for those files: 0 errors | Extrapolation, partial-then-stop |
+| Build succeeds for the affected package | Build command for that package: exit 0 | Linter passing, logs look good |
 | Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
@@ -50,7 +63,7 @@ Skip any step = lying, not verifying
 - Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
 - About to commit/push/PR without verification
 - Trusting agent success reports
-- Relying on partial verification
+- Claiming "tests pass" when only some were run, without naming the scope
 - Thinking "just this once"
 - Tired and wanting work over
 - **ANY wording implying success without having run verification**
@@ -65,14 +78,13 @@ Skip any step = lying, not verifying
 | "Linter passed" | Linter ≠ compiler |
 | "Agent said success" | Verify independently |
 | "I'm tired" | Exhaustion ≠ excuse |
-| "Partial check is enough" | Partial proves nothing |
 | "Different words so rule doesn't apply" | Spirit over letter |
 
 ## Key Patterns
 
 **Tests:**
 ```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
+✅ [Run targeted test command] [See: 12/12 pass in affected package] "Tests pass for <scope>"
 ❌ "Should pass now" / "Looks correct"
 ```
 
@@ -84,7 +96,7 @@ Skip any step = lying, not verifying
 
 **Build:**
 ```
-✅ [Run build] [See: exit 0] "Build passes"
+✅ [Build the affected package] [exit 0] "Build passes for <package>"
 ❌ "Linter passed" (linter doesn't check compilation)
 ```
 
@@ -129,6 +141,6 @@ From 24 failure memories:
 
 **No shortcuts for verification.**
 
-Run the command. Read the output. THEN claim the result.
+Pick the scope, run the command, read the output, state the claim with the scope it was run at.
 
 This is non-negotiable.

@@ -41,6 +41,8 @@ Run: `git diff <base-sha>..<head-sha>`
 
 Ground your review in this diff. Do not browse the wider codebase unless the diff or spec leads you there.
 
+Don't re-execute the implementer's verification. If the diff suggests it was wrong or insufficient, flag it as a finding.
+
 ## Output
 
 Report:

@@ -79,4 +79,5 @@ These are loaded on demand by the phase documents that reference them:
 | `condition-based-waiting.md` | Replace arbitrary timeouts with condition polling |
 | `implementer-prompt.md` | Subagent template for task implementation |
 | `reviewer-prompt.md` | Subagent template for unified spec + quality review |
+| `adversarial-prompt.md` | Subagent template for end-of-workflow proportional breakage hunt |
 | `plan-reviewer-prompt.md` | Subagent template for plan review after task decomposition |
