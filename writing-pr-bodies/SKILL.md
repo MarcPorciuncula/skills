@@ -295,9 +295,10 @@ Add a sidecar only if it carries information the reviewer must know.
   Multiple distinct artifacts → short list. **Implementation plans are not reviewer artifacts** — they're author-facing tracking; skip them.
 - **External references** — Linear tickets, related/follow-up PR numbers, parent or stacked PRs. **Always include.** Plain lines at the bottom or a `## References` block:
   ```
-  Linear: AI-1234
+  Linear: [AI-1234](https://linear.app/<workspace>/issue/AI-1234)
   Follow-up: #1235
   ```
+  **Use full URLs for systems GitHub doesn't auto-link** — Linear, Jira, Notion, Sentry, Google Docs, internal dashboards. A bare `AI-1234` is unclickable; the reviewer has to copy it into Linear's search to find the ticket, which most won't bother to do, so the reference is dead weight. Cross-repo PRs and issues need the `owner/repo#123` form (or full URL) for the same reason. **GitHub references in the same repo are the exception** — `#1235`, `@username`, and commit SHAs auto-link, so plain forms are fine. If you don't know the workspace slug or exact URL shape for a Linear/Jira ticket, ask rather than printing the bare ID.
 - **Background** — only if the commits don't carry it.
 - **How to test** — bottom of the body. Numbered or bulleted concrete steps. Each step names a specific user action, command, or button. **No checkboxes** (compliance signal, not reproduction). PR-specific by construction — if every PR's "How to test" looks the same, you've reverted to ritual; cut it.
   ```
@@ -374,6 +375,7 @@ The exception: a `## Human overview` section is immutable (see *Human overview s
 | "I'll restate the title in the first sentence" | Cut. The reader has the title. |
 | "Let me name the types and packages I touched" | Plain language unless an identifier is a non-obvious touchpoint. |
 | "I'll add the 🤖 attribution" | Don't. |
+| "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" — a bare ID or label without a URL | Unclickable reference is dead weight — the reviewer won't paste an ID into a search box. External systems that GitHub doesn't auto-link (Linear, Jira, Notion, Sentry, Google Docs, dashboards) need full URLs. GitHub same-repo refs (`#1235`, `@user`, SHAs) auto-link and don't. If the URL shape is unknown, ask. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human, not you. Put framing in the lede. |
 | "The existing human overview reads a bit rough — let me tighten it" | Don't. It's the user's words; leave it byte-for-byte. |
 | "Comprehensive / robust / seamless / elegant fits here" | Marketing register. Cut. |
