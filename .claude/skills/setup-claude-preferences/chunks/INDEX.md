@@ -7,7 +7,8 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 - **design-and-change-proposals** — State responsibility, boundary, and a rejected alternative before implementing. Always applicable.
 - **visual-explanations** — ASCII diagrams and markdown tables for explaining code. Always applicable.
 - **attributing-content** — Prefix `[Claude]` on GitHub/Linear comments; preserve human-overview sections in PR bodies. Skip for users who don't collaborate on shared issue trackers.
-- **frontend-tests** — Frontend tests must exercise behavior; skip tests that mirror JSX. Applies when writing component tests; skip for backend-only work.
+- **writing-tests** — Two-pass self-check before writing any test: justify it (five gates), then design it (verification questions). Always applicable.
+- **frontend-tests** — Default to no component test; refactor first so the code is visibly trivial. Applies when writing component tests; skip for backend-only work.
 - **code-removal-and-refactoring** — Delete internal code rather than deprecate. Applies to internal codebases; less relevant for public-API maintenance.
 - **refactoring-and-cleanup** — Don't push back on user-directed scope expansion. Always applicable.
 - **worktrees** — Keep the repo root on `main` (no other-branch checkouts, even read-only); do all work on other branches in `.claude/worktrees/<branch>/`. Most relevant when multiple agents or sessions share a single clone; skip for users who work from a single checkout.
