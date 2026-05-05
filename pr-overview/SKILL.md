@@ -8,21 +8,47 @@ description: >
 
 # PR Walkthrough
 
-Narrate the change as a guided reading. The reader can open the diff themselves — your job is to give them the framing, the concepts, and the reasoning that GitHub's UI does not.
+Write a report for a reviewer about to read the diff. Give them the framing, concepts, and reasoning that GitHub's UI does not.
 
 ## Iron Law
 
+**THIS IS A REPORT FOR A REVIEWER, NOT A NARRATIVE FOR A READER.**
+
 **REACH FOR A DIAGRAM WHEN IT REPLACES THREE SENTENCES WITH ONE LOOK.**
 
-Prose and diagrams do different work, and a walkthrough uses both. Prose carries reasoning, causality, and the reader's growing mental model. Diagrams show shape — topology, state, matrices, branching flow, before/after deltas.
+## Who you are writing for
+
+You are writing a senior engineer's pre-review brief to a peer. The reader has already opened `gh pr view` and the diff in another tab. They are irritated by recap, allergic to drama, and skim. Anything that doesn't help them review faster is failure.
+
+A disciplined senior engineer briefing a peer states what changed, points at the parts that take more than a glance to understand, and stops. They don't introduce, set up, frame, hook, or signpost. They don't name events. They don't editorialise. That's the posture for every paragraph.
 
 ## Voice
 
-Write to a peer reviewer. State facts; don't sell them.
+Direct, specific, unhurried, unornamented. State facts. Don't sell them. The walkthrough is a flat technical reference between diagrams, not a piece of writing with craft.
 
-The register is a senior engineer explaining the change to a teammate who is about to review it — direct, specific, unhurried but not padded. That includes both stating facts *and* making small connections the teammate might otherwise miss: not to dramatize, but because pointing at connections is what explanation is. Facts sit plainly; consequences are stated, not amplified. No editorializing about the PR itself, no dramatic framing, no rhetorical amplification.
+| Good | Bad |
+|---|---|
+| "The new dispatcher acquires a Postgres advisory lock before each tick. Other instances skip the tick when the lock is held." | "The headline reshape is the dispatcher itself: where the scheduling lives moved from in-process timers to a Postgres-backed leader. Everything else hangs off that." |
+| "All three checks must pass; any failure aborts the request." | "Three independently-attestable signals, all bound to the same secret. Lose any one and the request fails closed." |
+| "Provider B requires `offline_access` for refresh tokens; Provider A rejects it on refresh and uses `access_type=offline` on authorize instead." | "Provider B, mostly mirrors Provider A. Read it as A with three meaningful divergences." |
+| "Adds a 5-minute TTL on pending rows. The cleanup job deletes expired rows on each tick." | "The cleanup job — the smallest, cleanest piece of the PR — sweeps abandoned pending rows on a 5-minute cadence." |
 
-Reflective asides are welcome — single sentences where the narrator steps back to point out a connection, a subtlety, or a consequence. Examples: *"Silence here is the feature." "That distinction didn't exist before this PR." "This is the subtlety easy to miss when reading only the session."* They aren't analysis and they aren't diagrams; they're the connective tissue a good teacher uses.
+Reflective asides — single sentences that point at a connection or consequence — slip in unannounced. Never flag them. Phrases like *"The closing reflective note:"*, *"Three subtleties worth pointing at:"*, *"Worth noting:"*, *"What's interesting is…"*, *"It pays to know that…"* are forbidden. The aside lands as one bare sentence or is cut.
+
+## Forbidden ornaments
+
+Cut on sight:
+
+- **Editorial framing of the PR itself** — *"the title says X but…"*, *"beyond the title"*, *"the headline reshape is…"*, *"the centerpiece is…"*, *"this PR actually…"*, *"those are the smallest two of…"*, *"the title undersells it"*. The reader has the title.
+- **Event-naming** — *"the X-to-Y shift"*, *"the pivot to Z"*, *"the move from X to Y"*. Headings name concepts, not events. Commits record the author's path; the walkthrough is organised by net change.
+- **Comma-tagline headings** — *"X, mostly mirrors Y"*, *"X — the smallest, cleanest piece"*, *"The N bug, surfaced by adding M"*.
+- **Line counts anywhere in the output** — *"a 274-line file"*, *"67 lines of careful posture"*, *"154 lines, four tests"*, *"the 400-line design doc"*, *"(new) 239-line guide"* as a tree annotation, *"the ~2350-line plan document"* in the Honesty section. The diff shows size. Line counts are ornament whether they appear in prose, diagrams, table cells, or the Honesty section.
+- **Editorial adjectives on the code** — *careful, clean, elegant, clever, smallest, cleanest, deliberate, surgical, tight*. Describe what the code does, not how it feels to read.
+- **Anticipation phrases** — *"three subtleties worth pointing at"*, *"the part that touches the most surface"*, *"it pays to know"*, *"read it as X with N divergences"*. State the content; don't introduce it.
+- **Dramatic flourishes** — *"lose any one and it fails closed"*, *"the whole thing is worthless if…"*, *"fails closed"* as a one-liner. State the consequence flatly.
+- **Diff-stat in the body** — *"6 commits, 42 files, +3742 / -719"*, commit lists with hashes. The reviewer has `gh pr view`.
+- **List preambles that only announce a list** — *"Three subtleties:"*, *"Two routes now:"*, *"The flow is two-legged:"*. If the bullets read the same way without the preamble, cut it.
+- **LLM padding** — *just, simply, really, actually, basically, essentially, fundamentally, particularly, clearly, obviously, notably*.
 
 ## Phase 1 — Gather external context
 
@@ -33,35 +59,50 @@ Assemble the context the PR was written in before reading any source.
 3. Referenced PRs — any `#NNNN` in the body or comments, plus stack parents and children. Fetch each with `gh pr view`.
 4. Linear tickets — any `AI-1205`-style identifier in body, commit titles, or branch name. Use `mcp__linear-server__get_issue`.
 5. Design docs or specs linked from the body. Read them.
-6. `git log --oneline <base>..<head>` — commit storyline.
+6. `git log --oneline <base>..<head>` — list of commits, for navigation only.
+
+**Commit order is not walkthrough order.** Commits record the author's path; the walkthrough is organised around net change. Don't structure sections around commits, don't name commits as events, and don't narrate cause-and-effect between commits. The diff is what the reviewer reviews, not the history that produced it.
 
 Before Phase 2, you must be able to state the PR's goal in one sentence.
 
 ## Phase 2 — Survey the change
 
-1. `git fetch origin <branch>` and `git checkout <branch>`.
-2. `git diff --stat <base>..HEAD` — size, spread, concentration.
+1. `git fetch origin <branch>` and check it out in a worktree (never the repo root).
+2. `git diff --stat <base>..HEAD` — size, spread, concentration. For your own use; doesn't go in the output.
 3. Identify the 5–10 central files by size, by position in the change, and by whether they define new types or entry points. Deprioritise tests and generated files unless the tests themselves are the point.
 4. Read them.
 
 ## Phase 3 — Shape and order the walkthrough
 
-A walkthrough moves through three motions — orienting the reader, descending into the layers, and resurfacing with synthesis. These are shapes the reader *feels*, not sections you label. A walkthrough might open with a narrative context paragraph that both orients and sets up the descent; its synthesis might be a single closing diagram with no announcement. Don't add headings called "Orient" or "Resurface" — let the content carry the shape.
+The walkthrough orients the reader, descends through the layers, and resurfaces with synthesis. These are shapes the reader feels, not sections to label. Don't add headings called "Orient" or "Resurface".
 
-Section headings should come from the content, not from structural templates. "The identity layer" is better than "2. Preference module." "Recovery is where the complexity lives" is a heading; "The session" without context is a label.
+### Opening
 
-Closing on a file map alone is fine when the PR is a pure structural refactor and file layout *is* the synthesis. Otherwise the close should be domain-level — a combined diagram, a prose paragraph, or an observation that assembles the pieces.
+The opening states what the PR does in one or two sentences and goes straight to the first concept.
 
-A walkthrough has one narrator telling one story. Pick the order before you write.
+Forbidden in the opening:
 
-A PR is judged on two axes, and a walkthrough can visit both:
+- Commit list (any form — hashes, oneline, parenthetical labels).
+- File count, +/- line totals, any other diff-stat number.
+- Phrases that frame the PR against its title (see *Forbidden ornaments*).
 
-- **Code architecture** — where the change lives, what moved, what replaced what. Serves "where should I focus my review?"
-- **Domain** — what the change means, how the system behaves, the flows and states it produces. Serves "does this actually work correctly?"
+The reader has `gh pr view`. Don't re-render it.
 
-Both are legitimate. Let the PR dictate — a small refactor might be all code architecture; a behavioural fix might be all domain; a large feature touches both. When both apply, weave them into a single narrative rather than splitting into parallel sections.
+### Headings
 
-Default order — **entry-point-first**: the user-visible behaviour or external interface → what had to change to support it → the supporting infrastructure.
+Headings name a concept or layer — what the next section is about. Examples of the right shape: *the dispatcher loop*, *the lease semantics*, *the retry transport*, *the pending lifecycle*, *the auth boundary*. Forbidden:
+
+- Event-naming headings (see *Forbidden ornaments*).
+- Editorial headings — *"the smallest, cleanest piece"*, *"the centerpiece"*.
+- Comma-tagline construction.
+
+A heading announces a concept the next section covers. It does not summarise that section.
+
+Use sentence case throughout — capitalise the first word, leave the rest lowercase unless it's a proper noun. Mixed case across headings is friction.
+
+### Order
+
+Default — **entry-point-first**: user-visible behaviour or external interface → what had to change to support it → supporting infrastructure.
 
 Alternatives that sometimes fit better:
 
@@ -71,9 +112,13 @@ Alternatives that sometimes fit better:
 
 One order per walkthrough.
 
-## Phase 4 — Narrate, weaving in diagrams where they amplify understanding
+### Closing
 
-Write prose. Each paragraph advances the reader's mental model of the change.
+Closing on a file map alone is fine when the PR is a pure structural refactor and file layout *is* the synthesis. Otherwise the close is domain-level — a combined diagram, a flat paragraph, or an observation that assembles the pieces. No "closing reflective note" header. No announced wrap-up.
+
+## Phase 4 — Write, weaving in diagrams where they amplify understanding
+
+Each paragraph advances the reader's mental model. No paragraph exists to set up, recap, or reflect on another paragraph.
 
 Reach for a diagram when it replaces three sentences with one look. Diagrams shine at:
 
@@ -83,9 +128,7 @@ Reach for a diagram when it replaces three sentences with one look. Diagrams shi
 - **Branching flow** — decision points where the branches *are* the insight
 - **Before/after** — deltas where the shape itself is what changed
 
-Prose shines at the space between — causality, rationale, the "why this matters," the connective tissue that carries the reader from one concept to the next. A walkthrough without paragraphs between diagrams is a gallery; a walkthrough where every diagram would collapse to a single prose sentence is under-visualised.
-
-Place each diagram at the moment in the narration where the reader needs it, not in a dedicated diagrams section.
+Place each diagram at the moment the reader needs it.
 
 ### Visual selection
 
@@ -100,7 +143,7 @@ Place each diagram at the moment in the narration where the reader needs it, not
 
 Use ASCII throughout (`┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼`). The output renders in a terminal.
 
-**Keep each diagram on one axis.** A file tree carries code-architecture information; a state machine carries domain information; a call graph carries code architecture; a behavioural flow carries domain. Mixing them — a file tree with behavioural labels, a state machine annotated with line numbers, a component map with sentence-length purpose columns — muddles both. If a concept needs both axes, use two diagrams or put the cross-axis detail in the prose between them.
+**Keep each diagram on one axis.** A file tree carries code-architecture information; a state machine carries domain information. Mixing them muddles both. If a concept needs both axes, use two diagrams or put the cross-axis detail in the prose between them.
 
 ## Phase 5 — Worth flagging → Honesty
 
@@ -111,18 +154,22 @@ Close with two short sections.
 
 ## Red flags — STOP
 
-If you find yourself thinking any of these, step back:
-
 | Thought | Reality |
 |---|---|
-| "Let me call-tree the hot path with line numbers" | Line numbers are navigation. A walkthrough is about shape. |
-| "This diagram makes the section feel complete" | If the diagram would collapse to a single prose sentence, the sentence is the better form. |
-| "This file tree would be clearer with behavioural labels" / "This state machine should show line numbers" | Keep each diagram on one axis. Cross-axis detail goes in the prose around the diagram, not inside it. |
-| "The title undersells it" / "This PR actually..." | Editorial asides about the PR itself are noise. State what it does. |
-| "The insight that unlocks..." / "What you wouldn't think of until..." | Teaser framing is drama. Present the insight directly. |
-| "The whole thing is worthless if..." | Hyperbole. State the risk plainly: "If X is wrong, the recording is incomplete." |
+| "Let me list the commits at the top so the reader has the storyline" | The reviewer has `git log`. The opening rules forbid this. |
+| "+X / -Y in N files gives them the shape" | The reviewer has `gh pr view`. |
+| "The title undersells it / This PR actually…" | Editorial framing of the PR itself is forbidden. State what the change is. |
+| "Let me name this pivot — the shift to X" | Headings name concepts, not events. |
+| "67 lines of careful posture" / "a 274-line file" | Line counts and editorial adjectives are forbidden. |
+| "Three subtleties worth pointing at" | Anticipation phrases are forbidden. State the content. |
+| "The closing reflective note:" | Asides land as unannounced single sentences or are cut. |
+| "Lose any one and it fails closed" | State the consequence flatly. |
 | "Let me give the opening some impact" | The reader has the title. Orient, don't hook. |
-| "The reader will infer the synthesis from the sections" | Ending on one layer's details leaves the reader holding parts, not a whole. Close with a diagram, a paragraph, or an observation that assembles them. |
+| "X, mostly mirrors Y" / "Z — the smallest, cleanest piece" | Comma-tagline headings are forbidden. |
+| "Read it as X with N meaningful divergences" | Anticipation. State the divergences directly. |
+| "The reader will infer the synthesis from the sections" | Close with a diagram, paragraph, or observation that assembles the pieces. |
+| "The diagram makes the section feel complete" | If the diagram would collapse to a single prose sentence, the sentence is the better form. |
+| "Let me call-tree the hot path with line numbers" | Line numbers are navigation. A walkthrough is about shape. |
 
 **Violating the letter of these rules is violating the spirit of them.**
 
@@ -136,6 +183,7 @@ A walkthrough that re-renders the diff wastes the reader's time. Prose, reasonin
 - **Starting with the diff file-by-file.** Structure and external context come first.
 - **Skipping PR comments and linked tickets.** Reviewer concerns and author replies encode reasoning the code cannot carry.
 - **Overclaiming coverage.** If the PR is 50 files and you read 8, say so.
+- **Treating commits as events.** Commits are scaffolding for the author. The walkthrough is organised by net change.
 
 ## Input forms
 
