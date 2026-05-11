@@ -199,18 +199,25 @@ After replying and resolving, present a brief summary: how many comments were re
 
 ### Needs your attention
 
-After the summary, re-surface every item that still requires the user to take action. This is the last thing in the conversation by design — the Phase 1 table scrolls away under Phase 2/3 tool output, and these items get lost otherwise.
+After the summary, re-surface every item that **still requires the user to take action**. This is the last thing in the conversation by design — the Phase 1 table scrolls away under Phase 2/3 tool output, and these items get lost otherwise.
 
-Include any item that matches one of:
+The bar for inclusion is high: include only items where the user must do something *by the skill's own rules*. If a comment was auto-resolved or declined per the rules, the standard behaviour was applied and there is nothing for the user to do — re-surfacing it implicitly asks the user to override the skill's own classification, which is the opposite of why this section exists. Trust the classification.
 
-- **Threads left open** — questions about architecture/design, correctness, or subjective suggestions from human reviewers (per the auto-resolve rules). The user needs to read Claude's reply and decide whether to follow up.
-- **Out of scope** — the user needs to decide whether to open a follow-up issue or PR.
-- **Question / discussion items where Claude posted a `[Claude]` reply** — the user may want to add their own voice or correct the framing. Include the reply text Claude posted so the user can see what's already there.
-- **Items where Claude declined to make a change** (Pedantic, Stale docs with no action) — the user may want to override and take action anyway.
+Include only:
 
-Format as a numbered list. For each item include: location (`file:line`), the original comment (truncated if long), the category, what action is needed, and — for items where Claude posted a reply — the reply text. Items the user does not need to act on (simple fixes that are done, outdated comments) are not included here.
+- **Threads left open** — per the auto-resolve rules, this means questions about architecture/design, correctness, or subjective suggestions from human reviewers. The user needs to read Claude's reply and decide whether to follow up. Include the reply text Claude posted.
+- **Out of scope items** — the user needs to decide whether to open a follow-up issue or PR.
 
-Skip this section entirely if there are no items requiring user action.
+Do **not** include:
+
+- Anything that was auto-resolved per the rules (bot comments of any category, trivial directives from humans, outdated). Auto-resolve *is* the standard behaviour — these are deliberately handled without the user.
+- Pedantic or stale-docs items where Claude declined and the thread was auto-resolved. The decline *is* the standard behaviour by the gates in Phase 1; surfacing it asks the user to override the skill's own logic.
+- Simple fixes that have already been applied and replied to.
+- Outdated / already-fixed items.
+
+Format as a numbered list. For each item include: location (`file:line`), the original comment (truncated if long), the category, what action is needed, and — for items where Claude posted a reply — the reply text.
+
+Skip this section entirely if there are no items requiring user action. This is the common case when the run converges (most comments auto-resolved or auto-declined per the rules) — silence is the correct outcome, not a regression.
 
 ## Scripts
 
