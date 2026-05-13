@@ -429,8 +429,10 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 ### Protocol
 
 - **Drafting a fresh PR** — write a title that passes the self-test before opening.
-- **Editing an existing PR** — silently apply the self-test. If it passes, leave it. If it fails, surface a recommended rewrite as `current → proposed`. **Do not change the title autonomously.**
-- **Exception** — if the user explicitly asked for a title rewrite, proceed.
+- **Editing a PR body that changes what the PR is about** — update the title to match in the same edit. Scope drift, a new headline, or fundamentally different framing all qualify.
+- **Editing a PR body that only refines presentation** — leave the title alone.
+- **The title fails the self-test on its own merits** — surface a recommended rewrite as `current → proposed`. Don't change autonomously.
+- **The user explicitly asked for a title rewrite** — proceed.
 
 ## Procedure
 
