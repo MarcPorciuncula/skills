@@ -38,6 +38,30 @@ You must communicate *the net change* of the PR and its motivation or justificat
 - DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
 - DO NOT use a "summary" title. The PR body **IS** the summary of the changes in the PR
 
+## Functional vs non-functional changes
+
+Any change to a codebase is either functional or non-functional. You'll already understand this concept, it's the same as deciding between "feat" "fix" "improvement" vs "chore" "docs" "refactor" style commits.
+
+In a PR for a functional change, that functional change is the main subject.
+
+- DO use when the party impacted by the change is the end user
+- PRIORITISE the change in behaviour of the system over code level changes
+- DO use active present or active past tense when describing the change "Adds new page", "Added a new page"
+- DO frame the change in terms of user visible behaviour
+- DO contrast past and new behaviour when the change is subtle or occurs under specific conditions or edge cases
+- DEPRIORITISE changes and subtleties in the code or components
+
+A non functional change usually changes code organisation, architecture, or tooling. In this case changes and subtleties in the code or components is the main subject.
+
+- DO use when the party impacted by the change is the system or the developers maintaining the system.
+- DO describe the transition and code level changes at an appropriate level of detail
+- DO use code-level language, identifier names, file paths, and structural terms
+- DO NOT characterise components as actors "Code generation moves to the pre-build stage"
+- DO use passive voice when describing components being moved or otherwise affected "Code generation has been moved to the pre-build stage" "Code generation now runs after dependency install"
+- DO call out flow on effects that might affect functionality and end users
+
+Sometimes a PR can carry both kinds of change, but will generally lead more towards one side than the other. Use the appropriate framing for the appropriate change.
+
 ## Writing style
 
 The writing style is crucial to how fast a reader greps the changes in the PR. The CORE GOAL of this text is to communicate the changes as EFFECTIVELY, CLEARLY, and QUICKLY as possible. The text must be written in a TECHNICAL + ACCESSIBLE register.
@@ -76,6 +100,7 @@ Accessible writing is the key to fast, clear comprehension.
 - DO update the PR when a recent commit affects the *net-change* of the whole PR
 - DO NOT describe pivots in design or intermediate states of the branch's changes
 - DO NOT reference which commits contain which changes
+
 
 ### HARD RESTRICTION: DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE
 
