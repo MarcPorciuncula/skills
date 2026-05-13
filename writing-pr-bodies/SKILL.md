@@ -86,6 +86,7 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 Accessible writing is the key to fast, clear comprehension.
 
 - DO use plain sentence shapes and forms
+- DO use sentence fragments when they save words ("Follow-up to #1209" not "This is a follow-up to #1209")
 - DO use dot points to listing legitimately parallel items
 - DO NOT use dot points to dump unrelated content quickly
 - DO NOT use em dashes or threaded clauses even if they are more "correct" sentence forms.
@@ -115,6 +116,7 @@ RECOGNISE these common literary signposting patterns.
 | "The hook is the third writer to the threads cache (after X and Y)" | its position in a sequence |
 | "It's worth noting that X" | how much weight X carries |
 | "Notably, …" / "In particular, …" / "As mentioned, …" | the prose's weighting or backward-reference |
+| "At the same time, On the other hand, That said" (when nothing contrasts) | a relationship between sentences that doesn't exist |
 | "Let me explain how this works" / "Let's walk through" | the next sentence |
 | "## Summary" + bullets of changed files | the document's own inventory |
 
@@ -131,7 +133,7 @@ RECOGNISE these literary characterisation and animation patterns.
 
 | REJECT | PREFER | WHY |
 |---|---|---|
-| "Go compilation moves into the Dockerfile" | "Go compilation step has been moved into the Dockerfile" | "Go compilation" is being characterised as the actor. Swap to passive tense. |
+| "Go compilation moves into the Dockerfile" | "Go compilation step has been moved into the Dockerfile" | "Go compilation" is being characterised as the actor. Recast the construct as the object of the change. |
 | "Two additional fixes fell out of this change" | "Includes two additional fixes" | "fell out" is used as literary animation, this is hard to grep. Be explicit. |
 | "The previous attempt at fixing this defeated keyed cache reuse" | "A previous attempt broke keyed cache reuse" | "defeated" is literary animation. Be explicit. |
 
@@ -141,6 +143,25 @@ These patterns dilute the information and require readers to process through lay
 - DO delete or rephrease them out of the text
 - DO NOT describe the change as a narrative
 - DO downlevel to plain, accessible language
+
+### HARD RESTRICTION: DO NOT PAD WORDS THAT CARRY NO INFORMATION
+
+RECOGNISE these common padding patterns.
+
+| Pattern | What it's doing |
+|---|---|
+| "just, simply, really, actually" | hedge or filler — no information added |
+| "basically, essentially, fundamentally" | hedge or vague emphasis — no information added |
+| "quite, rather, somewhat, fairly, particularly" | weak intensifier — softens or vaguely emphasises |
+| "clearly, obviously" (when not announcing emphasis) | empty intensifier |
+| "This change does X" / "This PR adds Y" | redundant self-reference — drop the subject ("Adds Y") |
+
+These patterns consume the reader's processing budget without adding information.
+
+- DO NOT write these patterns
+- DO delete or rephrase them out of the text
+- DO trust the reader to weight content from the verb and noun
+- DO state the bare fact. "Adds X" beats "This change essentially adds X"
 
 ## Common PR Structures
 
@@ -249,31 +270,6 @@ No jokes, colloquialisms, or stylised asides. They read as performance.
 State the mechanism in plain language, not type names. "Adds an HTTP endpoint for updating an existing record by ID, with optional version-conflict checking" beats "Implements `PUT /resource/{id}` via `HandleUpdate` calling `UpdateResource`". Reach for identifier names only when the identifier is itself a non-obvious touchpoint a reviewer needs to find.
 
 The same rule applies to **file paths**. Don't write narrative prose like "`pkg/server/webhooks.go` retyped the parameter; meanwhile `pkg/simplejobs/worker/worker.go` was already passing the constructor's return value as of #1209" — that's code archaeology. Name a file path only when the reviewer needs to *find* something the diff doesn't surface.
-
-### Cut padding
-
-LLM prose accumulates connective tissue. Get the structure right and the prose can still feel padded — cut at the sentence level too.
-
-- **Hedges and intensifiers** — *just, simply, really, actually, basically, essentially, fundamentally, quite, rather, somewhat, fairly, particularly, clearly, obviously*.
-- **Filler lead-ins** — *It's worth noting that, It should be noted, Notably, Interestingly, As mentioned, In particular, In essence, At a high level, To be clear*. These weight the prose's own emphasis rather than convey content — see *Focus on describing the system or the change*.
-- **Redundant self-reference** — *This change, This PR, This refactor* as the subject of every sentence. "This adds X" → "Adds X."
-- **Explainer-mode openers** — *Let me explain, Let's walk through, To understand this, The way this works is*.
-- **Empty contrasts** — *At the same time, On the other hand, That said* when nothing actually contrasts.
-- **List preambles** — a clause ending in `:` that introduces a list. The colon-then-bullets case is the most common instance of the broader "do not signpost" principle (see *Focus on describing the system or the change*). Stripping the count word doesn't rescue the preamble — *"The flow is two-legged:"* → *"The flow:"* fails the same test. **Useful preambles change how the bullets read** — they name a relationship between items (*"These three changes are independent and can land in any order:"*), narrow scope (*"Cases this PR doesn't handle (left for follow-up):"*), set up a contrast (*"Where this differs from the previous handler:"*), or state a verdict (*"All three failure modes have the same root cause:"*). **Test:** read the bullets without the preamble. If they read the same way, cut it.
-
-| Before | After |
-|---|---|
-| "This change essentially refactors the auth middleware to handle expired tokens more gracefully." | "Refactors the auth middleware to handle expired tokens." |
-| "It's worth noting that the worker now retries on transient failures." | "The worker now retries on transient failures." |
-| "Basically, the previous approach was leaking goroutines on shutdown." | "The previous approach leaked goroutines on shutdown." |
-| "Let me explain how this works: when a request comes in, we first authenticate, then dispatch." | "On request: authenticate, then dispatch." |
-| "The notification poller had three issues: it kept running after sign-out, backed off too aggressively after one 503, and logged every retry at error level." | "The notification poller kept running after sign-out, backed off too aggressively after one 503, and logged every retry at error level." |
-| "Three new endpoints:\n- POST /thing — …\n- GET /thing — …\n- DELETE /thing — …" | "- POST /thing — …\n- GET /thing — …\n- DELETE /thing — …" (drop the preamble; the bullets stand alone) |
-| "Two changes together change that. First, Go compilation moves into the Dockerfile. Second, both workflows now use Depot." | "The Dockerfile compiles Go in a separate builder stage. Both workflows use Depot's hosted build service." (drop the bridge sentence; describe the new state directly) |
-| "These three changes are independent and can land in any order:\n- A — …\n- B — …\n- C — …" | Keep as-is — preamble names the relationship between items (independence + ordering freedom) that the bullets don't carry on their own. |
-| "The struct itself is now unexported, so `Foo{}` no longer compiles — that literal in `pkg/x/y.go` was the bug #1209 just fixed by hand, and the shape that allowed it (exported struct with an unexported field, plus a nil-tolerant constructor and a `reconciler()` fallback to `UnavailableFoo`) only converted the misuse into a per-call Sentry error rather than a compile failure." | "Closes the loophole behind #1209: the exported struct + nil-tolerant constructor turned this misuse into a runtime Sentry rather than a compile error." |
-
-**Fragments are OK when they save words.** "Follow-up to #1209." reads cleaner than "This is a follow-up to #1209." Trailing reference lines, stack pointers, and one-word qualifiers don't need to be wrapped in complete sentences.
 
 ## Bullets vs paragraphs
 
