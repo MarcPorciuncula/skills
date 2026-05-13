@@ -66,7 +66,7 @@ Sometimes a PR can carry both kinds of change, but will generally lead more towa
 
 The writing style is crucial to how fast a reader greps the changes in the PR. The CORE GOAL of this text is to communicate the changes as EFFECTIVELY, CLEARLY, and QUICKLY as possible. The text must be written in a TECHNICAL + ACCESSIBLE register.
 
-**Its subject matter is inherently technical**
+**The subject matter is inherently technical**
 
 - DO use precise technical terms and concepts
 - DO use the same domain language and symbols that the code uses
@@ -77,9 +77,20 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 
 - DO NOT signpost upcoming content or structure
 - DO NOT describe the structure of the PRs body's own prose
-- DO NOT use formal or persuasive language
-- DO NOT express opinion
-- DO keep it factual
+- DO NOT use formal, persuasive, or marketing-style language
+- DO NOT reach for marketing or corporate register ("comprehensive", "seamless")
+- DO NOT express unsolicted opinions
+- DO NOT "sell"
+
+**It must be accurate, measured, and well scoped**
+
+- DO name what isn't done when related and relevant ("populating the list endpoint is a follow-up", "only xyz service was migrated, other services will need to be migrated going forward")
+- DO NOT name "out of scope" items that no one asked about.
+- DO scope claims to what the change actually covers
+- DO NOT make sweeping claims that overstate the plans
+- DO right-size detail to the diff. state what the reader needs to act on or be aware of; trust the code for the line-by-line detail.
+- DO NOT include verbatim code chunks in the description
+- DO include illustrative and abridged code chunks when the subject matter is code architecture, refactors, interfaces, or APIs
 
 **It must be accessible**
 
@@ -249,27 +260,6 @@ fooDispatcher := FooJob.Bind(sjSvc)
 - Show what changes, not what stays the same. Cut boilerplate, unrelated setup, untouched members.
 - `// Before` / `// After` headers are enough; longer commentary belongs in `## Change`.
 - Ceiling: ~15 lines per side. Past that, you're dumping the type surface — trim.
-
-This is the one place the "no code archaeology" rule yields. Narrative prose about which files changed is archaeology; a tight Before/After is the contested delta as code.
-
-## Voice
-
-Peer engineer. State facts. Acknowledge limits honestly. Don't sell.
-
-- "Adds the `is_admin` flag on the user-lookup endpoint only. The list and search endpoints leave the field at its zero value for now — populating them is a follow-up." — good. Calibrated; names what isn't done.
-- "Exposes per-caller admin status across the user resource." — bad. Sweeping claim that overstates the actual change.
-- "Replaces three single-target image-transform tools with one bulk tool." — good. Plain.
-- "Introduces a more efficient batch-oriented approach to image transforms." — bad. Corporate.
-
-No jokes, colloquialisms, or stylised asides. They read as performance.
-
-**Verb tense is a framing diagnostic.** Past tense ("X became Y", "Y was lost", "Z surfaced as a toast") narrates a failure — use it for genuine bug fixes (`fix:` work). Present tense ("X creates Y", "the picker shows Z") describes existing behaviour without judging it — use it for feature work (`feat:` / `improve:` / `refactor:`). If you find yourself reaching for past tense to describe behaviour that wasn't a bug, the frame is wrong; switch to *Feature lede*.
-
-**Use user-visible language for user-visible changes.** "Multipart upload to S3 with chunked transfer encoding" describes the data flow; "each file shows its own progress bar as it uploads" describes what the user sees. For UX-affecting PRs, lead with what the user does and notices ("drag a file in", "see the progress bar", "cancel mid-upload") rather than the implementation flow.
-
-State the mechanism in plain language, not type names. "Adds an HTTP endpoint for updating an existing record by ID, with optional version-conflict checking" beats "Implements `PUT /resource/{id}` via `HandleUpdate` calling `UpdateResource`". Reach for identifier names only when the identifier is itself a non-obvious touchpoint a reviewer needs to find.
-
-The same rule applies to **file paths**. Don't write narrative prose like "`pkg/server/webhooks.go` retyped the parameter; meanwhile `pkg/simplejobs/worker/worker.go` was already passing the constructor's return value as of #1209" — that's code archaeology. Name a file path only when the reviewer needs to *find* something the diff doesn't surface.
 
 ## Bullets vs paragraphs
 
