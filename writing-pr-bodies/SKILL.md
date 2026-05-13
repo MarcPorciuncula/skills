@@ -73,14 +73,12 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 - DO NOT colloquialise technical terms
 - DO preserve accuracy and avoid or hedge unchecked or unsubstantiated claims
 
-**It's not an essay**.
+**The change of a PR is atomic**
 
-- DO NOT signpost upcoming content or structure
-- DO NOT describe the structure of the PRs body's own prose
-- DO NOT use formal, persuasive, or marketing-style language
-- DO NOT reach for marketing or corporate register ("comprehensive", "seamless")
-- DO NOT express unsolicted opinions
-- DO NOT "sell"
+- DO describe all changes in the PR as if they would land all at once
+- DO update the PR when a recent commit affects the *net-change* of the whole PR
+- DO NOT describe pivots in design or intermediate states of the branch's changes
+- DO NOT reference which commits contain which changes
 
 **It must be accurate, measured, and well scoped**
 
@@ -91,6 +89,23 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 - DO right-size detail to the diff. state what the reader needs to act on or be aware of; trust the code for the line-by-line detail.
 - DO NOT include verbatim code chunks in the description
 - DO include illustrative and abridged code chunks when the subject matter is code architecture, refactors, interfaces, or APIs
+
+**It's not an essay**.
+
+- DO NOT signpost upcoming content or structure
+- DO NOT describe the structure of the PRs body's own prose
+- DO NOT use formal, persuasive, or marketing-style language
+- DO NOT reach for marketing or corporate register ("comprehensive", "seamless")
+- DO NOT express unsolicted opinions
+- DO NOT "sell"
+
+**Only use bullets for genuine lists**
+
+- DO use bullets when items are parallel, when you are **listing out** items of a repeating structure or topic matter. 
+- DO NOT use bullet lists to mask unrelated content as "list items"
+- DO NOT add useless bullet list lead-ins. eg. "Two changes:" "The flow is two legged"
+- DO NOT put large paragraphs in bullet lists.
+- DO NOT use bullet lists to "inventory" the changes or the diff
 
 **It must be accessible**
 
@@ -105,14 +120,6 @@ Accessible writing is the key to fast, clear comprehension.
 - DO NOT use long, winding clauses
 - DO NOT use verbs to evoke literary animation
 - DO NOT waste words to bridge paragraphs
-
-**The change of a PR is atomic**
-
-- DO describe all changes in the PR as if they would land all at once
-- DO update the PR when a recent commit affects the *net-change* of the whole PR
-- DO NOT describe pivots in design or intermediate states of the branch's changes
-- DO NOT reference which commits contain which changes
-
 
 ### HARD RESTRICTION: DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE
 
@@ -174,27 +181,51 @@ These patterns consume the reader's processing budget without adding information
 - DO trust the reader to weight content from the verb and noun
 - DO state the bare fact. "Adds X" beats "This change essentially adds X"
 
-## Common PR Structures
+## Body & common sections
 
-Remember the core objectives when structuring your PR. We want to structure for **cold-read scannability**
+Every PR has a lede. After the lede, compose additional sections the PR needs from this catalogue, or author your own when none of the patterns fit. No section is required, and a useless section is worse than no section.
+
+Add a section only if it carries information the reviewer needs that they couldn't get from the diff or commit messages.
+
+DO INCLUDE:
+
+- A non-obvious design decision and why it was made
+- A subtlety the reader is likely to miss while reading the code
+- A behavioural difference (before vs after) that the diff doesn't make legible
+- A constraint, invariant, or assumption the change rests on
+- A diff-shape signal that would surprise a reviewer if not flagged (large mechanical churn, restructured tests, regenerated vendored files)
+
+DON'T INCLUDE CONTENT THAT:
+
+- Lists files that changed
+- Restates trivialities of a refactor, rename or move
+- Says "Adds tests for X"
+- Restates the lede in different words
+
+NEVER write a `## SUMMARY` section. The PR body **is** the summary.
 
 ### Lede
 
-The lede is the opening sentence and paragraph(s), and is the main prose of the PR. You should be able to communicate the high level change and motivation in just the PR title and lede alone.
+The opening sentence or paragraph carrying the PR's headline change. Right-size to the PR. Small diffs warrant one or two short sentences; complex changes get a paragraph or two.
 
-- DO right-size your writing to the change. A small diff change with a self explanatory title only deserves a couple sentences.
-- DO provide the necessary details that the title can't carry
+Lead with what the change does. Frame the new state directly. Use the prior state as a comparison point only when it clarifies.
 
-### Problem / Change structure
+- DO lead with the change itself
+- DO right-size to the PR
+- DO NOT bury the change behind preamble or context
 
-A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does. Problem / change framing implies something existing was broken and in a state not originally designed. Something can be poorly designed or poorly operating, but "correct" according to its original specification.
+> Adds upload progress indicators to the attachment picker. Instead of a single spinner that hides everything in flight, each file shows its own progress bar and a cancel button. Failed uploads stay in the picker with a retry option rather than disappearing silently.
 
-- DO use for GENUINE bugs or faults
-- DO use for "UX bugs" where the previous state was hard to use or obstructionary
-- DO use when the problem itself requires at least a paragraph to explain
-- DO NOT use when "Fixes an issue where xyz..." as a lede would suffice.
-- DO NOT use for improvements, refactors, feature additions even if they are addressing shortcomings
-- DO NOT use the problem / change structure when making an *improvement*. An improvement is NOT a problem / change. The previous state may have been *undesirable* but not *incorrect*
+### Problem / Change
+
+A heading-pair structure that supplements or replaces the lede when a bug fix benefits from framing the problem before the change. Two headings, `## Problem` and `## Change`, make the contrast between what was wrong and what the PR does legible at a glance.
+
+Heading pairs can be `## Problem` / `## Change`, `## Issue` / `## Fix`, or any pair that fits.
+
+- DO use for genuine bugs or faults closed by this PR
+- DO use when the problem requires at least a paragraph to explain
+- DO NOT use when "Fixes an issue where xyz..." as a lede would suffice
+- DO NOT use for improvements, refactors, or feature additions. They aren't bug fixes even if the prior state was undesirable
 
 > ## Problem
 >
@@ -204,46 +235,9 @@ A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Ch
 >
 > A new pass in the same plugin walks in-window refs, asks filestore what's current, and appends a short note to the most recent user turn naming the changed paths. The agent decides whether to re-read; the hint is informational, not a task list.
 
-Heading pairs can be `## Problem` / `## Change`, `## Why` / `## What`, or any pair that names this PR's beats. Don't reach for `## Summary` — it opens the door to bullet-inventory bodies.
+### Before/After code blocks
 
-**Don't use Problem/Change for `feat:` / `improve:` / `refactor:` work.** The shape forces a "what was broken" frame, and forcing it onto a non-bug pathologises prior decisions that were deliberate. Use *Feature lede* (next) instead.
-
-### Feature lede
-
-For PRs that add new behaviour, improve a UX, or refactor — anything that would naturally be `feat:` / `improve:` / `refactor:` rather than `fix:`. The prior state isn't being treated as a bug; this change adds to it or makes it better.
-
-Lead with what the change *adds* or *improves*, in present tense, with the prior state as a comparison point if useful. The reader experiences the prior state as "what is" (not "what was broken"), and the new state as "what's now possible".
-
-> Adds upload progress indicators to the attachment picker. Instead of a single spinner that hides everything in flight, each file shows its own progress bar and a cancel button. Failed uploads stay in the picker with a retry option rather than disappearing silently.
-
-| Frame | Trigger | Lede |
-|---|---|---|
-| **Feature** | `feat:` / `improve:` / `refactor:` — work motivated by adding capability | "Adds upload progress indicators to the attachment picker. Each file shows its own progress bar and a cancel button; failed uploads stay in the picker with a retry option." |
-| **Bug fix** | `fix:` — work motivated by a bug report | "Fixes the attachment picker so failed uploads no longer disappear silently. Previously a failed upload was removed from the UI with no error; now it stays with a retry button." |
-
-Anchor on the work's motivation (commit prefix, ticket type, what prompted the work), not on a judgment about whether the prior state was good or bad. Almost any prior state has *some* undesirable property — that doesn't make it a bug. If you find yourself reaching for "well, the prior state was actually wrong because…" to justify Problem/Change on improvement work, you're rationalising. The diagnostic: if you naturally write "X became Y" / "Y was lost" / "Z surfaced as a toast" (past tense, pathologising), you're framing as a bug fix; if you naturally write "X creates Y" / "the picker shows Z" (present tense, descriptive), you're framing as a feature. Match the frame to the work's motivation, not to the most prescribed shape.
-
-### Lede + sidecars
-
-A short prose lede, then named sections for material that doesn't fit the lede.
-
-> Switches the scheduled-job runner from in-process timers to a Postgres-backed leader-elected scheduler. A single instance acquires the lease and dispatches due jobs; other instances stay idle and only take over if the lease lapses. Existing job code is unchanged — only the dispatch surface moves.
->
-> Lease semantics: renewed every 10s, expire after 30s, so a leader that goes silent (network partition, pause-the-world GC) loses dispatch authority before any other instance picks it up. During that gap, scheduled jobs may briefly miss their slot — the scheduler is "at-most-once per slot", not "exactly-once". Jobs that need at-least-once semantics already wrap themselves in idempotent retries.
->
-> ## Background
->
-> The previous in-process timer fired on every instance, and we relied on each handler's own dedupe to collapse the duplicate runs into one. That worked at three instances; under the current autoscaling profile (up to thirty), the dedupe write contention itself became the dominant cost.
->
-> ## Stack
->
-> Stacked on #N. Merges after the lease-table migration in #N is applied to all environments.
-
-Shapes can combine — Problem/Change with a How-to-test sidecar is common.
-
-#### Before/After code blocks for API-reshape refactors
-
-When the *value* of a refactor is the API delta, two short Before/After code blocks at the call-site level are the most legible artifact a reviewer can have.
+When a refactor's value is the API delta, two short Before/After code blocks at the call-site level are the most legible artifact a reviewer can have.
 
 ```go
 // Before
@@ -256,18 +250,114 @@ fooDispatcher := NewFooDispatcher(sjSvc)
 fooDispatcher := FooJob.Bind(sjSvc)
 ```
 
-- Show one or two representative call sites, not the full type-signature surface.
-- Show what changes, not what stays the same. Cut boilerplate, unrelated setup, untouched members.
-- `// Before` / `// After` headers are enough; longer commentary belongs in `## Change`.
-- Ceiling: ~15 lines per side. Past that, you're dumping the type surface — trim.
+- DO show one or two representative call sites, not the full type-signature surface
+- DO cut boilerplate, unrelated setup, untouched members
+- DO use `// Before` and `// After` headers without further commentary
+- DO NOT exceed ~15 lines per side
 
-## Bullets vs paragraphs
+### Areas touched
 
-- **Bullets when items are genuinely parallel** — three or more correctness subtleties, several review-handoff observations, multiple constraints. Each bullet can run a sentence or two.
-- **Paragraphs when items aren't parallel** — when one builds on another, when one is much weightier, when reasoning flows.
-- **Avoid the lead-in-then-paragraphs pattern.** "Two correctness subtleties worth flagging:" followed by two long prose paragraphs is a tell. If items are parallel enough to share a lead-in, make them bullets. If not, drop the lead-in and weave content into surrounding prose.
+For cross-cutting refactors. Names *scope of impact* — subsystems affected, where conflicts with in-flight work are likely, where to watch for regression.
 
-The disease was bullet *inventories of the diff* under `## Summary`, not bullets per se. Parallel observations belong in bullets.
+- DO use when a teammate couldn't predict where this PR collides with theirs without opening the diff
+- DO NOT use for single-package PRs
+- DO NOT substitute file counts or full file lists for scope summaries
+
+```
+## Areas touched
+
+- `pkg/foo/*` — internal API reshape; no behaviour change.
+- All composition roots (api, worker, periodic-runner) — call-site updates.
+- `pkg/{bar,baz}/dispatch.go` — new descriptors; old wrappers removed.
+```
+
+### How to test
+
+Concrete reproduction steps for the reviewer. Goes at the bottom of the body.
+
+- DO write PR-specific steps with specific commands, buttons, or user actions
+- DO NOT use checkboxes
+- DO NOT include if every step is a generic CI command (`task test`, `go vet`)
+- DO NOT list unit tests as a 'how to test' instruction
+
+```
+## How to test
+
+1. Start the API server locally with `task dev`.
+2. In another terminal, find the API process: `pgrep -f 'alcova server'`.
+3. Send `kill -TERM <pid>` and watch the logs — expect "graceful shutdown: draining" followed by a clean exit within ~8s.
+4. Repeat with `kill -INT <pid>` — expect "fast shutdown: dropping in-flight connections" and immediate exit.
+```
+
+### External references
+
+Linear tickets, related PR numbers, parent or stacked PRs.
+
+- DO always include when external references exist
+- DO use full URLs for systems GitHub doesn't auto-link (Linear, Jira, Notion, Sentry, Google Docs, dashboards)
+- DO use plain `#1234` or `@username` for same-repo GitHub references — they auto-link
+- DO use `owner/repo#123` for cross-repo references
+- DO ask the user when you don't know the workspace slug or URL shape for a ticket
+- DO NOT include bare unclickable IDs ("Linear: AI-1234")
+
+```
+Linear: [AI-1234](https://linear.app/<workspace>/issue/AI-1234)
+Follow-up: #1235
+```
+
+### Stack
+
+When the PR is part of an enforced merge-order stack.
+
+- DO name the PR this one is stacked on and any sequencing dependencies
+- DO NOT include for unrelated PR pairings
+
+```
+Stacked on #N. Merges after the lease-table migration in #N is applied to all environments.
+```
+
+### Differences from previous PRs
+
+When re-baselining an earlier sibling PR that was closed or superseded.
+
+- DO summarise what's changed between the previous attempt and this one
+- DO NOT include for fresh PRs without precedent
+
+### Also in this PR
+
+For secondary changes that fell out of the same work but aren't part of the headline.
+
+- DO use one bullet per item, naming the behavioural or API consequence
+- DO use this heading verbatim
+- DO NOT include docs updates or renames. They're diff-recoverable
+
+### Design
+
+Link to a spec when one exists. Not a re-summary.
+
+- DO link to the design spec a reviewer would consult
+- DO include multiple distinct artifacts as a short list
+- DO NOT link to author-facing implementation plans or task-tracking docs
+
+```
+## Design
+
+[docs/specs/2026-04-17-dev-entrypoint-design.md](docs/specs/2026-04-17-dev-entrypoint-design.md)
+```
+
+### Background
+
+For context the commits don't carry. Only include when the PR's motivation or constraints aren't legible from the PR scope alone.
+
+- DO use when the why isn't obvious from the change
+- DO NOT use as filler for "thoroughness"
+
+### Deployability
+
+For rollout dependencies, migration ordering, or merge gates.
+
+- DO use when the PR's safety depends on external state (a migration applied, a feature flag flipped)
+- DO NOT use for self-contained PRs
 
 ## PR titles
 
@@ -338,69 +428,6 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 **Describe the net diff, not the session journey.** Source of truth: `git diff <base>...HEAD`, not session memory. Reverts, refactors, abandoned approaches — invisible to the reviewer, must be invisible to the body.
 
 **Check the title against the scope sentence.** Run the self-test. Surface a recommended rewrite if it fails.
-
-## What earns a place in the body
-
-After the lede (or problem/change pair), include only material a reviewer needs that they couldn't get from the diff or commit messages.
-
-**An observation earns its place if it carries one of:**
-- A non-obvious design decision and why it was made
-- A subtlety the reader is likely to miss while reading the code
-- A behavioural difference (before vs after) that the diff doesn't make legible
-- A constraint, invariant, or assumption the change rests on
-- A diff-shape signal that would surprise a reviewer if not flagged (large mechanical churn, restructured tests, regenerated vendored files)
-
-**It does *not* earn its place if it:**
-- Lists files that changed
-- Restates an identifier rename / move
-- Says "Adds tests for X"
-- Recapitulates the lede in different words
-
-If you can't write the observation without typing identifier names or file paths, it doesn't belong in the body.
-
-The test: imagine the reviewer reading the PR with the body collapsed. Which paragraphs would they reach for? Those earn their place.
-
-## Sidecars
-
-Add a sidecar only if it carries information the reviewer must know.
-
-- **Deployability** — rollout dependency, migration ordering, merge gate.
-- **Stack** — when ordering matters.
-- **Differences from #N** — re-baselining an earlier sibling.
-- **Areas touched** — for cross-cutting refactors. Two or three lines naming *scope of impact* — subsystems affected, where conflicts with in-flight work are likely, where to watch for regression. Bar: could a teammate predict where this PR collides with theirs without opening the diff? Do *not* substitute file counts or full file lists. Skip for single-package PRs.
-  ```
-  ## Areas touched
-
-  - `pkg/foo/*` — internal API reshape; no behaviour change.
-  - All composition roots (api, worker, periodic-runner) — call-site updates.
-  - `pkg/{bar,baz}/dispatch.go` — new descriptors; old wrappers removed.
-  ```
-- **Also in this PR** — secondary changes that fell out of the same work but aren't part of the headline. One bullet per item, each naming a behavioural or API consequence (not docs or renames — those are diff-recoverable). Use this heading verbatim; avoid "Other changes that fell out…" framings.
-- **Design** — link to a spec when one exists. Not a re-summary.
-  ```
-  ## Design
-
-  [docs/specs/2026-04-17-dev-entrypoint-design.md](docs/specs/2026-04-17-dev-entrypoint-design.md)
-  ```
-  Multiple distinct artifacts → short list. **Implementation plans are not reviewer artifacts** — they're author-facing tracking; skip them.
-- **External references** — Linear tickets, related/follow-up PR numbers, parent or stacked PRs. **Always include.** Plain lines at the bottom or a `## References` block:
-  ```
-  Linear: [AI-1234](https://linear.app/<workspace>/issue/AI-1234)
-  Follow-up: #1235
-  ```
-  **Use full URLs for systems GitHub doesn't auto-link** — Linear, Jira, Notion, Sentry, Google Docs, internal dashboards. A bare `AI-1234` is unclickable; the reviewer has to copy it into Linear's search to find the ticket, which most won't bother to do, so the reference is dead weight. Cross-repo PRs and issues need the `owner/repo#123` form (or full URL) for the same reason. **GitHub references in the same repo are the exception** — `#1235`, `@username`, and commit SHAs auto-link, so plain forms are fine. If you don't know the workspace slug or exact URL shape for a Linear/Jira ticket, ask rather than printing the bare ID.
-- **Background** — only if the commits don't carry it.
-- **How to test** — bottom of the body. Numbered or bulleted concrete steps. Each step names a specific user action, command, or button. **No checkboxes** (compliance signal, not reproduction). PR-specific by construction — if every PR's "How to test" looks the same, you've reverted to ritual; cut it.
-  ```
-  ## How to test
-
-  1. Start the API server locally with `task dev`.
-  2. In another terminal, find the API process: `pgrep -f 'alcova server'`.
-  3. Send `kill -TERM <pid>` and watch the logs — expect "graceful shutdown: draining" followed by a clean exit within ~8s.
-  4. Repeat with `kill -INT <pid>` — expect "fast shutdown: dropping in-flight connections" and immediate exit.
-  ```
-
-Skip every sidecar that would be empty or filler.
 
 ## Human overview sections
 
