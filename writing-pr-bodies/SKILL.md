@@ -1,54 +1,143 @@
 ---
 name: writing-pr-bodies
 description: >
-  Produces a PR description aimed at a human reviewer about to read the diff,
-  optimised for cold-read scannability — not a re-narration of the diff itself.
-  TRIGGER before any `gh pr create`, `gh pr edit --body`, `gs branch submit`,
-  `git spice branch submit`, or other command that opens or updates a pull
-  request body — including autonomous PR-creation flows where the user did
-  not explicitly ask for a body. Also trigger when the user asks to write,
-  rewrite, tighten, or review a PR description / title.
+  Rules and guidelines for writing easily readable and accurate PR titles and 
+  descriptions. TRIGGER before any `gh pr create`, `gh pr edit --body`, 
+  `gs branch submit` `git-spice branch submit`, or any other command that opens
+  or updates a pull request body, including autonomous PR creation where the
+  user didn't specifically give direction about the PR body or the PR itself.
   SKIP for non-body PR operations (e.g. `gh pr ready`, `gh pr merge`, label
   or reviewer changes) and for commit messages.
 ---
 
 # Writing PR Bodies
 
-A PR body is a handout for a reviewer who is about to read the diff.
+These rules and guidelines are to be followed when writing PRs, titles, and bodies.
 
-## The principle
+## Audience
 
-**Cold-read scannability.** A reviewer landing on this PR with no context grasps what the change is and why within 30 seconds.
+The primary reader is a senior software engineer with a focus on productivity, accuracy, and precision. Software engineers working with coding agents today process hundreds of PRs built by themselves, their coworkers, and AI agents. They suffer from constant context switching and mental overload. They need clear oversight and need to grep changes in a glance so they can make a quick judgements. This isn't hyperbole, it's reality. The engineer that reads your writing probably has 13 pull requests open in their browser right now, so poor writing and communication costs them time and money.
 
-A scannable body:
+## Core requirements
 
-- States the change and motivation immediately — first paragraph or first heading, not buried mid-prose.
-- Gives the eye anchor points — paragraph breaks, headings when the PR has more than one beat, bullets when items are parallel.
-- Earns every line against the diff. Inventory restatement, marketing prose, and session journey fail this test.
+A reviewer landing on your PR needs to be able to read, scan, or skim to grep the changes in ten seconds. The title and the PR body are crucial. Yes, they can see the detail in the diff and commit log, but that could be dozens of commits and tens of thousands of lines. Your writing must be optimised for **cold-read scannability**, it should be *salient*, *didactic*, and *accessible* to read quickly.
 
-There is no single mandated shape. Pick the shape that orients *this* PR's reader fastest.
+You must communicate *the net change* of the PR and its motivation or justification.
 
-## Shapes
+- DO state the change and its motivation immediately in the first paragraph, sentence, or heading
+- DO explain the design and its trade-offs
+- DO how design decisions are justified
+- DO explain the before/after state for berhavioural changes or fixes
+- DO point out flow on effects
+- DO list out side-effects or incidental changes that made it into the branch
+- DO use headings, paragraphs, and lists to make the content easily scannable
+- DO NOT repeat the diff, the reader has access to the "files changed" tab
+- DO NOT list out files UNLESS they are the crucial subject of the change
+- DO NOT narrate changes over the lifecycle of the branch. a PR is merged atomically and intermediate states never get deployed
+- DO amend or correct the PR to ensure it matches the final net changes after a pivot or deviation from the original intent or design
+- DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
+- DO NOT use a "summary" title. The PR body **IS** the summary of the changes in the PR
 
-### Lede only
+## Writing style
 
-One short paragraph in plain prose. Use when one or two sentences carry the whole picture.
+The writing style is crucial to how fast a reader greps the changes in the PR. The CORE GOAL of this text is to communicate the changes as EFFECTIVELY, CLEARLY, and QUICKLY as possible. The text must be written in a TECHNICAL + ACCESSIBLE register.
 
-> Narrows the scope of pre-commit self-checks (lint, type-check) so they target only changed packages instead of the full repo. The repo-wide pass is slow and CI runs it anyway — the local pass exists for fast iteration, not coverage.
+**Its subject matter is inherently technical**
 
-**Right-size to the diff.** For diffs under ~50 lines with a self-explanatory title, target ~two sentences (~50 words). The body's job is whatever the title couldn't carry — a follow-up reference, a one-sentence "why now", a constraint. A four-sentence lede on a 24-line PR is overwriting the title.
+- DO use precise technical terms and concepts
+- DO use the same domain language and symbols that the code uses
+- DO NOT colloquialise technical terms
+- DO preserve accuracy and avoid or hedge unchecked or unsubstantiated claims
 
-### Problem / Change
+**It's not an essay**.
 
-A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does.
+- DO NOT signpost upcoming content or structure
+- DO NOT describe the structure of the PRs body's own prose
+- DO NOT use formal or persuasive language
+- DO NOT express opinion
+- DO keep it factual
 
-**Use only when this PR closes a bug.** Concrete tests:
+**It must be accessible**
 
-- The change has (or would have) a `fix:` prefix in conventional-commit style, not `feat:` / `improve:` / `refactor:`.
-- The work was motivated by a bug report or user complaint about something not behaving as intended, not by a desire to add capability.
-- A teammate hearing about the change would say "oh, that bug" — not "oh, that improvement".
+Accessible writing is the key to fast, clear comprehension.
 
-The contrast between problem and change is the legibility lever; that lever only works if there *is* a bug.
+- DO use plain sentence shapes and forms
+- DO use dot points to listing legitimately parallel items
+- DO NOT use dot points to dump unrelated content quickly
+- DO NOT use em dashes or threaded clauses even if they are more "correct" sentence forms.
+- DO NOT use "technical prose". DO use technical terms for subject matter.
+- DO NOT use long, winding clauses
+- DO NOT use verbs to evoke literary animation
+- DO NOT waste words to bridge paragraphs
+
+**The change of a PR is atomic**
+
+- DO describe all changes in the PR as if they would land all at once
+- DO update the PR when a recent commit affects the *net-change* of the whole PR
+- DO NOT describe pivots in design or intermediate states of the branch's changes
+- DO NOT reference which commits contain which changes
+
+### HARD RESTRICTION: DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE
+
+RECOGNISE these common literary signposting patterns.
+
+| Sentence | What it talks about |
+|---|---|
+| "Two changes together change that. First, … Second, …" | the upcoming paragraphs |
+| "Two changes that together let the binary stop carrying environment information at link time" | the upcoming paragraphs (lede form) |
+| "Three failure modes followed:" | the list shape |
+| "The flow is two-legged:" | the list shape (stripping the count doesn't rescue it) |
+| "The hook is the third writer to the threads cache (after X and Y)" | its position in a sequence |
+| "It's worth noting that X" | how much weight X carries |
+| "Notably, …" / "In particular, …" / "As mentioned, …" | the prose's weighting or backward-reference |
+| "Let me explain how this works" / "Let's walk through" | the next sentence |
+| "## Summary" + bullets of changed files | the document's own inventory |
+
+These patterns waste words describing the text itself and not the PR.
+
+- DO NOT write these problematic patterns
+- DO delete or rephrase them out of the text
+- DO NOT count prose
+- DO preserve counts when counting actual code shape. Example: "There are four affected GlossaryService RPCs (list / create / update / delete)"
+
+### HARD RESTRICTION: DO NOT CHARACTERISE OR ANIMATE THE CHANGE
+
+RECOGNISE these literary characterisation and animation patterns.
+
+| REJECT | PREFER | WHY |
+|---|---|---|
+| "Go compilation moves into the Dockerfile" | "Go compilation step has been moved into the Dockerfile" | "Go compilation" is being characterised as the actor. Swap to passive tense. |
+| "Two additional fixes fell out of this change" | "Includes two additional fixes" | "fell out" is used as literary animation, this is hard to grep. Be explicit. |
+| "The previous attempt at fixing this defeated keyed cache reuse" | "A previous attempt broke keyed cache reuse" | "defeated" is literary animation. Be explicit. |
+
+These patterns dilute the information and require readers to process through layers of indirection.
+
+- DO NOT write these problematic patterns
+- DO delete or rephrease them out of the text
+- DO NOT describe the change as a narrative
+- DO downlevel to plain, accessible language
+
+## Common PR Structures
+
+Remember the core objectives when structuring your PR. We want to structure for **cold-read scannability**
+
+### Lede
+
+The lede is the opening sentence and paragraph(s), and is the main prose of the PR. You should be able to communicate the high level change and motivation in just the PR title and lede alone.
+
+- DO right-size your writing to the change. A small diff change with a self explanatory title only deserves a couple sentences.
+- DO provide the necessary details that the title can't carry
+
+### Problem / Change structure
+
+A `## Problem` heading with 1–3 sentences naming what was wrong, then a `## Change` heading with 1–3 sentences naming what the PR does. Problem / change framing implies something existing was broken and in a state not originally designed. Something can be poorly designed or poorly operating, but "correct" according to its original specification.
+
+- DO use for GENUINE bugs or faults
+- DO use for "UX bugs" where the previous state was hard to use or obstructionary
+- DO use when the problem itself requires at least a paragraph to explain
+- DO NOT use when "Fixes an issue where xyz..." as a lede would suffice.
+- DO NOT use for improvements, refactors, feature additions even if they are addressing shortcomings
+- DO NOT use the problem / change structure when making an *improvement*. An improvement is NOT a problem / change. The previous state may have been *undesirable* but not *incorrect*
 
 > ## Problem
 >
@@ -69,8 +158,6 @@ For PRs that add new behaviour, improve a UX, or refactor — anything that woul
 Lead with what the change *adds* or *improves*, in present tense, with the prior state as a comparison point if useful. The reader experiences the prior state as "what is" (not "what was broken"), and the new state as "what's now possible".
 
 > Adds upload progress indicators to the attachment picker. Instead of a single spinner that hides everything in flight, each file shows its own progress bar and a cancel button. Failed uploads stay in the picker with a retry option rather than disappearing silently.
-
-Two contrasted framings of broadly similar PRs:
 
 | Frame | Trigger | Lede |
 |---|---|---|
@@ -112,7 +199,6 @@ fooDispatcher := NewFooDispatcher(sjSvc)
 fooDispatcher := FooJob.Bind(sjSvc)
 ```
 
-Rules:
 - Show one or two representative call sites, not the full type-signature surface.
 - Show what changes, not what stays the same. Cut boilerplate, unrelated setup, untouched members.
 - `// Before` / `// After` headers are enough; longer commentary belongs in `## Change`.
@@ -143,15 +229,12 @@ The same rule applies to **file paths**. Don't write narrative prose like "`pkg/
 
 LLM prose accumulates connective tissue. Get the structure right and the prose can still feel padded — cut at the sentence level too.
 
-Words and phrases to cut:
-
 - **Hedges and intensifiers** — *just, simply, really, actually, basically, essentially, fundamentally, quite, rather, somewhat, fairly, particularly, clearly, obviously*.
-- **Filler lead-ins** — *It's worth noting that, It should be noted, Notably, Interestingly, As mentioned, In particular, In essence, At a high level, To be clear*.
+- **Filler lead-ins** — *It's worth noting that, It should be noted, Notably, Interestingly, As mentioned, In particular, In essence, At a high level, To be clear*. These weight the prose's own emphasis rather than convey content — see *Focus on describing the system or the change*.
 - **Redundant self-reference** — *This change, This PR, This refactor* as the subject of every sentence. "This adds X" → "Adds X."
 - **Explainer-mode openers** — *Let me explain, Let's walk through, To understand this, The way this works is*.
 - **Empty contrasts** — *At the same time, On the other hand, That said* when nothing actually contrasts.
-- **List preambles** — a clause ending in `:` that introduces a list. **Useless preambles just announce the list:** *Three failure modes followed: …, A few issues remain: …, Three new endpoints: …, The migration steps: …, The flow is two-legged: …, The implications are as follows: …*. Counts whether leading (*Three X:*) or embedded (*The X is two-legged:*, *The migration is three-stage:*), vague quantifiers ("a few", "some", "several"), and label-only headers ("The X:", "Steps in X:", "Parts of X:") nearly always fall here — the announcement word doesn't earn its place. **Stripping the count doesn't rescue the preamble** — going from *The flow is two-legged:* to *The flow:* or *Steps in the flow:* fails the same test. **Useful preambles change how the bullets read** — they name a relationship between items (*"These three changes are independent and can land in any order:"*), narrow scope (*"Cases this PR doesn't handle (left for follow-up):"*), set up a contrast (*"Where this differs from the previous handler:"*), or state a verdict the bullets justify (*"All three failure modes have the same root cause:"*). **Test:** read the bullets without the preamble. If they read the same way, cut the preamble. If the preamble framed how the reader takes them, keep it. This is a high-frequency LLM tic — treat any colon-then-bullets shape as suspicious by default, then verify the preamble is doing work before keeping it.
-- **Throat-clearing parentheticals** — recapping structural detail in parens. State the *consequence*, not the inventory.
+- **List preambles** — a clause ending in `:` that introduces a list. The colon-then-bullets case is the most common instance of the broader "do not signpost" principle (see *Focus on describing the system or the change*). Stripping the count word doesn't rescue the preamble — *"The flow is two-legged:"* → *"The flow:"* fails the same test. **Useful preambles change how the bullets read** — they name a relationship between items (*"These three changes are independent and can land in any order:"*), narrow scope (*"Cases this PR doesn't handle (left for follow-up):"*), set up a contrast (*"Where this differs from the previous handler:"*), or state a verdict (*"All three failure modes have the same root cause:"*). **Test:** read the bullets without the preamble. If they read the same way, cut it.
 
 | Before | After |
 |---|---|
@@ -160,10 +243,8 @@ Words and phrases to cut:
 | "Basically, the previous approach was leaking goroutines on shutdown." | "The previous approach leaked goroutines on shutdown." |
 | "Let me explain how this works: when a request comes in, we first authenticate, then dispatch." | "On request: authenticate, then dispatch." |
 | "The notification poller had three issues: it kept running after sign-out, backed off too aggressively after one 503, and logged every retry at error level." | "The notification poller kept running after sign-out, backed off too aggressively after one 503, and logged every retry at error level." |
-| "The new code has a few rough edges: error messages aren't capitalised, retries don't have backoff, and metrics are missing." | "The new code's error messages aren't capitalised, retries don't have backoff, and metrics are missing." |
 | "Three new endpoints:\n- POST /thing — …\n- GET /thing — …\n- DELETE /thing — …" | "- POST /thing — …\n- GET /thing — …\n- DELETE /thing — …" (drop the preamble; the bullets stand alone) |
-| "The migration steps:\n- backfill the new column — …\n- swap reads — …\n- drop the old column — …" | Three options. Drop the preamble entirely. Weave the items into prose ("The migration runs in three steps: backfill the new column, swap reads, drop the old column."). Or upgrade the preamble to do work: *"The migration runs in three steps that must apply in order, with a deploy gap between each:"* — names the ordering constraint the bullets don't carry. The third option is only honest if the preamble actually carries information the bullets don't. |
-| "The flow is two-legged:\n- on auth success, …\n- on auth failure, …" | Stripping the count word doesn't rescue the preamble — *"The flow:"* and *"Steps in the flow:"* fail the same test. Drop it, weave into prose, or upgrade to a preamble that names what the bullets share: *"The flow forks at auth — success and failure paths diverge entirely:"*. |
+| "Two changes together change that. First, Go compilation moves into the Dockerfile. Second, both workflows now use Depot." | "The Dockerfile compiles Go in a separate builder stage. Both workflows use Depot's hosted build service." (drop the bridge sentence; describe the new state directly) |
 | "These three changes are independent and can land in any order:\n- A — …\n- B — …\n- C — …" | Keep as-is — preamble names the relationship between items (independence + ordering freedom) that the bullets don't carry on their own. |
 | "The struct itself is now unexported, so `Foo{}` no longer compiles — that literal in `pkg/x/y.go` was the bug #1209 just fixed by hand, and the shape that allowed it (exported struct with an unexported field, plus a nil-tolerant constructor and a `reconciler()` fallback to `UnavailableFoo`) only converted the misuse into a per-call Sentry error rather than a compile failure." | "Closes the loophole behind #1209: the exported struct + nil-tolerant constructor turned this misuse into a runtime Sentry rather than a compile error." |
 
@@ -240,8 +321,6 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 - **Exception** — if the user explicitly asked for a title rewrite, proceed.
 
 ## Form the picture before drafting
-
-Three disciplines apply before you write.
 
 **State the change in one sentence.** Read the full diff against base and the commit storyline, then state in one sentence what the PR does. If a changed file doesn't fit the sentence, the sentence is wrong or the PR has stray scope. Don't draft until the sentence holds.
 
@@ -345,8 +424,11 @@ The exception: a `## Human overview` section is immutable (see *Human overview s
 3. Pick a shape — lede only, problem/change, or lede + sidecars — by *this* PR's complexity.
 4. Write the body in that shape.
 5. Apply the cold-read test: would a reviewer with no context know what the PR is and why within 30 seconds?
-6. Add only observations that earn their place. Add sidecars only if load-bearing.
-7. Reread. Cut anything that hits a Red flag.
+6. **Accessibility pass.** Read the body back as a tired reviewer skimming at speed between context-switches. Two questions on every sentence:
+   - *What is this sentence about?* If it's about the prose itself — its structure, what comes next, how many items follow, a position in a sequence, how much weight a fact carries — cut or rewrite. (See *Focus on describing the system or the change*.)
+   - *Does it parse on first read?* If a clause needs re-reading, simplify. Threaded em-dashes, three-clause sentences, animation verbs ("moves into", "lands at") are common offenders. (See *Describe the new state, not the diff*.)
+7. Add only observations that earn their place. Add sidecars only if load-bearing.
+8. Reread. Cut anything that hits a Red flag.
 
 ## Red flags — STOP
 
@@ -358,7 +440,10 @@ The exception: a `## Human overview` section is immutable (see *Human overview s
 | "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property — that doesn't make it a bug. The criterion is the work's motivation (commit prefix, ticket type), not a retrospective judgment about whether the prior state was good. `feat:` / `improve:` / `refactor:` → *Feature lede*. `fix:` → Problem/Change. |
 | "I'll narrate this UX feature in implementation terms — `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | UX-affecting PRs read in user-visible language. "Drag a file in", "see per-file progress", "click cancel" — what the user does and notices. Implementation-flow framing is what a system architect would write, not what the reviewer reads first. |
 | "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. Parallel items → bullets. Non-parallel → drop the lead-in. |
-| "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" / "The change has the following implications: …" | List preamble doing no work — the clause only announces the list. Counts whether leading (*Three X:*) or embedded (*The X is two-legged:*), vague quantifiers ("a few", "some", "several"), and label-only headers ("The X:", "Steps in X:") all qualify. Stripping the count word doesn't rescue the preamble. **Useful preambles change how the bullets read** — naming a relationship ("can land in any order"), narrowing scope ("cases not handled"), setting up contrast ("where this differs"), or stating a verdict ("all share the same root cause"). **Test:** read the bullets without the preamble. If they read the same way, cut it. If it framed how the reader takes them, keep it. Or upgrade — replace the empty announcement with a preamble that names what the bullets share. This is a high-frequency LLM tic — pattern-match on the shape, then verify the preamble is doing work. |
+| "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" / "The change has the following implications: …" | List preamble doing no work — the clause only announces the list. The colon-bullets case is the most common shape; counts (leading or embedded), vague quantifiers, and label-only headers all qualify. Stripping the count doesn't rescue the preamble. See *Focus on describing the system or the change* and the Cut padding table. |
+| "Two changes together change that. First, … Second, …" / "Two changes that together let X stop Y" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form — the count announces upcoming paragraphs, doing the same no-work job as the colon-then-bullets version. The fact that the bridge sentence is grammatically a sentence (with a period instead of a colon) doesn't change what it's doing. Cut the bridge; the paragraphs stand on their own. See *Focus on describing the system or the change*. |
+| "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. The relevant content is what the hook does and what the other writers exist for — not its ordinal. Drop the count. |
+| "Go compilation moves into the Dockerfile" / "The binary stops carrying environment information at link time" / "Build & push is now gated on a probe" / "Logic moves out of the worker into the dispatcher" | Animation verb describing a diff transition the reviewer doesn't see. Name what the new code is or does. *"The Dockerfile compiles Go in a separate builder stage."* *"The binary reads `ALCOVA_ENVIRONMENT` from the process env at start."* *"Before build & push, a probe skips the step when the SHA tag already exists."* See *Describe the new state, not the diff*. |
 | "The user asked me to revise — I'll keep most of the original and restructure / polish" | Revision is not editing. The existing body is one input, not a baseline. Re-derive from the diff first; apply *earns its place* to existing paragraphs as ruthlessly as to new ones. Restructuring without cutting is not a revision. See *When revising an existing PR body*. |
 | "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split, not packed paragraph. |
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle and cut the others. |
