@@ -3,7 +3,7 @@ name: writing-pr-bodies
 description: >
   Rules and guidelines for writing easily readable and accurate PR titles and 
   descriptions. TRIGGER before any `gh pr create`, `gh pr edit --body`, 
-  `gs branch submit` `git-spice branch submit`, or any other command that opens
+  `gs branch submit`, `git-spice branch submit`, or any other command that opens
   or updates a pull request body, including autonomous PR creation where the
   user didn't specifically give direction about the PR body or the PR itself.
   SKIP for non-body PR operations (e.g. `gh pr ready`, `gh pr merge`, label
@@ -26,14 +26,14 @@ You must communicate *the net change* of the PR and its motivation or justificat
 
 - DO state the change and its motivation immediately in the first paragraph, sentence, or heading
 - DO explain the design and its trade-offs
-- DO how design decisions are justified
-- DO explain the before/after state for berhavioural changes or fixes
-- DO point out flow on effects
+- DO explain how design decisions are justified
+- DO explain the before/after state for behavioural changes or fixes
+- DO point out flow-on effects
 - DO list out side-effects or incidental changes that made it into the branch
 - DO use headings, paragraphs, and lists to make the content easily scannable
 - DO NOT repeat the diff, the reader has access to the "files changed" tab
 - DO NOT list out files UNLESS they are the crucial subject of the change
-- DO NOT narrate changes over the lifecycle of the branch. a PR is merged atomically and intermediate states never get deployed
+- DO NOT narrate changes over the lifecycle of the branch. A PR is merged atomically and intermediate states never get deployed
 - DO amend or correct the PR to ensure it matches the final net changes after a pivot or deviation from the original intent or design
 - DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
 - DO NOT use a "summary" title. The PR body **IS** the summary of the changes in the PR
@@ -51,14 +51,14 @@ In a PR for a functional change, that functional change is the main subject.
 - DO contrast past and new behaviour when the change is subtle or occurs under specific conditions or edge cases
 - DEPRIORITISE changes and subtleties in the code or components
 
-A non functional change usually changes code organisation, architecture, or tooling. In this case changes and subtleties in the code or components is the main subject.
+A non-functional change usually changes code organisation, architecture, or tooling. In this case changes and subtleties in the code or components is the main subject.
 
 - DO use when the party impacted by the change is the system or the developers maintaining the system.
 - DO describe the transition and code level changes at an appropriate level of detail
 - DO use code-level language, identifier names, file paths, and structural terms
 - DO NOT characterise components as actors "Code generation moves to the pre-build stage"
 - DO use passive voice when describing components being moved or otherwise affected "Code generation has been moved to the pre-build stage" "Code generation now runs after dependency install"
-- DO call out flow on effects that might affect functionality and end users
+- DO call out flow-on effects that might affect functionality and end users
 
 Sometimes a PR can carry both kinds of change, but will generally lead more towards one side than the other. Use the appropriate framing for the appropriate change.
 
@@ -86,7 +86,7 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 - DO NOT name "out of scope" items that no one asked about.
 - DO scope claims to what the change actually covers
 - DO NOT make sweeping claims that overstate the plans
-- DO right-size detail to the diff. state what the reader needs to act on or be aware of; trust the code for the line-by-line detail.
+- DO right-size detail to the diff. State what the reader needs to act on or be aware of; trust the code for the line-by-line detail.
 - DO NOT include verbatim code chunks in the description
 - DO include illustrative and abridged code chunks when the subject matter is code architecture, refactors, interfaces, or APIs
 
@@ -96,14 +96,14 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 - DO NOT describe the structure of the PRs body's own prose
 - DO NOT use formal, persuasive, or marketing-style language
 - DO NOT reach for marketing or corporate register ("comprehensive", "seamless")
-- DO NOT express unsolicted opinions
+- DO NOT express unsolicited opinions
 - DO NOT "sell"
 
 **Only use bullets for genuine lists**
 
 - DO use bullets when items are parallel, when you are **listing out** items of a repeating structure or topic matter. 
 - DO NOT use bullet lists to mask unrelated content as "list items"
-- DO NOT add useless bullet list lead-ins. eg. "Two changes:" "The flow is two legged"
+- DO NOT add useless bullet list lead-ins. eg. "Two changes:" "The flow is two-legged"
 - DO NOT put large paragraphs in bullet lists.
 - DO NOT use bullet lists to "inventory" the changes or the diff
 
@@ -113,7 +113,7 @@ Accessible writing is the key to fast, clear comprehension.
 
 - DO use plain sentence shapes and forms
 - DO use sentence fragments when they save words ("Follow-up to #1209" not "This is a follow-up to #1209")
-- DO use dot points to listing legitimately parallel items
+- DO use dot points to list legitimately parallel items
 - DO NOT use dot points to dump unrelated content quickly
 - DO NOT use em dashes or threaded clauses even if they are more "correct" sentence forms.
 - DO NOT use "technical prose". DO use technical terms for subject matter.
@@ -158,7 +158,7 @@ RECOGNISE these literary characterisation and animation patterns.
 These patterns dilute the information and require readers to process through layers of indirection.
 
 - DO NOT write these problematic patterns
-- DO delete or rephrease them out of the text
+- DO delete or rephrase them out of the text
 - DO NOT describe the change as a narrative
 - DO downlevel to plain, accessible language
 
@@ -325,7 +325,7 @@ When re-baselining an earlier sibling PR that was closed or superseded.
 
 ### Also in this PR
 
-For secondary changes included in the PR such as dead code cleanup, a tooling fix or small refactor to unblock the main objective etc. include it in an 'also in this PR' section.
+For secondary changes included in the PR such as dead code cleanup, a tooling fix or small refactor to unblock the main objective etc. Include it in an 'also in this PR' section.
 
 - DO use one bullet per item, naming the behavioural or API consequence
 - DO use this heading verbatim
