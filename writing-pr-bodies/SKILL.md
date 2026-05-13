@@ -193,7 +193,7 @@ DO INCLUDE:
 - A subtlety the reader is likely to miss while reading the code
 - A behavioural difference (before vs after) that the diff doesn't make legible
 - A constraint, invariant, or assumption the change rests on
-- A diff-shape signal that would surprise a reviewer if not flagged (large mechanical churn, restructured tests, regenerated vendored files)
+- An unusual diff shape that would surprise a reviewer if not flagged (large mechanical churn, restructured tests, regenerated vendored files)
 
 DON'T INCLUDE CONTENT THAT:
 
@@ -497,39 +497,35 @@ Apply each check before posting.
 | Thought | Reality |
 |---|---|
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
-| "I'll cram problem and change into one dense lede paragraph" | Headings before the lede aren't forbidden. Split with `## Problem` / `## Change`. The disease is inventory bullets, not headings. |
-| "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work — closing a bug ticket. If the work would be `feat:` / `improve:` / `refactor:`, use *Feature lede*. Past-tense pathologisation ("X became Y", "Y was lost") is the tell that you've misframed an improvement as a fix. |
-| "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property — that doesn't make it a bug. The criterion is the work's motivation (commit prefix, ticket type), not a retrospective judgment about whether the prior state was good. `feat:` / `improve:` / `refactor:` → *Feature lede*. `fix:` → Problem/Change. |
-| "I'll narrate this UX feature in implementation terms — `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | UX-affecting PRs read in user-visible language. "Drag a file in", "see per-file progress", "click cancel" — what the user does and notices. Implementation-flow framing is what a system architect would write, not what the reviewer reads first. |
-| "Two correctness subtleties worth flagging:" + two long prose paragraphs | Lead-in-then-paragraphs anti-pattern. Parallel items → bullets. Non-parallel → drop the lead-in. |
-| "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" / "The change has the following implications: …" | List preamble doing no work — the clause only announces the list. The colon-bullets case is the most common shape; counts (leading or embedded), vague quantifiers, and label-only headers all qualify. Stripping the count doesn't rescue the preamble. See *Focus on describing the system or the change* and the Cut padding table. |
-| "Two changes together change that. First, … Second, …" / "Two changes that together let X stop Y" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form — the count announces upcoming paragraphs, doing the same no-work job as the colon-then-bullets version. The fact that the bridge sentence is grammatically a sentence (with a period instead of a colon) doesn't change what it's doing. Cut the bridge; the paragraphs stand on their own. See *Focus on describing the system or the change*. |
-| "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. The relevant content is what the hook does and what the other writers exist for — not its ordinal. Drop the count. |
-| "Go compilation moves into the Dockerfile" / "The binary stops carrying environment information at link time" / "Build & push is now gated on a probe" / "Logic moves out of the worker into the dispatcher" | Animation verb describing a diff transition the reviewer doesn't see. Name what the new code is or does. *"The Dockerfile compiles Go in a separate builder stage."* *"The binary reads `ALCOVA_ENVIRONMENT` from the process env at start."* *"Before build & push, a probe skips the step when the SHA tag already exists."* See *Describe the new state, not the diff*. |
-| "The user asked me to revise — I'll keep most of the original and restructure / polish" | Revision is not editing. The existing body is one input, not a baseline. Re-derive from the diff first; apply *earns its place* to existing paragraphs as ruthlessly as to new ones. Restructuring without cutting is not a revision. See *When revising an existing PR body*. |
-| "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split, not packed paragraph. |
-| "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle and cut the others. |
-| "Let me narrate which files changed and what changed in each" | Code archaeology. Diff has it. Name a file path only when the reviewer needs to *find* something the diff doesn't surface. |
-| "It's a 24-line PR but the lede is a 100-word sentence threading five things" | Right-size to the diff. Tiny PRs get one or two short sentences. |
-| "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. See *Cut padding*. |
-| "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Cut. Promote any non-obvious removal decision into a sentence under `## Change`. |
-| "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Doesn't predict conflicts or regressions. Use `## Areas touched` instead. |
-| "## Also in this PR — Docs: new CLAUDE.md walks through …" | Docs updates that follow mechanically don't earn an "Also in this PR" bullet. Reserve for behavioural or API consequences. |
-| "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing tracking. Skip. The Design sidecar is for the *spec* a reviewer would consult, not a to-do list. |
-| "I'll add a Test plan checkbox list" | Use `## How to test` instead — concrete steps, no checkboxes. Drop entirely if every step is a generic command (`task test`, `go vet`). |
-| "Let me list every changed file" | The diff has that. |
+| "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work. For `feat:` / `improve:` / `refactor:`, use a regular Lede. |
+| "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property; that doesn't make it a bug. The criterion is the work's motivation, not retrospective judgement. |
+| "I'll narrate this UX feature in implementation terms — `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | Functional PRs read in user-visible language. See Functional vs non-functional changes. |
+| "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" | List preamble doing no work. Drop it; the bullets stand alone. |
+| "Two changes together change that. First, … Second, …" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form. The count announces upcoming paragraphs. Cut the bridge sentence. |
+| "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. Drop the count. |
+| "Go compilation moves into the Dockerfile" / "The binary stops carrying environment information at link time" | Animation verb personifying a code construct. Recast the construct as the object of the change. |
+| "The user asked me to revise — I'll keep most of the original and restructure / polish" | Don't preserve existing prose simply because it's there. Re-derive from the diff. See Procedure stage 2. |
+| "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split. |
+| "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle. |
+| "Let me narrate which files changed and what changed in each" | The diff has it. Name a file path only when the reviewer needs to find something the diff doesn't surface. |
+| "It's a 24-line PR but the lede is a 100-word sentence threading five things" | Right-size to the diff. |
+| "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
+| "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
+| "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Use Areas touched if collision risk matters. |
+| "## Also in this PR — Docs: new CLAUDE.md walks through …" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
+| "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
+| "I'll add a Test plan checkbox list" | Use How to test instead. No checkboxes. Drop entirely if every step is a generic CI command. |
 | "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
 | "I'll restate the title in the first sentence" | Cut. The reader has the title. |
-| "Let me name the types and packages I touched" | Plain language unless an identifier is a non-obvious touchpoint. |
+| "Let me name the types and packages I touched" | Plain language for functional PRs; identifiers and file paths belong in non-functional PRs where they're the subject. |
 | "I'll add the 🤖 attribution" | Don't. |
-| "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" — a bare ID or label without a URL | Unclickable reference is dead weight — the reviewer won't paste an ID into a search box. External systems that GitHub doesn't auto-link (Linear, Jira, Notion, Sentry, Google Docs, dashboards) need full URLs. GitHub same-repo refs (`#1235`, `@user`, SHAs) auto-link and don't. If the URL shape is unknown, ask. |
-| "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human, not you. Put framing in the lede. |
-| "The existing human overview reads a bit rough — let me tighten it" | Don't. It's the user's words; leave it byte-for-byte. |
-| "Comprehensive / robust / seamless / elegant fits here" | Marketing register. Cut. |
-| "This needs more structure to feel complete" | A short prose body *is* complete for a small PR. |
-| "Plain prose only, no headings" | Overcorrection. Structure that anchors the reader (problem/change, parallel bullets) serves the cold-read test. |
+| "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" — bare ID or label without a URL | Unclickable reference is dead weight. Use full URLs for systems GitHub doesn't auto-link. |
+| "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
+| "The existing human overview reads a bit rough — let me tighten it" | Leave it byte-for-byte. |
+| "This needs more structure to feel complete" | A short prose body is complete for a small PR. |
+| "Plain prose only, no headings" | Overcorrection. Use structure that anchors the reader (Problem/Change, parallel bullets). |
 | "Let me describe how the approach evolved" | Net diff, not session. |
 | "I'll start writing once I've read the recent commits" | Read the full diff against base first. |
-| "The title's a bit off but I'll just rewrite it while I'm here" | Don't change the title autonomously. Surface a recommended rewrite. |
+| "The title's a bit off but I'll just rewrite it while I'm here" | If the body edit changes what the PR is about, update the title in the same edit. Otherwise surface a `current → proposed` proposal. See PR titles Protocol. |
 
 **Violating the letter of these rules is violating the spirit of them.**
