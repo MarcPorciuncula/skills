@@ -325,11 +325,11 @@ When re-baselining an earlier sibling PR that was closed or superseded.
 
 ### Also in this PR
 
-For secondary changes that fell out of the same work but aren't part of the headline.
+For secondary changes included in the PR such as dead code cleanup, a tooling fix or small refactor to unblock the main objective etc. include it in an 'also in this PR' section.
 
 - DO use one bullet per item, naming the behavioural or API consequence
 - DO use this heading verbatim
-- DO NOT include docs updates or renames. They're diff-recoverable
+- DO NOT include docs updates or renames. These can be easily read from the diff.
 
 ### Design
 
@@ -358,6 +358,17 @@ For rollout dependencies, migration ordering, or merge gates.
 
 - DO use when the PR's safety depends on external state (a migration applied, a feature flag flipped)
 - DO NOT use for self-contained PRs
+
+## Human overview sections
+
+You may be working on a PR alongside a human or on their behalf. They may add, or instruct you to add their own content to the PR.
+
+- DO preserve any 'human overview', 'human notes', or other similarly marked sections or content.
+- DO NOT write your own 'human overview'. Human overview means written by humans for humans.
+- DO preserve any uploaded screenshots or clips
+- DO preserve content inserted by other agents or tools, these will be specially marked with html comments or other delineations
+- DO write a human section ONLY WHEN a human directs you to, and preserve their input text verbatim.
+- DO NOT make any modification, fix, paraphrasing, or adjustment to human written content even if it appears to be wrong
 
 ## PR titles
 
@@ -421,52 +432,63 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 - **Editing an existing PR** — silently apply the self-test. If it passes, leave it. If it fails, surface a recommended rewrite as `current → proposed`. **Do not change the title autonomously.**
 - **Exception** — if the user explicitly asked for a title rewrite, proceed.
 
-## Form the picture before drafting
+## Procedure
 
-**State the change in one sentence.** Read the full diff against base and the commit storyline, then state in one sentence what the PR does. If a changed file doesn't fit the sentence, the sentence is wrong or the PR has stray scope. Don't draft until the sentence holds.
+Follow this procedure when drafting or revising a PR body.
 
-**Describe the net diff, not the session journey.** Source of truth: `git diff <base>...HEAD`, not session memory. Reverts, refactors, abandoned approaches — invisible to the reviewer, must be invisible to the body.
+### 1. Read & orient
 
-**Check the title against the scope sentence.** Run the self-test. Surface a recommended rewrite if it fails.
+There may be changes in the PR you don't know about. The absolute source of truth for the **net changes** of the PR is the branch's commits and diff, not your own session memory. Read the PR and orient yourself to the changes. You can only skip this if you were the exclusive creator and contributor of the branch.
 
-## Human overview sections
+1. Read `git diff <base>...HEAD`.
+2. Read the commit subjects and bodies to understand the changes over time. Keep in mind this is for your understanding of the net change, but you MUST NOT include intermediate states and changes in the history in your final text.
+3. When revising, read the existing PR body.
 
-A `## Human overview` (or `## Human notes`, `## From the author`) section is a provenance claim — the heading asserts the human's own words.
+- DO NOT draft exclusively from session memory or partial recollection.
 
-**Don't author one yourself.** Writing under that heading is lying about authorship. Put your framing in the lede or a substantive paragraph.
+### 2. Audit (revising only)
 
-**When editing an existing PR body, treat the section as immutable.** Leave it byte-for-byte. No copy-edits, reflowing, or "while I'm here" tweaks. Modify only the agent-authored content around it. If the human overview now contradicts the rest of the body because the diff has moved on, surface that to the user; don't reconcile it yourself.
+The existing body is one input, not a baseline to preserve.
 
-These rules apply regardless of the section's name, capitalisation, position, or whether it's currently empty (an empty heading is the user reserving space — leave it).
+1. State the PR's scope from the diff before reading the existing body.
+2. Note where the existing body fails this skill: shape, signposting, animation, padding, content that doesn't belong.
+3. Identify observations the existing body carries that the diff doesn't (constraints the author flagged, subtleties they identified). Carry them forward only if they pass the body-inclusion rules in Body & common sections.
 
-## When revising an existing PR body
+- DO NOT preserve prose from the existing body simply because it's there.
+- DO NOT restructure or polish in place; rewrite from the diff.
+- DO NOT modify a `## Human overview` section (see Human overview sections).
 
-Revision is not editing. The existing body is one input, not a baseline to preserve.
+### 3. Frame
 
-When asked to "revise", "rewrite", "tighten", or "update" a PR body, the reflex is to read the existing content and treat it as ground truth — restructuring paragraphs, swapping headings, polishing sentences. That produces a body that *looks* improved but carries forward the same beats, the same padding, and the same length. Restructuring is not cutting.
+1. State the change in one sentence.
+2. Identify whether the change is functional or non-functional.
+3. Pick the body shape: use **Lede** as the default; use **Problem/Change** if the work is a bug fix that benefits from framing the problem before the change.
 
-Apply the same discipline as a fresh draft:
+- DO NOT draft until the one-sentence scope holds. If a changed file doesn't fit the sentence, the sentence is wrong or the PR has stray scope.
 
-1. **Read the diff first, not the existing body.** Read `git diff <base>...HEAD` and the commit storyline. Form your one-sentence scope from the diff alone. Only then look at the existing body.
-2. **Treat the existing body as one input.** Use it to surface observations the diff doesn't carry — a constraint the original author flagged, a subtlety they identified. That content earns the same way as content you'd write fresh: only if a reviewer couldn't recover it from the diff.
-3. **Apply *earns its place* to existing paragraphs as ruthlessly as to new ones.** Inheriting prose because it was already there is the silent failure mode. If a paragraph wouldn't survive a from-scratch draft, cut it.
-4. **Don't merge in detail just because it was in the original.** Restructuring three dense paragraphs into Problem/Change/Subtleties keeps the same word count. The body is shorter, or it isn't revised.
-5. **Trust your tighter draft.** If your draft is shorter than the original, that's a likely correct outcome, not a sign you're missing something.
+### 4. Draft
 
-The exception: a `## Human overview` section is immutable (see *Human overview sections*). Everything else in an agent-authored body is yours to cut.
+1. Write the body and title together from the one-sentence scope.
+2. Compose sections from the Body & common sections catalogue, or author your own when none fit.
+3. Right-size to the diff.
 
-## Drafting flow
+- DO NOT pad content to fill a sense of "completeness".
 
-1. Read the full diff against base and the commit storyline.
-2. State the change in one sentence. Don't draft until the sentence holds.
-3. Pick a shape — lede only, problem/change, or lede + sidecars — by *this* PR's complexity.
-4. Write the body in that shape.
-5. Apply the cold-read test: would a reviewer with no context know what the PR is and why within 30 seconds?
-6. **Accessibility pass.** Read the body back as a tired reviewer skimming at speed between context-switches. Two questions on every sentence:
-   - *What is this sentence about?* If it's about the prose itself — its structure, what comes next, how many items follow, a position in a sequence, how much weight a fact carries — cut or rewrite. (See *Focus on describing the system or the change*.)
-   - *Does it parse on first read?* If a clause needs re-reading, simplify. Threaded em-dashes, three-clause sentences, animation verbs ("moves into", "lands at") are common offenders. (See *Describe the new state, not the diff*.)
-7. Add only observations that earn their place. Add sidecars only if load-bearing.
-8. Reread. Cut anything that hits a Red flag.
+### 5. Self-review
+
+Apply each check before posting.
+
+1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding).
+2. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
+3. Check the title against the PR titles self-test. Update or surface a rewrite if it fails.
+4. Verify a reviewer with no context grasps the change and motivation within 30 seconds.
+5. Check each section: would a reviewer skip it without losing the PR? If yes, cut it.
+6. Check the body against the Red flags table. Cut anything that hits.
+
+### 6. Post
+
+1. Use `gh pr create` for a fresh PR, or `gh pr edit --body` for a revision.
+2. Apply the PR titles protocol.
 
 ## Red flags — STOP
 
