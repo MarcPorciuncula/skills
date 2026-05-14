@@ -16,11 +16,11 @@ These rules and guidelines are to be followed when writing PRs, titles, and bodi
 
 ## Audience
 
-The primary reader is a senior software engineer with a focus on productivity, accuracy, and precision. Software engineers working with coding agents today process hundreds of PRs built by themselves, their coworkers, and AI agents. They suffer from constant context switching and mental overload. They need clear oversight and need to grep changes in a glance so they can make a quick judgements. This isn't hyperbole, it's reality. The engineer that reads your writing probably has 13 pull requests open in their browser right now, so poor writing and communication costs them time and money.
+The primary reader is a senior software engineer with a focus on productivity, accuracy, and precision. Software engineers working with coding agents today process hundreds of PRs built by themselves, their coworkers, and AI agents. They suffer from constant context switching and mental overload. They need clear oversight and need to grep changes in a glance so they can make a quick judgements. The engineer that reads your writing probably has 13 pull requests open in their browser right now, so poor writing and communication costs them time and money.
 
 ## Core requirements
 
-A reviewer landing on your PR needs to be able to read, scan, or skim to grep the changes in ten seconds. The title and the PR body are crucial. Yes, they can see the detail in the diff and commit log, but that could be dozens of commits and tens of thousands of lines. Your writing must be optimised for **cold-read scannability**, it should be *salient*, *didactic*, and *accessible* to read quickly.
+A reviewer landing on your PR needs to be able to read, scan, or skim to grep the changes in ten seconds. The title and the PR body are crucial. They can see the detail in the diff and commit log, but that could be dozens of commits and tens of thousands of lines. Your writing must be optimised for **cold-read scannability**, it should be *salient*, *didactic*, and *accessible* to read quickly.
 
 You must communicate *the net change* of the PR and its motivation or justification.
 
@@ -46,7 +46,6 @@ In a PR for a functional change, that functional change is the main subject.
 
 - DO use when the party impacted by the change is the end user
 - PRIORITISE the change in behaviour of the system over code level changes
-- DO use active present or active past tense when describing the change "Adds new page", "Added a new page"
 - DO frame the change in terms of user visible behaviour
 - DO contrast past and new behaviour when the change is subtle or occurs under specific conditions or edge cases
 - DEPRIORITISE changes and subtleties in the code or components
@@ -56,8 +55,8 @@ A non-functional change usually changes code organisation, architecture, or tool
 - DO use when the party impacted by the change is the system or the developers maintaining the system.
 - DO describe the transition and code level changes at an appropriate level of detail
 - DO use code-level language, identifier names, file paths, and structural terms
-- DO NOT characterise components as actors "Code generation moves to the pre-build stage"
-- DO use passive voice when describing components being moved or otherwise affected "Code generation has been moved to the pre-build stage" "Code generation now runs after dependency install"
+- DO NOT characterise components as actors performing the change ("Code generation moves to the pre-build stage")
+- DO use a named subject when describing post-change behaviour ("Code generation now runs after dependency install")
 - DO call out flow-on effects that might affect functionality and end users
 
 Sometimes a PR can carry both kinds of change, but will generally lead more towards one side than the other. Use the appropriate framing for the appropriate change.
@@ -107,6 +106,16 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 - DO NOT put large paragraphs in bullet lists.
 - DO NOT use bullet lists to "inventory" the changes or the diff
 
+**The PR is the implicit subject**
+
+Like standard commit messages, default to **subjectless present active** voice. eg. ~~This PR~~ "Factors out a shared helper".
+
+- DO write "Adds X", "Moves Y", "Excludes Z", "Removes W", "Switches A to B"
+- DO NOT default to "X is excluded", "Y was added", "Z has been moved" when the PR is the obvious actor
+- DO name a subject when it carries information ("Source files now key the build cache", "Each file shows its own progress bar")
+- DO use passive only when the actor is genuinely unimportant or awkward to name
+- DO NOT animate code constructs as actors performing the change
+
 **It must be accessible**
 
 Accessible writing is the key to fast, clear comprehension.
@@ -151,7 +160,7 @@ RECOGNISE these literary characterisation and animation patterns.
 
 | REJECT | PREFER | WHY |
 |---|---|---|
-| "Go compilation moves into the Dockerfile" | "Go compilation step has been moved into the Dockerfile" | "Go compilation" is being characterised as the actor. Recast the construct as the object of the change. |
+| "Go compilation moves into the Dockerfile" | "Moves Go compilation into the Dockerfile" | "Go compilation" is being characterised as the actor. Recast with the PR as the implicit subject and the construct as the object. |
 | "Two additional fixes fell out of this change" | "Includes two additional fixes" | "fell out" is used as literary animation, this is hard to grep. Be explicit. |
 | "The previous attempt at fixing this defeated keyed cache reuse" | "A previous attempt broke keyed cache reuse" | "defeated" is literary animation. Be explicit. |
 
@@ -168,11 +177,11 @@ RECOGNISE these common padding patterns.
 
 | Pattern | What it's doing |
 |---|---|
-| "just, simply, really, actually" | hedge or filler — no information added |
-| "basically, essentially, fundamentally" | hedge or vague emphasis — no information added |
-| "quite, rather, somewhat, fairly, particularly" | weak intensifier — softens or vaguely emphasises |
+| "just, simply, really, actually" | hedge or filler |
+| "basically, essentially, fundamentally" | hedge or vague emphasis |
+| "quite, rather, somewhat, fairly, particularly" | weak intensifier |
 | "clearly, obviously" (when not announcing emphasis) | empty intensifier |
-| "This change does X" / "This PR adds Y" | redundant self-reference — drop the subject ("Adds Y") |
+| "This change does X" / "This PR adds Y" | redundant self-reference. Drop the subject ("Adds Y"). |
 
 These patterns consume the reader's processing budget without adding information.
 
@@ -229,7 +238,7 @@ Heading pairs can be `## Problem` / `## Change`, `## Issue` / `## Fix`, or any p
 
 > ## Problem
 >
-> The file-hydration pass re-fetches each `filestore://<id>/v<N>` reference at the *pinned* version on every turn. When a user edits a file between turns — increasingly common now that the markdown panel auto-saves edits back to filestore — the operator agent silently keeps quoting stale content.
+> The file-hydration pass re-fetches each `filestore://<id>/v<N>` reference at the *pinned* version on every turn. When a user edits a file between turns (increasingly common now that the markdown panel auto-saves edits back to filestore), the operator agent silently keeps quoting stale content.
 >
 > ## Change
 >
@@ -257,7 +266,7 @@ fooDispatcher := FooJob.Bind(sjSvc)
 
 ### Areas touched
 
-For cross-cutting refactors. Names *scope of impact* — subsystems affected, where conflicts with in-flight work are likely, where to watch for regression.
+For cross-cutting refactors. Names *scope of impact*: subsystems affected, where conflicts with in-flight work are likely, where to watch for regression.
 
 - DO use when a teammate couldn't predict where this PR collides with theirs without opening the diff
 - DO NOT use for single-package PRs
@@ -266,9 +275,9 @@ For cross-cutting refactors. Names *scope of impact* — subsystems affected, wh
 ```
 ## Areas touched
 
-- `pkg/foo/*` — internal API reshape; no behaviour change.
-- All composition roots (api, worker, periodic-runner) — call-site updates.
-- `pkg/{bar,baz}/dispatch.go` — new descriptors; old wrappers removed.
+- `pkg/foo/*`: internal API reshape, no behaviour change.
+- All composition roots (api, worker, periodic-runner): call-site updates.
+- `pkg/{bar,baz}/dispatch.go`: new descriptors. Old wrappers removed.
 ```
 
 ### How to test
@@ -285,8 +294,8 @@ Concrete reproduction steps for the reviewer. Goes at the bottom of the body.
 
 1. Start the API server locally with `task dev`.
 2. In another terminal, find the API process: `pgrep -f 'alcova server'`.
-3. Send `kill -TERM <pid>` and watch the logs — expect "graceful shutdown: draining" followed by a clean exit within ~8s.
-4. Repeat with `kill -INT <pid>` — expect "fast shutdown: dropping in-flight connections" and immediate exit.
+3. Send `kill -TERM <pid>` and watch the logs. Expect "graceful shutdown: draining" followed by a clean exit within ~8s.
+4. Repeat with `kill -INT <pid>`. Expect "fast shutdown: dropping in-flight connections" and immediate exit.
 ```
 
 ### External references
@@ -295,7 +304,7 @@ Linear tickets, related PR numbers, parent or stacked PRs.
 
 - DO always include when external references exist
 - DO use full URLs for systems GitHub doesn't auto-link (Linear, Jira, Notion, Sentry, Google Docs, dashboards)
-- DO use plain `#1234` or `@username` for same-repo GitHub references — they auto-link
+- DO use plain `#1234` or `@username` for same-repo GitHub references (they auto-link)
 - DO use `owner/repo#123` for cross-repo references
 - DO ask the user when you don't know the workspace slug or URL shape for a ticket
 - DO NOT include bare unclickable IDs ("Linear: AI-1234")
@@ -376,21 +385,21 @@ The title is the PR's identity across review lists, search, squash-merge commits
 
 ### Properties of a good title
 
-- **Specific verb + object** — `Add X`, `Fix Y when Z`, `Move A out of B`, `Drop X`, `Switch X to Y`. Not `Update`, `Improve`, `Refactor stuff`.
-- **Names the affected behaviour, not just the area** — "Stop unmounting markdown editor on save" beats "Markdown editor lifecycle".
-- **Matches the one-sentence scope** — not broader, not narrower.
-- **Stable across the PR's life** — won't need rewriting if the implementation evolves.
-- **Conventional prefix when the team uses one** — `fix(scope): …`, `feat(scope): …` per recent merged PRs.
+- **Specific verb + object**: `Add X`, `Fix Y when Z`, `Move A out of B`, `Drop X`, `Switch X to Y`. Not `Update`, `Improve`, `Refactor stuff`.
+- **Names the affected behaviour, not just the area**. "Stop unmounting markdown editor on save" beats "Markdown editor lifecycle".
+- **Matches the one-sentence scope**, not broader, not narrower.
+- **Stable across the PR's life**. Won't need rewriting if the implementation evolves.
+- **Conventional prefix when the team uses one**: `fix(scope): …`, `feat(scope): …` per recent merged PRs.
 - **Imperative-mood subject line.**
 
 ### What doesn't belong in titles
 
 - **Phase numbers** outside an active stack (see below). Phase signal goes in the body.
-- **Exhaustive scope qualifiers** — long parenthetical lists.
-- **Implementation details** — type names, function names, file paths.
-- **Ticket IDs** — see *Ticket IDs* below; conditional.
+- **Exhaustive scope qualifiers**, long parenthetical lists.
+- **Implementation details**: type names, function names, file paths.
+- **Ticket IDs**. See *Ticket IDs* below; conditional.
 
-### Stack numbering — when it *does* belong
+### Stack numbering: when it *does* belong
 
 In a stack where merge order is enforced:
 
@@ -408,7 +417,7 @@ The body's external-references section always carries the ticket ID. The separat
 - **Direct response → include in title.** PR closes or canonically implements the ticket. Format: `AI-1234: …`.
 - **Incidental relationship → skip the prefix.** Follow-up fixing a side effect, refactor that touches mentioned code, change initiated independently in the same area.
 - **When in doubt → skip.** The body still carries the reference.
-- **Team convention overrides** — match recent merged PRs.
+- **Team convention overrides**. Match recent merged PRs.
 
 Decision test: *would a teammate landing on the ticket and looking for "the PR that did this" expect to find this one via title prefix?* Yes → prefix. No → body only.
 
@@ -424,15 +433,15 @@ Apply each before accepting a title:
 
 If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 
-**Borderline case** — weak verb (`Update`, `Improve`, `Refactor`) rescued by a specific object (`Refactor X around Y`, `Update X to handle Z`): borderline pass. Don't autonomously rewrite, but surface a tighter alternative when the user is open to feedback.
+**Borderline case**. Weak verb (`Update`, `Improve`, `Refactor`) rescued by a specific object (`Refactor X around Y`, `Update X to handle Z`): borderline pass. Don't autonomously rewrite, but surface a tighter alternative when the user is open to feedback.
 
 ### Protocol
 
-- **Drafting a fresh PR** — write a title that passes the self-test before opening.
-- **Editing a PR body that changes what the PR is about** — update the title to match in the same edit. Scope drift, a new headline, or fundamentally different framing all qualify.
-- **Editing a PR body that only refines presentation** — leave the title alone.
-- **The title fails the self-test on its own merits** — surface a recommended rewrite as `current → proposed`. Don't change autonomously.
-- **The user explicitly asked for a title rewrite** — proceed.
+- **Drafting a fresh PR**: write a title that passes the self-test before opening.
+- **Editing a PR body that changes what the PR is about**: update the title to match in the same edit. Scope drift, a new headline, or fundamentally different framing all qualify.
+- **Editing a PR body that only refines presentation**: leave the title alone.
+- **The title fails the self-test on its own merits**: surface a recommended rewrite as `current → proposed`. Don't change autonomously.
+- **The user explicitly asked for a title rewrite**: proceed.
 
 ## Procedure
 
@@ -468,17 +477,21 @@ The existing body is one input, not a baseline to preserve.
 
 - DO NOT draft until the one-sentence scope holds. If a changed file doesn't fit the sentence, the sentence is wrong or the PR has stray scope.
 
-### 4. Draft
+### 4. Draft to a file
+
+Write the body to a file before posting. Self-review must read from the file, not from composition memory.
 
 1. Write the body and title together from the one-sentence scope.
 2. Compose sections from the Body & common sections catalogue, or author your own when none fit.
 3. Right-size to the diff.
+4. Save the body to a file (e.g. `.claude/pr-body.md`). When revising an existing PR, first pull the current body to the file: `gh pr view <n> --json body -q .body > .claude/pr-body.md`.
 
 - DO NOT pad content to fill a sense of "completeness".
+- DO NOT skip the file step. Self-review must operate on a concrete text artifact.
 
 ### 5. Self-review
 
-Apply each check before posting.
+Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
 
 1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding).
 2. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
@@ -487,24 +500,27 @@ Apply each check before posting.
 5. Check each section: would a reviewer skip it without losing the PR? If yes, cut it.
 6. Check the body against the Red flags table. Cut anything that hits.
 
+- DO edit the file in place. Do not redraft from session memory.
+
 ### 6. Post
 
-1. Use `gh pr create` for a fresh PR, or `gh pr edit --body` for a revision.
+1. Use `gh pr create --body-file <path>` for a fresh PR, or `gh pr edit --body-file <path>` for a revision.
 2. Apply the PR titles protocol.
 
-## Red flags — STOP
+## Red flags: STOP
 
 | Thought | Reality |
 |---|---|
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
 | "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work. For `feat:` / `improve:` / `refactor:`, use a regular Lede. |
 | "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property; that doesn't make it a bug. The criterion is the work's motivation, not retrospective judgement. |
-| "I'll narrate this UX feature in implementation terms — `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | Functional PRs read in user-visible language. See Functional vs non-functional changes. |
+| "I'll narrate this UX feature in implementation terms like `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | Functional PRs read in user-visible language. See Functional vs non-functional changes. |
 | "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" | List preamble doing no work. Drop it; the bullets stand alone. |
 | "Two changes together change that. First, … Second, …" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form. The count announces upcoming paragraphs. Cut the bridge sentence. |
 | "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. Drop the count. |
 | "Go compilation moves into the Dockerfile" / "The binary stops carrying environment information at link time" | Animation verb personifying a code construct. Recast the construct as the object of the change. |
-| "The user asked me to revise — I'll keep most of the original and restructure / polish" | Don't preserve existing prose simply because it's there. Re-derive from the diff. See Procedure stage 2. |
+| "I'll write '.git is excluded' / 'X has been moved' / 'Y was added'" | Passive or past-tense default when the PR is the obvious actor. Subjectless present active: "Excludes .git", "Moves X", "Adds Y". |
+| "The user asked me to revise, so I'll keep most of the original and restructure / polish" | Don't preserve existing prose simply because it's there. Re-derive from the diff. See Procedure stage 2. |
 | "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split. |
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle. |
 | "Let me narrate which files changed and what changed in each" | The diff has it. Name a file path only when the reviewer needs to find something the diff doesn't surface. |
@@ -512,16 +528,16 @@ Apply each check before posting.
 | "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Use Areas touched if collision risk matters. |
-| "## Also in this PR — Docs: new CLAUDE.md walks through …" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
+| "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
 | "I'll add a Test plan checkbox list" | Use How to test instead. No checkboxes. Drop entirely if every step is a generic CI command. |
 | "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
 | "I'll restate the title in the first sentence" | Cut. The reader has the title. |
 | "Let me name the types and packages I touched" | Plain language for functional PRs; identifiers and file paths belong in non-functional PRs where they're the subject. |
 | "I'll add the 🤖 attribution" | Don't. |
-| "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" — bare ID or label without a URL | Unclickable reference is dead weight. Use full URLs for systems GitHub doesn't auto-link. |
+| "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" (bare ID or label without a URL) | Unclickable reference is dead weight. Use full URLs for systems GitHub doesn't auto-link. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
-| "The existing human overview reads a bit rough — let me tighten it" | Leave it byte-for-byte. |
+| "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
 | "This needs more structure to feel complete" | A short prose body is complete for a small PR. |
 | "Plain prose only, no headings" | Overcorrection. Use structure that anchors the reader (Problem/Change, parallel bullets). |
 | "Let me describe how the approach evolved" | Net diff, not session. |
