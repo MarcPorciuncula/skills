@@ -46,7 +46,6 @@ In a PR for a functional change, that functional change is the main subject.
 
 - DO use when the party impacted by the change is the end user
 - PRIORITISE the change in behaviour of the system over code level changes
-- DO use active present or active past tense when describing the change "Adds new page", "Added a new page"
 - DO frame the change in terms of user visible behaviour
 - DO contrast past and new behaviour when the change is subtle or occurs under specific conditions or edge cases
 - DEPRIORITISE changes and subtleties in the code or components
@@ -56,8 +55,8 @@ A non-functional change usually changes code organisation, architecture, or tool
 - DO use when the party impacted by the change is the system or the developers maintaining the system.
 - DO describe the transition and code level changes at an appropriate level of detail
 - DO use code-level language, identifier names, file paths, and structural terms
-- DO NOT characterise components as actors "Code generation moves to the pre-build stage"
-- DO use passive voice when describing components being moved or otherwise affected "Code generation has been moved to the pre-build stage" "Code generation now runs after dependency install"
+- DO NOT characterise components as actors performing the change ("Code generation moves to the pre-build stage")
+- DO use a named subject when describing post-change behaviour ("Code generation now runs after dependency install")
 - DO call out flow-on effects that might affect functionality and end users
 
 Sometimes a PR can carry both kinds of change, but will generally lead more towards one side than the other. Use the appropriate framing for the appropriate change.
@@ -107,6 +106,16 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 - DO NOT put large paragraphs in bullet lists.
 - DO NOT use bullet lists to "inventory" the changes or the diff
 
+**The PR is the implicit subject**
+
+Like standard commit messages, default to **subjectless present active** voice. eg. ~~This PR~~ "Factors out a shared helper".
+
+- DO write "Adds X", "Moves Y", "Excludes Z", "Removes W", "Switches A to B"
+- DO NOT default to "X is excluded", "Y was added", "Z has been moved" when the PR is the obvious actor
+- DO name a subject when it carries information ("Source files now key the build cache", "Each file shows its own progress bar")
+- DO use passive only when the actor is genuinely unimportant or awkward to name
+- DO NOT animate code constructs as actors performing the change
+
 **It must be accessible**
 
 Accessible writing is the key to fast, clear comprehension.
@@ -151,7 +160,7 @@ RECOGNISE these literary characterisation and animation patterns.
 
 | REJECT | PREFER | WHY |
 |---|---|---|
-| "Go compilation moves into the Dockerfile" | "Go compilation step has been moved into the Dockerfile" | "Go compilation" is being characterised as the actor. Recast the construct as the object of the change. |
+| "Go compilation moves into the Dockerfile" | "Moves Go compilation into the Dockerfile" | "Go compilation" is being characterised as the actor. Recast with the PR as the implicit subject and the construct as the object. |
 | "Two additional fixes fell out of this change" | "Includes two additional fixes" | "fell out" is used as literary animation, this is hard to grep. Be explicit. |
 | "The previous attempt at fixing this defeated keyed cache reuse" | "A previous attempt broke keyed cache reuse" | "defeated" is literary animation. Be explicit. |
 
@@ -504,6 +513,7 @@ Apply each check before posting.
 | "Two changes together change that. First, … Second, …" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form. The count announces upcoming paragraphs. Cut the bridge sentence. |
 | "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. Drop the count. |
 | "Go compilation moves into the Dockerfile" / "The binary stops carrying environment information at link time" | Animation verb personifying a code construct. Recast the construct as the object of the change. |
+| "I'll write '.git is excluded' / 'X has been moved' / 'Y was added'" | Passive or past-tense default when the PR is the obvious actor. Subjectless present active: "Excludes .git", "Moves X", "Adds Y". |
 | "The user asked me to revise — I'll keep most of the original and restructure / polish" | Don't preserve existing prose simply because it's there. Re-derive from the diff. See Procedure stage 2. |
 | "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split. |
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle. |
