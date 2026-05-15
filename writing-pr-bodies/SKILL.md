@@ -59,7 +59,20 @@ A non-functional change usually changes code organisation, architecture, or tool
 - DO use a named subject when describing post-change behaviour ("Code generation now runs after dependency install")
 - DO call out flow-on effects that might affect functionality and end users
 
-Sometimes a PR can carry both kinds of change, but will generally lead more towards one side than the other. Use the appropriate framing for the appropriate change.
+Classify the PR as functional or non-functional. Stay in that register through the lede. A PR that touches both kinds of work still gets one classification; pick the one that names what the change *is*. Don't interleave registers in the lede.
+
+The same animation change in two registers:
+
+> **Non-functional register (wrong for a functional PR):** Renders the threads list as a single `AnimatePresence` with section headers and rows as direct siblings. Each row keyed by session id stays mounted across the Inbox / Recents partition, so when `unread` flips the same `motion.div` slides between sections instead of unmounting.
+
+> **Functional register (right for a functional PR):** When a thread flips between Inbox and Recent, the row slides between sections rather than disappearing and reappearing. Titles animate into their new position.
+
+The non-functional paragraph describes DOM lifecycle, library choice, keying. The functional paragraph describes the change as users experience it. In a functional PR, the second belongs in the lede.
+
+Before relocating non-functional prose to a sidecar, run two checks:
+
+1. Is this implementation detail, or a non-obvious design decision the reviewer needs? Implementation detail doesn't belong in the lede regardless.
+2. Would a reviewer be surprised to learn this is how it was implemented if it weren't flagged? If not, cut it entirely. A sidecar earns its place only when the design choice it describes is non-obvious from the diff.
 
 ## Writing style
 
@@ -498,7 +511,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
 | "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work. For `feat:` / `improve:` / `refactor:`, use a regular Lede. |
 | "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property; that doesn't make it a bug. The criterion is the work's motivation, not retrospective judgement. |
-| "I'll narrate this UX feature in implementation terms like `multipart S3 uploads`, `chunked transfer`, `retry-with-backoff handler`" | Functional PRs read in user-visible language. See Functional vs non-functional changes. |
+| "Let me describe how the animation / cache / upload / handshake is implemented alongside the user-visible effect" | Register mismatch. Implementation prose doesn't belong in a functional PR's lede. Cut it if the diff carries the detail; relocate to a subordinate sidecar only if the design choice is non-obvious. See Functional vs non-functional changes. |
 | "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" | List preamble doing no work. Drop it; the bullets stand alone. |
 | "Two changes together change that. First, … Second, …" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form. The count announces upcoming paragraphs. Cut the bridge sentence. |
 | "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. Drop the count. |
