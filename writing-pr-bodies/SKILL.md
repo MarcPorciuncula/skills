@@ -264,22 +264,6 @@ fooDispatcher := FooJob.Bind(sjSvc)
 - DO use `// Before` and `// After` headers without further commentary
 - DO NOT exceed ~15 lines per side
 
-### Areas touched
-
-For cross-cutting refactors. Names *scope of impact*: subsystems affected, where conflicts with in-flight work are likely, where to watch for regression.
-
-- DO use when a teammate couldn't predict where this PR collides with theirs without opening the diff
-- DO NOT use for single-package PRs
-- DO NOT substitute file counts or full file lists for scope summaries
-
-```
-## Areas touched
-
-- `pkg/foo/*`: internal API reshape, no behaviour change.
-- All composition roots (api, worker, periodic-runner): call-site updates.
-- `pkg/{bar,baz}/dispatch.go`: new descriptors. Old wrappers removed.
-```
-
 ### How to test
 
 Concrete reproduction steps for the reviewer. Goes at the bottom of the body.
@@ -527,7 +511,8 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "It's a 24-line PR but the lede is a 100-word sentence threading five things" | Right-size to the diff. |
 | "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
-| "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Use Areas touched if collision risk matters. |
+| "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
+| "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
 | "I'll add a Test plan checkbox list" | Use How to test instead. No checkboxes. Drop entirely if every step is a generic CI command. |
