@@ -127,6 +127,22 @@ PR bodies explain motivation and tradeoffs. Don't restate the diff —
 reviewers already have `git diff`.
 ```
 
+**Durability under maintenance.** Guidance is edited many times, often by agents. A load-bearing rule written as conceptual prose drifts toward the editing model's own register on every pass — the rule blurs without anyone deciding to weaken it. This is rot. The promotion forms above are also ranked by how well they survive repeated editing. Most durable first:
+
+1. **Concrete wrong/right example pair** — weakening it means deleting a visible block; the deletion shows in the diff.
+2. **Red Flags / recognition table row** — atomic and conspicuous when removed.
+3. **Atomic DO / DO NOT imperative** — one line; nothing to "improve" stylistically.
+4. **Iron Law or stop phrase** — short and bolded; removal is conspicuous.
+5. **Conceptual prose diagnostic** — least durable. High rewrite surface; an editor "tightening" it drifts the rule, and the drift doesn't show as a deletion in review.
+
+For a load-bearing rule, prefer forms 1–4. A rule that exists only as conceptual prose is a rot risk — convert it.
+
+| If you're thinking…                                                   | Reality                                                                                                            |
+|-----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| "I'll tighten this winding paragraph" (it states a load-bearing rule) | Tightening prose drifts the rule toward your register. Convert it to an example pair or imperative; don't re-prose it. |
+| "This conceptual diagnostic is elegant; I'll preserve the wording"    | Wording is what rots. Preserve the example, not the sentence.                                                       |
+| "The rule is clear enough as a paragraph"                             | Across many edits it won't stay clear. Use an atomic imperative or a table row.                                     |
+
 ### 5. Strip alignment leakage
 
 When guidance is co-authored or refined through conversation — especially when an agent helped write it — the writing process produces content that reflects the *alignment conversation* rather than the agent's needs. The author and the agent reach a shared understanding of the design, and that understanding leaks into the document as recap, justification, or role disambiguation. The result reads as well-formed prose but speaks to the wrong audience: a human trying to understand the design, not the agent that will execute it.
@@ -253,9 +269,24 @@ Removing content that might be load-bearing — prohibitions, context that could
 
 Keep genuine reference material — diagrams, code examples, migration notes, checklists. The target is argumentation and conversational artifacts, not thoroughness.
 
+## Before editing a skill
+
+Before editing the load-bearing text of an existing skill, anchor to its register:
+
+1. Read the target skill end to end.
+2. State its objective, tone, and structural devices back in writing, in the skill's own register.
+3. Match new content to the skill's existing forms. Tables stay tables, imperatives stay imperatives, example pairs stay example pairs. Don't introduce a register the skill doesn't already use.
+4. Only then edit.
+
+Skip this and you edit in your own default register — the skill rots one more iteration (see *Durability under maintenance* in principle 4).
+
+If the skill has no consistent register, it has already rotted. Say so and propose a target register before editing, rather than editing in the drifted one.
+
 ## Reviewing changes to guidance
 
 When reviewing a diff (edited guidance vs. the previous version), focus on what was added or changed — violations are more likely in the delta. Run `git diff main` or compare against the last known-good version. Check each addition against the principles and violations above.
+
+If the skill teaches a writing standard, run that standard against the skill's own text, not only the delta. A skill that violates its own rules has rotted — fix the text.
 
 ## Verifying improvements
 
