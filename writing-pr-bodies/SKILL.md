@@ -297,18 +297,22 @@ Concrete reproduction steps for the reviewer. Goes at the bottom of the body.
 
 ### External references
 
-Linear tickets, related PR numbers, parent or stacked PRs.
+Linear tickets, related PR numbers, parent or stacked PRs. Write them as a Markdown list. GitHub unfurls an issue, PR, or discussion reference to its title and live state **only when the reference is a list item**; the same reference inline renders as a bare `#1235` with no title. The bulleted form is what makes these scannable at a glance.
 
 - DO always include when external references exist
-- DO use full URLs for systems GitHub doesn't auto-link (Linear, Jira, Notion, Sentry, Google Docs, dashboards)
-- DO use plain `#1234` or `@username` for same-repo GitHub references (they auto-link)
-- DO use `owner/repo#123` for cross-repo references
-- DO ask the user when you don't know the workspace slug or URL shape for a ticket
+- DO write the references as a bulleted list, one reference per line
+- DO use a bare `#1235` or `owner/repo#1413` list item for GitHub PRs and issues (it unfurls to title + open/merged/closed state)
+- DO use full URLs for systems GitHub doesn't unfurl (Linear, Jira, Notion, Sentry, Google Docs, dashboards)
+- DO put the ticket title in the link text for non-GitHub references, since they never unfurl
+- DO use `@username` for a GitHub user
+- DO ask the user when you don't know the workspace slug, URL shape, or ticket title
+- DO NOT use inline references here (`Follow-up: #1235`). Inline never unfurls, so it stays a bare number with no title or state
 - DO NOT include bare unclickable IDs ("Linear: AI-1234")
 
 ```
-Linear: [AI-1234](https://linear.app/<workspace>/issue/AI-1234)
-Follow-up: #1235
+- Linear: [AI-1297 Attach meeting references to Operator chats](https://linear.app/<workspace>/issue/AI-1297)
+- #1235
+- Alcova-AI/alcova-backend#1413
 ```
 
 ### Stack
@@ -329,6 +333,7 @@ When the PR's branch is independent (branched off the base, shares no git histor
 - DO name the PR this one depends on and what the dependency is
 - DO state the merge-order or deploy-order constraint
 - DO use the cross-repo `owner/repo#N` form and carry the same link in External references
+- DO lead the body with a Deployability `> [!WARNING]` when merging before the dependency lands breaks production
 - DO NOT call this a stack or write "stacked on"
 
 ```
@@ -377,6 +382,20 @@ For rollout dependencies, migration ordering, or merge gates.
 
 - DO use when the PR's safety depends on external state (a migration applied, a feature flag flipped)
 - DO NOT use for self-contained PRs
+
+When merging or deploying this PR before another change lands breaks production, lead the body with a GitHub alert, placed above the lede so the blocker is seen before a reviewer reaches the merge button:
+
+```
+> [!WARNING]
+> Do not merge before Alcova-AI/alcova-backend#1413 deploys. The regenerated SDK here calls the `initial_references` proto that PR ships; merging first breaks session creation in production.
+```
+
+- DO use `> [!WARNING]` and place it at the very top of the body, above the lede
+- DO state both the blocking condition and the unblock condition (which PR must land or deploy, which migration must run)
+- DO carry the gating reference as an unfurling list item in External references
+- DO use only for a genuine merge or deploy gate. A reviewer who ignores it can break production
+- DO NOT use it for notes, context, caveats, or risk commentary. A banner that cries wolf gets ignored
+- DO remove the banner in the same PR once the blocker clears
 
 ## Human overview sections
 
@@ -547,6 +566,9 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "Let me name the types and packages I touched" | Plain language for functional PRs; identifiers and file paths belong in non-functional PRs where they're the subject. |
 | "I'll add the 🤖 attribution" | Don't. |
 | "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" (bare ID or label without a URL) | Unclickable reference is dead weight. Use full URLs for systems GitHub doesn't auto-link. |
+| "I'll write `Follow-up: #1235` inline, the title will show" | Inline references never unfurl. Put references in a Markdown list so GitHub expands them to title + state. |
+| "`[AI-1234](url)` with the bare ID as the link text is enough" | Linear never unfurls. Put the ticket title in the link text so the reference is useful at a glance. |
+| "I'll add a `> [!NOTE]` / `> [!TIP]` banner to highlight context or a caveat" | Alerts are only for merge or deploy blockers (`> [!WARNING]` in Deployability). A decorative banner trains reviewers to ignore the real ones. |
 | "PR B depends on PR A landing, so B is stacked on A" / "## Stack — Stacked on cross-repo#N" | Stack means shared git ancestry in one repo (B branched off A). An independent or cross-repo ordering dependency is not a stack. Use the Dependency section and carry the link in External references. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
 | "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
