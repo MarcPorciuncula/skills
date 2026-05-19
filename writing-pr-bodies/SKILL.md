@@ -69,10 +69,10 @@ The same animation change in two registers:
 
 The non-functional paragraph describes DOM lifecycle, library choice, keying. The functional paragraph describes the change as users experience it. In a functional PR, the second belongs in the lede.
 
-Before relocating non-functional prose to a sidecar, run two checks:
+Before moving non-functional prose out of the lede into its own section, run two checks:
 
 1. Is this implementation detail, or a non-obvious design decision the reviewer needs? Implementation detail doesn't belong in the lede regardless.
-2. Would a reviewer be surprised to learn this is how it was implemented if it weren't flagged? If not, cut it entirely. A sidecar earns its place only when the design choice it describes is non-obvious from the diff.
+2. Would a reviewer be surprised to learn this is how it was implemented if it weren't flagged? If not, cut it entirely. A section earns its place only when the design choice it describes is non-obvious from the diff.
 
 ## Writing style
 
@@ -164,6 +164,7 @@ RECOGNISE these common literary signposting patterns.
 | "The flow is two-legged:" | the list shape (stripping the count doesn't rescue it) |
 | "The hook is the third writer to the threads cache (after X and Y)" | its position in a sequence |
 | "It's worth noting that X" | how much weight X carries |
+| "the load-bearing decision is X" / "the key decision here is X" | how much weight X carries |
 | "Notably, …" / "In particular, …" / "As mentioned, …" | the prose's weighting or backward-reference |
 | "At the same time, On the other hand, That said" (when nothing contrasts) | a relationship between sentences that doesn't exist |
 | "Let me explain how this works" / "Let's walk through" | the next sentence |
@@ -174,7 +175,7 @@ These patterns waste words describing the text itself and not the PR.
 - DO NOT write these problematic patterns
 - DO delete or rephrase them out of the text
 - DO NOT count prose
-- DO preserve counts when counting actual code shape. Example: "There are four affected GlossaryService RPCs (list / create / update / delete)"
+- DO preserve counts when counting actual code shape. Example: "There are four affected CatalogService RPCs (list / create / update / delete)"
 
 ### HARD RESTRICTION: DO NOT CHARACTERISE OR ANIMATE THE CHANGE
 
@@ -237,15 +238,24 @@ NEVER write a `## SUMMARY` section. The PR body **is** the summary.
 
 ### Lede
 
-The opening sentence or paragraph carrying the PR's headline change. Right-size to the PR. Small diffs warrant one or two short sentences; complex changes get a paragraph or two.
+The untitled opening of the body.
 
-Lead with what the change does. Frame the new state directly. Use the prior state as a comparison point only when it clarifies.
+Its **first sentence** is the headline change written as "Adds X", "Moves Y", "Switches A to B": what the PR does to the code, not what the feature does when someone uses it (see *The PR is the implicit subject*).
 
-- DO lead with the change itself
+Everything after it, up to the first heading, is **elaboration**: the consequence, the before/after, or a non-obvious effect of that change, phrased naturally (the feature, the user, or the affected code as the subject).
+
+Right-size to the PR. A small diff is one sentence with no elaboration. A complex change gets a few sentences or a short second paragraph.
+
+- DO put the change in the first sentence, as what the PR does
+- DO let the elaboration follow as a consequence of that sentence
+- DO use the prior state only as a comparison point, when it clarifies
 - DO right-size to the PR
 - DO NOT bury the change behind preamble or context
+- DO NOT open a second headline change in the elaboration, or inventory the diff there
 
 > Adds upload progress indicators to the attachment picker. Instead of a single spinner that hides everything in flight, each file shows its own progress bar and a cancel button. Failed uploads stay in the picker with a retry option rather than disappearing silently.
+
+First sentence: the change, with the PR as the subject. The rest: what the reader now sees, with the feature as the subject. One paragraph, right-sized.
 
 ### Problem / Change
 
@@ -260,11 +270,11 @@ Heading pairs can be `## Problem` / `## Change`, `## Issue` / `## Fix`, or any p
 
 > ## Problem
 >
-> The file-hydration pass re-fetches each `filestore://<id>/v<N>` reference at the *pinned* version on every turn. When a user edits a file between turns (increasingly common now that the markdown panel auto-saves edits back to filestore), the operator agent silently keeps quoting stale content.
+> The include resolver fetches each `asset://<id>/v<N>` reference at the *pinned* version on every render. When a user edits the source between renders, the page silently keeps showing stale content.
 >
 > ## Change
 >
-> A new pass in the same plugin walks in-window refs, asks filestore what's current, and appends a short note to the most recent user turn naming the changed paths. The agent decides whether to re-read; the hint is informational, not a task list.
+> A new pass in the same resolver walks the in-page references, asks the asset store what's current, and adds a short note listing the changed paths. The renderer decides whether to refetch; the note is informational, not a directive.
 
 ### Before/After code blocks
 
@@ -272,13 +282,13 @@ When a refactor's value is the API delta, two short Before/After code blocks at 
 
 ```go
 // Before
-sjSvc.RegisterKindForDispatch(KindFoo, FooOptions(2)...)
-fooDispatcher := NewFooDispatcher(sjSvc)
+queue.RegisterHandler(TaskEmail, HandlerOptions(2)...)
+emailWorker := NewEmailWorker(queue)
 ```
 
 ```go
 // After
-fooDispatcher := FooJob.Bind(sjSvc)
+emailWorker := EmailTask.Bind(queue)
 ```
 
 - DO show one or two representative call sites, not the full type-signature surface
@@ -314,6 +324,8 @@ Linear tickets, related PR numbers, parent or stacked PRs. Write them as a Markd
 - DO use full URLs for systems GitHub doesn't unfurl (Linear, Jira, Notion, Sentry, Google Docs, dashboards)
 - DO put the ticket title in the link text for non-GitHub references, since they never unfurl
 - DO use `@username` for a GitHub user
+- DO include the design spec or doc a reviewer would consult, if one exists
+- DO NOT link author-facing implementation plans or task-tracking docs
 - DO ask the user when you don't know the workspace slug, URL shape, or ticket title
 - DO NOT use inline references here (`Follow-up: #1235`). Inline never unfurls, so it stays a bare number with no title or state
 - DO NOT include bare unclickable IDs ("Linear: AI-1234")
@@ -322,6 +334,7 @@ Linear tickets, related PR numbers, parent or stacked PRs. Write them as a Markd
 - Linear: [AI-1297 Add upload progress to the attachment picker](https://linear.app/<workspace>/issue/AI-1297)
 - #1235
 - owner/repo#1413
+- Design: [docs/specs/2026-04-17-dev-entrypoint-design.md](docs/specs/2026-04-17-dev-entrypoint-design.md)
 ```
 
 ### Stack
@@ -364,19 +377,25 @@ For secondary changes included in the PR such as dead code cleanup, a tooling fi
 - DO use this heading verbatim
 - DO NOT include docs updates or renames. These can be easily read from the diff.
 
-### Design
+### Design / Key design decisions
 
-Link to a spec when one exists. Not a re-summary.
+The non-obvious decisions a reviewer needs and the diff doesn't show. Title it `## Design`, `## Key design decisions`, or whatever fits the PR. The design spec itself goes in External references, not here.
 
-- DO link to the design spec a reviewer would consult
-- DO include multiple distinct artifacts as a short list
-- DO NOT link to author-facing implementation plans or task-tracking docs
+Prefer one sentence in the lede elaboration. Promote to this section only when several decisions each pass the gate.
 
-```
-## Design
+A bullet qualifies only if **another option existed** and the choice shapes the rest of the design. Same gate as moving prose out of the lede (see *Functional vs non-functional changes*): would a reviewer be surprised to learn it was done this way if it weren't flagged? If not, cut it; it's the diff.
 
-[docs/specs/2026-04-17-dev-entrypoint-design.md](docs/specs/2026-04-17-dev-entrypoint-design.md)
-```
+Shape each bullet as the decision, a colon, then why this option beat the alternative. One line. No paragraphs. No weighting labels in the text ("the key decision is", "load-bearing"); the heading already says these are the key decisions.
+
+Cramming the decisions into one prose paragraph defeats the section:
+
+> **Wall (reject):** An upload is carried on the existing multipart envelope, the same one inline attachments use, with no re-encode; a resumable upload reuses the `tus` endpoint with a `?partial` marker so resumable and one-shot parts stay distinguishable through the shared parser, the part round-trips through the gateway's buffer-and-forward path, and a per-request middleware modelled on the auth rewrite replaces every upload part with one header block while the auth rewrite skips `?partial` parts so the two middlewares own disjoint slices of the request.
+
+> **Bullets (accept):**
+> - Uploads ride the existing multipart envelope, not a new endpoint: the gateway already buffers and forwards it, so the hot path is unchanged
+> - Resumable vs one-shot split by a `?partial` marker on the existing endpoint, not a second one: a single parser stays authoritative
+
+The wall buries two decisions in five mechanisms the diff already carries.
 
 ### Background
 
@@ -552,7 +571,8 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
 | "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work. For `feat:` / `improve:` / `refactor:`, use a regular Lede. |
 | "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property; that doesn't make it a bug. The criterion is the work's motivation, not retrospective judgement. |
-| "Let me describe how the animation / cache / upload / handshake is implemented alongside the user-visible effect" | Register mismatch. Implementation prose doesn't belong in a functional PR's lede. Cut it if the diff carries the detail; relocate to a subordinate sidecar only if the design choice is non-obvious. See Functional vs non-functional changes. |
+| "Let me describe how the animation / cache / upload / handshake is implemented alongside the user-visible effect" | Register mismatch. Implementation prose doesn't belong in a functional PR's lede. Cut it if the diff carries the detail; relocate to its own section only if the design choice is non-obvious. See Functional vs non-functional changes. |
+| "I'll write a Design paragraph covering the carrier, the marker, the round-trip and the middleware" / "I'll list every design choice I made" | Diff narration. A key decision is one where another option existed and the choice shapes the design. Cut the rest; the diff carries it. See Design / Key design decisions. |
 | "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" | List preamble doing no work. Drop it; the bullets stand alone. |
 | "Two changes together change that. First, … Second, …" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form. The count announces upcoming paragraphs. Cut the bridge sentence. |
 | "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. Drop the count. |
