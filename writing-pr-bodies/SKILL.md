@@ -313,13 +313,26 @@ Follow-up: #1235
 
 ### Stack
 
-When the PR is part of an enforced merge-order stack.
+When the PR's branch is stacked on another branch in the same repo: branched off that branch instead of the base, so its diff includes the parent's commits and git ancestry enforces the merge order. The git-spice / Graphite / ghstack case.
 
-- DO name the PR this one is stacked on and any sequencing dependencies
-- DO NOT include for unrelated PR pairings
+- DO name the parent PR this branch is stacked on
+- DO NOT use for an independent branch that merely depends on another PR landing. Cross-repo dependencies are always that case, never a stack. Use Dependency.
 
 ```
-Stacked on #N. Merges after the lease-table migration in #N is applied to all environments.
+Stacked on #N.
+```
+
+### Dependency
+
+When the PR's branch is independent (branched off the base, shares no git history with the other PR) but cannot merge or deploy until another PR lands. Common across repos: a regenerated client depends on a proto or schema a backend PR ships.
+
+- DO name the PR this one depends on and what the dependency is
+- DO state the merge-order or deploy-order constraint
+- DO use the cross-repo `owner/repo#N` form and carry the same link in External references
+- DO NOT call this a stack or write "stacked on"
+
+```
+Depends on owner/repo#N, which ships the proto the regenerated client here builds against. Merges after #N lands on the base branch.
 ```
 
 ### Differences from previous PRs
@@ -534,6 +547,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "Let me name the types and packages I touched" | Plain language for functional PRs; identifiers and file paths belong in non-functional PRs where they're the subject. |
 | "I'll add the 🤖 attribution" | Don't. |
 | "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" (bare ID or label without a URL) | Unclickable reference is dead weight. Use full URLs for systems GitHub doesn't auto-link. |
+| "PR B depends on PR A landing, so B is stacked on A" / "## Stack — Stacked on cross-repo#N" | Stack means shared git ancestry in one repo (B branched off A). An independent or cross-repo ordering dependency is not a stack. Use the Dependency section and carry the link in External references. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
 | "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
 | "This needs more structure to feel complete" | A short prose body is complete for a small PR. |
