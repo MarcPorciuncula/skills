@@ -154,7 +154,7 @@ This is distinct from war stories (principle 2 — specific incidents) and weak 
 
 The failure compounds when the alignment conversation is long. The longer the conversation, the more shared understanding accumulates, and the more of it tries to follow the author into the document.
 
-### 6. Prefer plain sentence shapes (soft)
+### 6. Prefer plain sentence shapes
 
 Em dashes, threaded clauses, and long winding sentences are harder for a context-saturated model to grep than short declarative ones. When editing guidance, reduce them opportunistically: split a threaded sentence, replace an em-dash aside with a period or parentheses, cut a winding clause. This is a preference, not an Iron Law. Don't open a rewrite pass solely to strip em dashes, and don't let it block a substantive edit. The hard rules are elsewhere (lead with the directive, cut argumentation); this one runs alongside them.
 
