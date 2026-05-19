@@ -102,10 +102,95 @@ forms put the instruction first; everything else is optional context after it.
 
 ## 3. Hard restrictions and register reset
 
-<!-- SCAFFOLD -->
-*Purpose:* concrete bad-pattern recognition; condition the agent to reset and not over-contextualise when editing existing guidance.
-*Sources:* `writing-agent-guidance` principles 2/4/5 (war story, strawman, alignment leakage, weak justification) converted from categories to concrete sentence catalogues. NET-NEW content.
-*Form:* `HARD RESTRICTION:` + `RECOGNISE` + 2-col tables + `REJECT | PREFER | WHY` triples + the reset block.
+These are the patterns that rot guidance. Recognise them in your own draft and
+in any file you edit, and remove them on sight.
+
+### HARD RESTRICTION: DO NOT WRITE WAR STORIES
+
+RECOGNISE these references to session or project history.
+
+| Sentence | What it references |
+|---|---|
+| "the previous approach was removed because…" | a change made in the editing session |
+| "this was changed from X to Y" | a prior implementation the reader never saw |
+| "we tried Z and it broke" | one incident only the author lived through |
+| "as we discussed" / "per the earlier decision" | the alignment conversation |
+
+A war story names one specific incident and only parses for a reader who lived
+through it. A track record is different: it names categories of failure ("from
+past failures: missing requirements shipped, undefined functions shipped, trust
+broken") without needing session context. The track record is a cost
+statement. Keep it when load-bearing.
+
+- DO NOT write sentences that only make sense within a particular session or project history
+- DO state the rule so it stands without the incident that motivated it
+- DO keep track-record cost statements that name failure categories, not incidents
+
+### HARD RESTRICTION: DO NOT ARGUE AGAINST STRAWMEN
+
+RECOGNISE these rebuttals of positions a fresh reader does not hold.
+
+| Sentence | What it argues with |
+|---|---|
+| "This is X, not Y" (no one proposed Y) | a position the reader never held |
+| "It may seem like you should X, but…" | an objection the reader did not raise |
+| "This is a structural requirement, not an optimisation" | a misreading no fresh reader would make |
+
+- DO NOT rebut a position the reader has no reason to hold
+- DO apply the recognisability test below before cutting any rebuttal
+
+### HARD RESTRICTION: DO NOT LEAK THE ALIGNMENT CONVERSATION
+
+RECOGNISE this content: true and well-formed, but written for a human tracing
+the design, not for the agent executing it.
+
+| Sentence | What it is |
+|---|---|
+| "By the time you reach X, the work has already been verified" | design recap the agent already has upstream |
+| "Naming it makes the trust boundary with CI explicit" | architecture the agent acts within, not on |
+| "not for code quality, which the other reviewer covers" | role disambiguation between adjacent agents |
+| "'tests pass for pkg/x' is a real claim; 'tests pass' is hand-waving" | conversational meta-talk |
+
+Diagnostic: would this still be here if you had drafted the file fresh, in one
+sitting, without the conversation that surfaced the design? If no, it is
+leakage. Cut it.
+
+- DO NOT carry recap, justification, or role-talk from the conversation into the file
+- DO cut content whose audience is a human understanding the design, not the agent executing it
+
+### HARD RESTRICTION: DO NOT JUSTIFY A RULE THAT STANDS ON ITS OWN
+
+RECOGNISE these weak justifications.
+
+| Sentence | What it does |
+|---|---|
+| "The reason for this is…" (after a clear directive) | argues a rule the reader already accepts |
+| "This is important because…" (no failure named) | asserts weight instead of stating a cost |
+| "Without this, things become significantly harder" | vague consequence, not observable |
+
+- DO NOT append rationale to a directive that already lands
+- DO replace the justification with a one-line cost the agent can observe, when a real failure mode exists (see section 4)
+
+**Recognisability test: cut, or promote?**
+
+Before cutting any rebuttal or justification, apply this:
+
+- A fresh reader would plausibly default to the rebutted behaviour → interception. Promote it to a directive form (section 4). Do not cut
+- It only parses with session context → war story. Cut
+- No one would do it → strawman. Cut
+
+### REGISTER RESET: before editing existing guidance
+
+STOP and RECOGNISE: you may be deep in a session on unrelated work, carrying a voice and context for a different activity, not for writing agent guidance. Your default instinct will be to carry that into the edit. Reframe for a fresh reader before you touch the file. Skip it and your biases will leak in. This is how guidance rots one iteration at a time.
+
+- DO read the target file end to end and treat its voice and register as the target
+- DO assume the reader has none of this conversation and none of your session context
+- DO match new content to the forms already in the file: a table stays a table, a directive stays a directive
+- DO NOT re-derive existing prose from memory. Edit against the file
+- DO NOT carry the conversation's recap or justification into the file (see DO NOT LEAK THE ALIGNMENT CONVERSATION)
+
+If you cannot state the file's objective, audience, and register back before
+editing, you have not read it. Do that first (section 6, step 1).
 
 ## 4. How to make a rule stick
 
