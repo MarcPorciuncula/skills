@@ -26,10 +26,25 @@ in this file is a defect. Fix it on sight, including here.
 
 ## 1. Core requirements
 
-<!-- SCAFFOLD -->
-*Purpose:* prime the agent — you are writing guidance FOR agents; here is what effective guidance must do and why it gets ignored.
-*Sources:* `writing-effective-skills` rationalisation problem + actionable core of the seven principles (compressed); `writing-agent-guidance` cost anchor (directives authoritative, tokens count).
-*Form:* short cost anchor + flat DO / DO NOT.
+The reader is an agent that will execute this guidance later: context window
+saturated, mid-task, carrying strong priors about the right way to do things.
+It does not read guidance the way a person does. It skims. When a rule is
+buried in argument or stated as a preference, the agent does not disobey it.
+It convinces itself the rule does not apply this time, and moves on. A rule
+that gets rationalised away is worse than no rule. It costs tokens to write, it
+gives false confidence that the case is covered, and it fails silently.
+
+Effective guidance:
+
+- DO state the behaviour as a direct instruction, not a description or a preference
+- DO lead with what to do; put caveats, exceptions, and rationale after, if they are needed at all
+- DO make the trigger concrete enough to fire without a judgement call
+- DO intercept the rationalisation the agent will reach for, written at the point it reaches for it
+- DO ground each rule in the concrete cost of breaking it, in terms the agent can already observe
+- DO state each rule once, in one canonical place, and link to it from anywhere else
+- DO NOT argue the rule's case or pre-empt objections a fresh reader would not raise
+- DO NOT pad with hedges, intensifiers, or sentences that describe the text's own structure
+- DO NOT spend prose on what a directive can carry. Tokens spent arguing are tokens not spent instructing
 
 ## 2. Writing style
 
