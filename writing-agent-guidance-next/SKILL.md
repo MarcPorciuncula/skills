@@ -20,9 +20,10 @@ in this file is a defect. Fix it on sight, including here.
 
 ## When to use
 
-<!-- SCAFFOLD — replace in its own step -->
-*Purpose:* activation conditions for the skill.
-*Sources:* current `writing-agent-guidance` "When to use" + `writing-effective-skills` trigger surface.
+- Writing any agent guidance from scratch: a skill, CLAUDE.md, AGENTS.md, a system or subagent prompt, inline agent instructions
+- Editing, reviewing, consolidating, or tightening existing guidance
+- Guidance reads more like an argument or an essay than a reference
+- Before any edit to the load-bearing text of a guidance file or skill. Run the Procedure; the alignment step is first
 
 ## 1. Core requirements
 
