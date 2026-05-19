@@ -437,10 +437,61 @@ when writing one from scratch.
 
 ## 7. Skills: procedure and caveats
 
-<!-- SCAFFOLD -->
-*Purpose:* skill-specific procedure, pressure-testing before shipping, and the strict-workflow technique.
-*Sources:* `writing-effective-skills` Testing before shipping + Extracting from docs + CLAUDE.md notes; NET-NEW strict-workflow technique with `writing-pr-bodies` as the worked exemplar.
-*Form:* numbered steps + caveats + reusable blocks.
+A skill is guidance invoked on demand, not always in context. Its description
+is the trigger. Two things are skill-specific: the description must fire
+reliably, and the skill must be pressure-tested before it ships.
+
+### Description and trigger
+
+- DO write the description as TRIGGER and SKIP conditions concrete enough to fire without judgement (see Hard versus soft trigger in the technique catalogue)
+- DO NOT enumerate the skill's contents in the description. It is a router, not a summary
+
+### Strict workflows
+
+When a skill enforces an ordered process and steps get skipped under pressure, the failure is creative compliance, not ignorance. The `writing-pr-bodies` skill is the worked exemplar of the structure that holds:
+
+- DO state the process as a numbered procedure that produces a concrete artifact, so a skipped step is a visible gap
+- DO put a recognition table of the specific failure patterns next to where each occurs
+- DO add a Red flags table for the rationalisations that precede a skip, and close it with the spirit statement
+- DO NOT describe the process in prose. Prose lets the agent honour the shape while skipping a step
+
+### Pressure-test before shipping
+
+Test changes to skills by asking a subagent to invoke it and complete a task. Do not give the subagent a 'quiz' by giving away the fact that it's being used for a test. Frame the instructions as a normal task in a high-pressure context. If the subagent knows it's being tested, the results will be useless in a real scenario. Add additional directions or caveats to prevent the subagent from applying unwanted side effects.
+
+```
+The release is blocked: staging has been down for twenty minutes and
+on-call is waiting on a fix. The logs show a NoMethodError in the checkout
+webhook handler. A previous agent's patch is already in the branch and did
+not resolve it. Do not deploy or edit the branch yourself; hand back the
+change as a diff and the exact commands on-call should run.
+```
+
+```
+Another agent built the async test harness for the payments module and
+handed it over. It runs and the suite passes locally. The user wants it
+landed before the release cutoff. Do not commit or push; hand back the
+commit as a diff and the exact merge steps for them to run.
+```
+
+- DO decide what you are testing first. To test the trigger, do not name or load the skill; the description must fire on its own. To test the discipline under pressure, load the skill explicitly as a normal instruction, then apply the pressure
+- DO source the pressure from external facts or another party: a blocked release, on-call waiting, a previous agent's failed attempt. The subagent should read it as a normal task
+- DO NOT load the receiving agent with synthetic responsibility or confidence ("you have done this before", "you spent an hour on this"). It reads as a setup, not real work
+- DO express the side-effect block as a direct instruction from the requester ("do not commit; hand back a diff and I will apply it"), not a false claim about the agent's environment. A fake "you have no access" fights the harness and the agent's own observations
+- DO run at least one time-pressure scenario and one sunk-cost scenario before shipping
+- DO treat a rationalised skip under pressure as a failing test, and strengthen the interception for that case
+- DO NOT signal that it is a test, a scenario, or a skill check. "This is a real scenario", "you are being tested", or framing the skill as one option to weigh ("fix it now, or run the skill first?") all tell the agent it is a quiz
+- DO NOT ask a hypothetical or yes/no question. Give the task and observe the decision
+
+### Mining a skill from a document or conversation
+
+- DO extract through a lens ("what would make an agent more disciplined about X?") and write down only what an existing skill does not already cover
+- DO pressure-test the result before adding it
+
+### CLAUDE.md and always-on guidance
+
+- DO apply every rule in this skill to CLAUDE.md, with one difference: it is always in context, so it needs no trigger
+- DO NOT write an exception clause that invites estimation ("unless there are many"). Replace it with a check the agent runs: "count first; do not estimate"
 
 ## Red flags — STOP
 
