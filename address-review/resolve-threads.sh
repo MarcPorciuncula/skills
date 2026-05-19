@@ -17,7 +17,7 @@
 #   2979303512
 #
 # Example:
-#   resolve-threads.sh Alcova-AI/operator-ui 314 ids.txt
+#   resolve-threads.sh owner/repo 314 ids.txt
 
 set -euo pipefail
 

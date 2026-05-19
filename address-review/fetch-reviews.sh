@@ -7,7 +7,7 @@
 #   Author, State, Body
 #
 # Example:
-#   fetch-reviews.sh Alcova-AI/operator-ui 314
+#   fetch-reviews.sh owner/repo 314
 
 set -euo pipefail
 

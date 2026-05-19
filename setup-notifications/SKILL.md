@@ -40,7 +40,7 @@ INPUT=$(cat)
 CWD=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('cwd',''))" 2>/dev/null)
 
 # Extract repo name and worktree/branch from cwd
-# e.g. /Users/marc/repos/alcova-ai/alcova-backend/my-feature -> "alcova-backend/my-feature"
+# e.g. /Users/marc/repos/acme/backend/my-feature -> "backend/my-feature"
 LOCATION="$CWD"
 if [[ -n "$CWD" ]]; then
     # Check if this looks like a git worktree (parent is a bare repo or repo dir)
