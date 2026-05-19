@@ -1,6 +1,12 @@
 ---
 name: writing-agent-guidance
-description: Use when writing, editing, or reviewing agent guidance — CLAUDE.md, .cursorrules, AGENTS.md, skills, or inline code documentation. Ensures guidance reads as direct, prescriptive reference rather than argumentation or conversation artifacts.
+description: >
+  Use when writing, editing, or reviewing agent guidance: CLAUDE.md,
+  .cursorrules, AGENTS.md, skills, or inline code documentation. Ensures
+  guidance reads as direct, prescriptive reference rather than argumentation
+  or conversation artifacts. TRIGGER before editing any such file and when
+  the user asks to write, tighten, or review guidance. SKIP for prose docs,
+  READMEs, and code comments that aren't agent instructions.
 ---
 
 # Writing Agent Guidance
@@ -16,6 +22,8 @@ Common problems to identify and remove:
 Rebuttals and justifications that intercept a *recognisable default* — a behaviour a fresh reader would agree an agent or author might plausibly fall into — are **interception** (principle 4). Keep the insight, promote the form.
 
 These appear in any collaboratively-written guidance, but are especially frequent when agents have been involved in the writing.
+
+This skill is a specimen of its own rules. Guidance that argues, essays, or pads in its own text is a defect to fix on sight, including in this file.
 
 ## When to use
 
@@ -146,6 +154,10 @@ This is distinct from war stories (principle 2 — specific incidents) and weak 
 
 The failure compounds when the alignment conversation is long. The longer the conversation, the more shared understanding accumulates, and the more of it tries to follow the author into the document.
 
+### 6. Prefer plain sentence shapes
+
+Em dashes, threaded clauses, and long winding sentences are harder for a context-saturated model to grep than short declarative ones. When editing guidance, reduce them opportunistically: split a threaded sentence, replace an em-dash aside with a period or parentheses, cut a winding clause. This is a preference, not an Iron Law. Don't open a rewrite pass solely to strip em dashes, and don't let it block a substantive edit. The hard rules are elsewhere (lead with the directive, cut argumentation); this one runs alongside them.
+
 ## Common violations
 
 ### Duplicated explanations
@@ -253,6 +265,15 @@ Removing content that might be load-bearing — prohibitions, context that could
 
 Keep genuine reference material — diagrams, code examples, migration notes, checklists. The target is argumentation and conversational artifacts, not thoroughness.
 
+## Procedure
+
+Editing guidance drifts it toward the editing model's own register. The alignment step is the guard.
+
+1. **Align.** Read the target file end to end. State its objective, tone, and structure in its own register. Get the user to confirm or correct it. Hold that as the model of correct output for this file.
+2. **Diff against the model.** Check the current text and any proposed change against the alignment statement and the principles above.
+3. **Edit against the file, not from memory.** Re-deriving prose from composition memory reintroduces the register you are removing.
+4. **Review the delta and pressure-test.** See Reviewing changes to guidance and Verifying improvements.
+
 ## Reviewing changes to guidance
 
 When reviewing a diff (edited guidance vs. the previous version), focus on what was added or changed — violations are more likely in the delta. Run `git diff main` or compare against the last known-good version. Check each addition against the principles and violations above.
@@ -265,3 +286,14 @@ To test whether revised guidance is actually better, run a head-to-head comparis
 2. Make your changes to the current version
 3. Dispatch two subagents in parallel — one following the old guidance, one following the new — against the same task or test file
 4. Compare the outputs: is the new version producing tighter, more directive-led results?
+
+## Red flags — STOP
+
+| Thought | Reality |
+|---|---|
+| "I'll restructure and polish the existing prose" | Restructuring preserves the register. Re-derive directives; apply the recognisability test to every inherited paragraph. |
+| "This justification explains the rule, keep it" | Recognisable default → promote to directive + cost. Strawman or war story → cut. Run the test; don't keep by default. |
+| "I'll add an existential cost or personality directive to make this land" | Human-authored only. Identify and preserve existing ones; never introduce on your own initiative. |
+| "The file looks fine, I can skip the alignment step" | You're reading it as its co-author. Align first, then diff against the model. |
+
+**Violating the letter of these rules is violating the spirit of them.**

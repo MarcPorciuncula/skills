@@ -1,30 +1,30 @@
 ---
 name: writing-effective-skills
 description: >
-  Use when writing or improving skills or CLAUDE.md directives. Covers the
-  persuasion principles and design patterns that make agent instructions
-  reliably followed rather than rationalized away.
+  Use when writing, improving, or reviewing a skill or CLAUDE.md directive.
+  Covers the persuasion principles and design patterns that make agent
+  instructions reliably followed rather than rationalized away. TRIGGER
+  before editing any SKILL.md, CLAUDE.md, AGENTS.md, or agent prompt
+  template, and when the user asks to write, tighten, or review a skill or
+  directive. SKIP for prose docs, READMEs, and code comments that aren't
+  agent instructions.
 ---
 
 # Writing Effective Skills and Directives
 
-## The Core Problem
+## The core problem
 
-Instructions that merely describe desired behavior have a predictable failure mode: the agent will follow them until it doesn't feel like it. Under time pressure, apparent simplicity, or strong priors about the "right" approach, rules get rationalized away. The agent doesn't disobey — it convinces itself the rule doesn't apply *this particular time*.
+Instructions that only describe desired behavior fail predictably. Under time pressure, apparent simplicity, or a strong prior about the right approach, the agent rationalizes the rule away. It doesn't disobey. It convinces itself the rule doesn't apply this time.
 
-Effective skills are designed around this failure mode. They describe what to do *and* intercept the moment before the agent stops doing it.
+Design every skill around that failure mode. Describe what to do, and intercept the moment before the agent stops doing it.
+
+This skill is a specimen of its own rules. If its own prose argues instead of directs, essays instead of intercepts, or pads instead of states, that is a defect to fix on sight, including in this file.
 
 ---
 
-## Research Foundation
+## Why this works
 
-LLMs respond to the same persuasion principles as humans. This isn't accidental — they're trained on text where these patterns precede compliance.
-
-**Meincke et al. (2025)** tested 7 persuasion principles across N=28,000 LLM conversations. Compliance increased from **33% → 72%** (p < .001) with persuasion techniques. Authority, commitment, and scarcity were the most effective. Liking actively degraded quality.
-
-**Cialdini (2021)** — the foundational framework for the seven principles.
-
-The key insight: **LLMs are parahuman.** Treat instruction design as applied behavioral science, not documentation.
+LLMs respond to the same persuasion and interception patterns as humans, because they are trained on text where those patterns precede compliance. Treat instruction design as applied behavioral engineering, not documentation. Empirical grounding: Meincke et al. (2025), persuasion principles across ~28,000 conversations; Cialdini (2021) for the framework.
 
 ---
 
@@ -35,8 +35,8 @@ The key insight: **LLMs are parahuman.** Treat instruction design as applied beh
 Imperative language removes decision fatigue. Absolute framing eliminates "is this an exception?" questions.
 
 ```markdown
-✅ YOU MUST complete Phase 1 before proposing any fix. No exceptions.
-❌ Generally try to investigate before proposing fixes.
+GOOD: YOU MUST complete Phase 1 before proposing any fix. No exceptions.
+BAD:  Generally try to investigate before proposing fixes.
 ```
 
 **Iron Law pattern** — monospaced all-caps for the non-negotiable core:
@@ -49,8 +49,8 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 Requiring public declarations before action creates consistency pressure. Once the agent announces what it will do, not doing it is a violation of its own stated intent.
 
 ```markdown
-✅ Before your first tool call, your very first words must state the branch and commit intent.
-❌ Let the user know what you're planning to do.
+GOOD: Before your first tool call, your very first words must state the branch and commit intent.
+BAD:  Let the user know what you're planning to do.
 ```
 
 **TodoWrite for checklists** — creating a task per checklist item forces sequential commitment. Steps don't get skipped because skipping requires actively marking an incomplete item done.
@@ -62,8 +62,8 @@ Requiring public declarations before action creates consistency pressure. Once t
 Time-bound or sequentially-dependent requirements prevent deferral.
 
 ```markdown
-✅ BEFORE attempting any fix, complete Phase 1.
-❌ Root cause investigation is important and should be done.
+GOOD: BEFORE attempting any fix, complete Phase 1.
+BAD:  Root cause investigation is important and should be done.
 ```
 
 ### 4. Social Proof — use to establish norms
@@ -71,8 +71,8 @@ Time-bound or sequentially-dependent requirements prevent deferral.
 "Every time," "always," and failure statistics make the rule feel like universal practice rather than a personal preference.
 
 ```markdown
-✅ Checklists without TodoWrite tracking = steps get skipped. Every time.
-❌ Some people find TodoWrite helpful for checklists.
+GOOD: Checklists without TodoWrite tracking = steps get skipped. Every time.
+BAD:  Some people find TodoWrite helpful for checklists.
 ```
 
 Grounding rules in real costs makes them feel discovered, not imposed:
@@ -83,8 +83,8 @@ Grounding rules in real costs makes them feel discovered, not imposed:
 Shared-identity framing reduces adversarial reading of rules. "We're colleagues working together" lands differently than "you must."
 
 ```markdown
-✅ We're colleagues. I need your honest technical judgment, not agreement.
-❌ You should probably tell me if I'm wrong.
+GOOD: We're colleagues. I need your honest technical judgment, not agreement.
+BAD:  You should probably tell me if I'm wrong.
 ```
 
 ### 6. Reciprocity — use sparingly
@@ -137,8 +137,8 @@ Use this for any rule where creative compliance is a real risk — especially ru
 Soft triggers require judgment to activate. Hard triggers fire automatically.
 
 ```markdown
-❌ Soft: "When you begin executing work, declare your intent."
-✅ Hard: "Before your first tool call in any response where you're doing work..."
+BAD  (soft): "When you begin executing work, declare your intent."
+GOOD (hard): "Before your first tool call in any response where you're doing work..."
 ```
 
 Soft triggers fail under ambiguity ("is this 'executing work'?"). Hard triggers don't require interpretation.
@@ -291,16 +291,16 @@ This works because the extraction step forces synthesis rather than summary — 
 
 Before finalizing, ask:
 
-- [ ] **What's the failure mode?** How will this rule be rationalized away? Is there an anti-rationalization table for the most likely bypasses?
-- [ ] **Is the trigger hard or soft?** Can it be made more specific?
-- [ ] **Is the letter/spirit gap closed?** Could an agent technically comply while missing the intent?
-- [ ] **Are principles overloaded?** Using all seven at once reads as manipulative. Two or three is right.
-- [ ] **Is Liking present?** Remove it.
-- [ ] **Are costs grounded?** Is there at least one sentence explaining what failure actually looks like?
-- [ ] **For checklists:** Is TodoWrite required? Without it, steps get skipped.
-- [ ] **Is it rigid or flexible?** Make this explicit. Rigid skills should say "follow exactly."
-- [ ] **Is it necessary?** Test whether the existing system already handles this before shipping.
-- [ ] **Has it been pressure-tested?** Run at least one time-pressure and one sunk-cost scenario against a subagent. Gameshow quizzes don't count.
+- **What's the failure mode?** How will this rule be rationalized away? Is there an anti-rationalization table for the most likely bypasses?
+- **Is the trigger hard or soft?** Can it be made more specific?
+- **Is the letter/spirit gap closed?** Could an agent technically comply while missing the intent?
+- **Are principles overloaded?** Using all seven at once reads as manipulative. Two or three is right.
+- **Is Liking present?** Remove it.
+- **Are costs grounded?** Is there at least one sentence explaining what failure actually looks like?
+- **For checklists:** Is TodoWrite required? Without it, steps get skipped.
+- **Is it rigid or flexible?** Make this explicit. Rigid skills should say "follow exactly."
+- **Is it necessary?** Test whether the existing system already handles this before shipping.
+- **Has it been pressure-tested?** Run at least one time-pressure and one sunk-cost scenario against a subagent. Gameshow quizzes don't count.
 
 ---
 
@@ -315,3 +315,30 @@ CLAUDE.md directives follow the same principles as skills but are always-on rath
 **Avoid exception clauses that invite estimation.** "Don't do X unless there are many consumers" will be read as "use my judgment about what 'many' means." Fix with: "Before invoking this exception, count — don't estimate."
 
 **Extend commitment mechanisms to CLAUDE.md.** Requiring a branch + intent declaration before the first tool call is a commitment mechanism, not just a transparency measure. The agent is now accountable to its own opening statement.
+
+---
+
+## Editing procedure
+
+Editing a skill drifts it toward the editing model's own register. The alignment step is the guard.
+
+1. **Align.** Read the target skill end to end. State its objective, tone, and structure in the skill's own register. Get the user to confirm or correct it. Hold that statement as the model of correct output for this skill.
+2. **Diff against the model.** Read the current text against the alignment statement. Flag every place the prose argues, essays, pads, signposts, or animates instead of directing.
+3. **Edit against the file, not from memory.** Apply changes to the file. Don't redraft conceptual prose from composition memory; that reintroduces the register you are removing.
+4. **Self-review against the Red flags table.** Read the edited file top to bottom as a first-time reader. Cut anything that hits a row.
+5. **Pressure-test if behavior changed.** See Testing Skills Before Shipping.
+
+---
+
+## Red flags — STOP
+
+| Thought | Reality |
+|---|---|
+| "I'll tighten this conceptual paragraph while I'm here" | Tightening preserves the register. Re-derive the directive; don't polish the essay. |
+| "The citation adds authority, keep the full passage" | A one-line pointer carries the authority. Exposition persuades a human, not the agent. |
+| "This paragraph explains why the rule exists, keep it" | Names a recognisable failure mode → promote to directive + cost. Argues → cut. |
+| "The skill reads fine to me" | You co-authored it. Self-review reads the file as a first-time reader, against the alignment statement. |
+| "Emoji markers read clearer than GOOD / BAD" | The skill propagates its own markers into authored skills. Plain markers only. |
+| "I know this skill, I can skip the alignment step" | The alignment step is the drift guard. Skipping it is how the rot got in. |
+
+**Violating the letter of these rules is violating the spirit of them.**
