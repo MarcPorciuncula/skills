@@ -48,10 +48,57 @@ Effective guidance:
 
 ## 2. Writing style
 
-<!-- SCAFFOLD -->
-*Purpose:* the register/voice model — what language to produce so the guidance is followed. The `writing-pr-bodies` "Writing style" analogue.
-*Sources:* `writing-agent-guidance` principles 1–3 (lead with the directive, write for a fresh reader, consolidate) recast as a voice model.
-*Form:* gloss + DO / DO NOT + one worked contrast example (the explanation is the artifact, stays prose).
+The form and phrasing of your instructions have direct consequences for how closely an agent will follow them. The same rule, written as an instruction or as an argument, produces different agent behaviour. Write in a direct, accessible, authoritative register.
+
+**Lead with the desired behaviour**
+
+- DO open every rule with the action to take
+- DO put caveats, exceptions, and rationale after the directive, if at all
+- DO absorb scope into the directive instead of a sentence whose only job is to name the subject
+- DO NOT open with the prohibition, the rationale, or the alternative being rejected
+- DO NOT write a directive that needs a paragraph of justification to land. Rewrite the directive instead
+
+```markdown
+# Bad: leads with the prohibition, then argues against an alternative
+Never put business logic in the gateway layer. The gateway exists
+only to translate between external and internal types.
+
+# Good: states the directive, then adds the caveat plainly
+The gateway layer translates between external and internal types.
+No business logic in this layer.
+
+# Bad: leads with a scope-setup sentence
+Error responses include a `code` field. Use codes from `pkg/errcodes`.
+
+# Good: scope absorbed into the directive
+Use codes from `pkg/errcodes` in error responses.
+```
+
+The bad forms make the agent read an argument or a scope-setup sentence before
+it learns what to do. Under load it may not reach the instruction. The good
+forms put the instruction first; everything else is optional context after it.
+
+**Write for a fresh reader**
+
+- DO write so an agent with zero session context can act on it
+- DO name a concrete code path only as an example the rule does not depend on
+- DO NOT reference incidents, prior implementations, or decisions from the editing session
+- DO NOT assume the reader saw the conversation that produced the rule
+
+**Keep one canonical home across files**
+
+- DO put the comprehensive version of a rule in one canonical location when it would otherwise be duplicated across files, and link to it from shorter mentions elsewhere
+- DO NOT keep the same full explanation in parallel across files or docs. Copies drift and the agent reads the stale one
+- DO cut dead redundancy wherever it sits, including within one file: the same point, in the same form, adding nothing
+- DO keep a rule restated in a different form when the form does work: a directive, a recognition row, a red flag, the spirit line. That is reinforcement, not duplication. Do not strip it
+
+**Keep the register technical and direct**
+
+- DO use precise technical terms and the codebase's own names
+- DO use plain sentence shapes
+- DO use sentence fragments when they carry the instruction in fewer words
+- DO NOT use em dashes, threaded clauses, or long winding sentences
+- DO NOT colloquialise or reach for a literary or academic register
 
 ## 3. Hard restrictions and register reset
 

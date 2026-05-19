@@ -243,6 +243,18 @@ pressure-test scenarios and extraction technique, kept as reusable blocks.
 - Any change to `writing-pr-bodies` (it is the reference, not a target).
 - Inventing new persuasion principles or guardrail forms.
 
+## Corrections logged during build
+
+- **Consolidation-rule scope (§2, §5).** The consolidation pressure is
+  primarily a multi-file concern: parallel full explanations across files
+  drift out of sync. Within a single file, still cut dead redundancy (the same
+  point restated in the same form, adding nothing), but never strip deliberate
+  multi-form reinforcement (the same rule as a directive, a recognition row, a
+  red flag, the spirit line). When §5 is written, its "Duplicated
+  explanations" violation must flag (a) cross-file parallel full explanations
+  and (b) dead in-file redundancy, and must not flag deliberate multi-form
+  reinforcement.
+
 ## 10. Implementation task checklist
 
 - [ ] Confirm plan with user (this commit)
