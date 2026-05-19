@@ -255,6 +255,14 @@ pressure-test scenarios and extraction technique, kept as reusable blocks.
   and (b) dead in-file redundancy, and must not flag deliberate multi-form
   reinforcement.
 
+- **Heavy-form authorship softened (§4, §5, Red flags).** Changed from
+  "human-authored only / agent never originates" to: existential cost and
+  personality-setting directives are the heaviest devices; at most one per
+  document; an agent may draft one and propose it, but a human must confirm
+  before it lands; the agent still identifies and preserves existing ones.
+  §5 (Safe vs destructive) and the Red flags row must state this softened
+  policy, not an absolute prohibition.
+
 ## 10. Implementation task checklist
 
 - [ ] Confirm plan with user (this commit)

@@ -92,6 +92,11 @@ forms put the instruction first; everything else is optional context after it.
 - DO cut dead redundancy wherever it sits, including within one file: the same point, in the same form, adding nothing
 - DO keep a rule restated in a different form when the form does work: a directive, a recognition row, a red flag, the spirit line. That is reinforcement, not duplication. Do not strip it
 
+**Reference by name, not by number**
+
+- DO refer to another part by its name: "the technique catalogue", "the alignment step", "the Red flags table"
+- DO NOT refer to it by number or position: "section 4", "step 1", "the section below". The agent holds the document in attention, not as a numbered table of contents, and counts unreliably
+
 **Keep the register technical and direct**
 
 - DO use precise technical terms and the codebase's own names
@@ -137,7 +142,7 @@ RECOGNISE these rebuttals of positions a fresh reader does not hold.
 | "This is a structural requirement, not an optimisation" | a misreading no fresh reader would make |
 
 - DO NOT rebut a position the reader has no reason to hold
-- DO apply the recognisability test below before cutting any rebuttal
+- DO apply the recognisability test before cutting any rebuttal
 
 ### HARD RESTRICTION: DO NOT LEAK THE ALIGNMENT CONVERSATION
 
@@ -169,13 +174,13 @@ RECOGNISE these weak justifications.
 | "Without this, things become significantly harder" | vague consequence, not observable |
 
 - DO NOT append rationale to a directive that already lands
-- DO replace the justification with a one-line cost the agent can observe, when a real failure mode exists (see section 4)
+- DO replace the justification with a one-line cost the agent can observe, when a real failure mode exists (see the technique catalogue)
 
 **Recognisability test: cut, or promote?**
 
 Before cutting any rebuttal or justification, apply this:
 
-- A fresh reader would plausibly default to the rebutted behaviour → interception. Promote it to a directive form (section 4). Do not cut
+- A fresh reader would plausibly default to the rebutted behaviour → interception. Promote it to a directive form from the technique catalogue. Do not cut
 - It only parses with session context → war story. Cut
 - No one would do it → strawman. Cut
 
@@ -183,21 +188,193 @@ Before cutting any rebuttal or justification, apply this:
 
 STOP and RECOGNISE: you may be deep in a session on unrelated work, carrying a voice and context for a different activity, not for writing agent guidance. Your default instinct will be to carry that into the edit. Reframe for a fresh reader before you touch the file. Skip it and your biases will leak in. This is how guidance rots one iteration at a time.
 
-- DO read the target file end to end and treat its voice and register as the target
+- DO read the target file end to end, and write your edits in its voice and register, not your own
 - DO assume the reader has none of this conversation and none of your session context
 - DO match new content to the forms already in the file: a table stays a table, a directive stays a directive
 - DO NOT re-derive existing prose from memory. Edit against the file
 - DO NOT carry the conversation's recap or justification into the file (see DO NOT LEAK THE ALIGNMENT CONVERSATION)
 
 If you cannot state the file's objective, audience, and register back before
-editing, you have not read it. Do that first (section 6, step 1).
+editing, you have not read it. Do that first; it is the alignment step.
 
-## 4. How to make a rule stick
+## 4. Technique catalogue
 
-<!-- SCAFFOLD -->
-*Purpose:* the device catalogue available when writing a skill or directive.
-*Sources:* `writing-effective-skills` Pattern Library, seven principles as *when to use each*, hard/soft triggers, anti-rationalisation tables, letter/spirit closer; `writing-agent-guidance` §4 promotion forms including the human-only authorship guardrails.
-*Form:* per device — definition + when to use + template.
+Use the simplest technique that gets the rule followed. A plain directive is
+the default; the heavier devices below are for rules it does not carry on its
+own. Pick the few that fit. Stacking every device onto one rule reads as
+manipulation and the agent discounts all of them.
+
+| Situation | Use | Avoid |
+|---|---|---|
+| A single rule that just needs stating | Plain directive, caveats after | leading with the caveat or rationale |
+| A set of parallel requirements | DO / DO NOT list | a prose paragraph |
+| The one non-negotiable core of a discipline | Iron Law | softening it with caveats |
+| A rule skipped under time pressure | Hard gate | "do this when you can" |
+| A multi-step process | numbered procedure + commitment announcement | a prose paragraph of steps |
+| A cost the agent cannot see | Cost statement | "this is important" |
+| Letter-versus-spirit compliance risk | Spirit statement | trusting the letter |
+| A rule agents keep overriding despite the other techniques | Anti-rationalisation table | adding a row speculatively |
+| Judgement the prompt cannot enumerate | Personality-setting directive (human-confirmed) | a generic archetype |
+| Collaborative-judgement work | Unity framing ("we", colleagues) | an authority pile-on |
+
+- DO NOT use flattery or rapport to drive compliance. It produces sycophancy and weakens every rule near it
+- DO NOT lean on reciprocity ("I did X, so you do Y"). Other devices are stronger and it rarely earns its place
+- DO NOT stack more than two or three devices on one rule
+
+### Plain directive
+
+The default form. State the behaviour as a direct instruction; add caveats,
+exceptions, or a one-line cost after it, only if needed. Most rules need
+nothing more.
+
+- DO write it as in "Lead with the desired behaviour" under Writing style (the canonical home for this rule)
+
+```
+Use codes from pkg/errcodes in error responses. New codes go in this
+package, not inline in other packages.
+```
+
+### DO / DO NOT list
+
+A set of parallel requirements as atomic bullets, one action per bullet. The
+workhorse form of this skill itself.
+
+- DO use when three or more requirements share a subject
+- DO keep each bullet to one action a reader can check
+- DO NOT bury two rules in one bullet, or pad a bullet into a paragraph
+
+```
+- DO <one action>
+- DO <one action>
+- DO NOT <one action>
+```
+
+### Iron Law
+
+The single non-negotiable core of a discipline, as one imperative, capitalised or bolded.
+
+- DO use for the one rule the whole skill exists to enforce
+- DO NOT attach a second Iron Law to a skill. A second one halves the first
+
+```
+NO [BEHAVIOUR] WITHOUT [PREREQUISITE] FIRST
+```
+
+### Cost statement
+
+One line naming what breaks if the rule is ignored, in terms the agent can already observe.
+
+- DO name an observable consequence: a build break, a stale read, a lost user
+- DO keep it true after a routine refactor of whatever it names. If a refactor makes it wrong, it named a mechanism; rephrase
+- DO NOT substitute "this is important" for a real cost
+
+```
+Don't invent error codes inline. Unknown codes fall through to a generic 500.
+```
+
+### Hard versus soft trigger
+
+The condition that activates a rule. Hard triggers fire without judgement; soft triggers ask the agent to decide.
+
+- DO write the trigger as a condition that fires automatically
+- DO NOT write a trigger that needs interpretation
+
+```
+Soft: "When you begin substantial work, declare intent."
+Hard: "Before your first tool call in any response where you edit a file, declare intent."
+```
+
+### Hard gate
+
+A blocking checkpoint that forbids progression until a condition holds.
+
+- DO use to stop a phase being skipped under pressure
+- DO state the condition and that perceived simplicity is not an exemption
+
+```
+Do NOT proceed to [next phase] until [condition]. This holds regardless of how simple the case looks.
+```
+
+### Commitment announcement
+
+A required public statement before action, so that not doing it contradicts the agent's own words.
+
+- DO use for multi-step disciplines. The agent announces the step; the rest of the turn must honour it
+- DO pair a checklist with one tracked task per item. An unchecked item is a visible incomplete
+
+```
+Announce at the start: "I'm using the [skill] skill to [purpose]."
+```
+
+### Spirit statement
+
+Closes the "I followed the intent, not the literal rule" loophole: an agent
+that reinterprets or partially complies, then excuses it as honouring the
+spirit. Used once per skill.
+
+- DO place it immediately after the anti-rationalisation table when the skill has one; otherwise beside the strictest restriction
+- DO keep the second sentence. The bare line is cryptic without it
+- DO NOT append it to individual rules. Per-rule use is what dilutes it
+
+```
+Violating the letter of these rules is violating the spirit of them. This
+cuts off the "I'm following the spirit" rationalisation.
+```
+
+### Anti-rationalisation table
+
+Names the excuse an agent gives itself to override a rule, and rebuts it at
+that point. It is powerful but also the most overused over-reached for. It exists to stop
+agents talking themselves out of an instruction, not to restate the
+instruction.
+
+Add a row only when one of these holds:
+
+- You hit the rationalisation yourself while doing the work
+- Repeat violations of the same rule are evident from the history or the diff
+- The user reports the behaviour breaking through the other techniques
+
+- DO write the thought as the agent's own justification for why the rule does not apply here
+- DO NOT add a row speculatively or "just in case". Every weak row dilutes the strong ones and the agent learns to skim the table
+- DO NOT write the thought as the banned act restated. "I'll just skip X" or "I'll ignore the rule" captures no rationalisation; no agent thinks that
+
+This skill's own Red flags table is the worked exemplar.
+
+```
+# Bad: the banned act restated, not a rationalisation
+| "I'll just commit without running the tests" | Run the tests first. |
+
+# Good: the excuse the agent actually gives itself
+| "The change is one line and obviously safe; tests would only confirm it" | One-line changes are exactly where untested assumptions hide. Run them. |
+```
+
+The good thought names the mental gymnastics ("obviously safe", "would only
+confirm it") that let the agent excuse itself. The bad thought is a strawman no
+agent actually thinks, so it intercepts nothing.
+
+### Existential cost and personality-setting directives
+
+The heaviest devices. Each shifts the agent's whole posture, not one rule, so
+they are easy to overuse and quick to lose force.
+
+- **Existential cost statement**: a cost framed at agent-identity level (trust lost, replacement), not system level. For behaviours the agent can rationalise past a mechanical cost ("the build fails") but not past an identity cost.
+- **Personality-setting directive**: invokes an archetype the agent models its judgement on, paired with a directive requiring judgement the prompt cannot enumerate.
+
+- DO treat these as heavy. Use at most one per document
+- DO get a human's confirmation before one lands. You may draft one and propose it to the human; you may not add it on your own initiative
+- DO identify and preserve existing ones so the recognisability test does not strip them as war stories
+- DO reserve them for posture-shaping guidance (CLAUDE.md, system prompts, subagent prompts), not procedural skills
+- DO NOT keep more than one. Overuse reads as melodrama and the form stops working everywhere
+
+```
+# Existential cost: an identity-level consequence, not a system one
+If you report a task complete without verifying it, you have lied. An agent
+that cannot be trusted to verify its own claims is replaced.
+
+# Personality-setting: an archetype the agent models judgement on
+You are a disciplined engineer reviewing a colleague's branch. You pick the
+highest-yield places it could break and check them.
+```
 
 ## 5. Stripping rotted guidance
 
