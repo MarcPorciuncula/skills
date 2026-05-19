@@ -188,7 +188,7 @@ Before cutting any rebuttal or justification, apply this:
 
 STOP and RECOGNISE: you may be deep in a session on unrelated work, carrying a voice and context for a different activity, not for writing agent guidance. Your default instinct will be to carry that into the edit. Reframe for a fresh reader before you touch the file. Skip it and your biases will leak in. This is how guidance rots one iteration at a time.
 
-- DO read the target file end to end, and write your edits in its voice and register, not your own
+- DO read the file you are editing end to end, and write your edits in its voice and register, not your own
 - DO assume the reader has none of this conversation and none of your session context
 - DO match new content to the forms already in the file: a table stays a table, a directive stays a directive
 - DO NOT re-derive existing prose from memory. Edit against the file
@@ -406,7 +406,7 @@ No business logic here.
 - DO keep reference material: diagrams, code examples, migration notes, checklists, command sequences
 - DO keep a track-record cost statement that names failure categories
 - DO keep a prohibition that blocks an observed failure the sharpened directive does not already prevent
-- The target is argumentation, not thoroughness
+- Strip argumentation and conversational artifacts, not reference material
 
 **Safe, or needs confirmation**
 
@@ -420,12 +420,20 @@ nothing load-bearing is lost, it was argumentation; keep it cut. If removal
 weakens the file against a recognisable default, it was interception; restore
 it and promote it with the technique catalogue.
 
-## 6. Procedure — writing or revising guidance
+## 6. Procedure for writing or revising guidance
 
-<!-- SCAFFOLD -->
-*Purpose:* the ordered procedure for any guidance edit. Step 1 is the alignment step.
-*Sources:* `writing-agent-guidance` Reviewing changes + Verifying improvements; NET-NEW alignment step.
-*Form:* numbered `## Procedure` with trailing DO NOTs.
+Run this before editing the load-bearing text of any guidance or skill, and
+when writing one from scratch.
+
+1. **Align.** State the objective, audience, register, and structural devices of the guidance you are writing or editing, in its own register. When editing, read the file end to end first and state them back from it. When writing fresh, state what you will write to. Get the user to confirm or correct it. Hold that statement as the model of correct output for the file. This is the alignment step.
+2. **Diff against the model.** Check the current text and every proposed change against the alignment statement, the recognition tables in Hard restrictions and register reset, and the rules in Writing style.
+3. **Edit against the file.** Apply changes to the file, not from composition memory. Re-deriving prose from memory reintroduces the register you are removing (see REGISTER RESET).
+4. **Review the delta.** Read the change against the previous version; violations cluster in what was added. Then read the whole file once as a first-time reader and run its own standard against its own text. A skill that breaks its own rules has rotted.
+5. **Verify, if behaviour changed.** For a substantive change, run the old and new guidance head to head: dispatch two subagents on the same realistic task, one per version, and compare which produces tighter, more directive-led output.
+
+- DO produce the alignment statement as written text and get it confirmed before editing. Once confirmed, editing in a different register is a visible break from your own stated model
+- DO NOT skip the alignment step because you already know the skill. Skipping it is how the rot got in
+- DO NOT treat the existing text as a baseline to preserve. Re-derive from the model, not from what is there
 
 ## 7. Skills: procedure and caveats
 
