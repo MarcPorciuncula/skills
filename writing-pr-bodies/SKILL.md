@@ -123,11 +123,20 @@ The writing style is crucial to how fast a reader greps the changes in the PR. T
 
 Like standard commit messages, default to **subjectless present active** voice. eg. ~~This PR~~ "Factors out a shared helper".
 
-- DO write "Adds X", "Moves Y", "Excludes Z", "Removes W", "Switches A to B"
+- DO lead with the action the PR performs on the codebase ("Adds X", "Moves Y", "Switches A to B")
+- DO NOT lead with the action the feature performs when invoked ("Pins a conversation to the top of the inbox"); recast that behaviour as the object of the PR's action ("Adds conversation pinning")
 - DO NOT default to "X is excluded", "Y was added", "Z has been moved" when the PR is the obvious actor
 - DO name a subject when it carries information ("Source files now key the build cache", "Each file shows its own progress bar")
 - DO use passive only when the actor is genuinely unimportant or awkward to name
 - DO NOT animate code constructs as actors performing the change
+
+The same feature lede with the wrong subject and with the PR as the subject:
+
+> **Wrong (the feature is the implicit subject):** Pins a conversation to the top of the inbox. A user marks a thread and it stays above unread items until they unpin it.
+
+> **Right (the PR is the implicit subject):** Adds conversation pinning. A user marks a thread and it stays above unread items until they unpin it.
+
+`Pins` is what the feature does when a user invokes it, not what the PR does. Subjectless present active makes the PR the subject, so the wrong lede is either false (the PR pins nothing) or silently swaps in the user and stops signalling a change. The right lede leads with the PR's action; the feature's behaviour follows as its object.
 
 **It must be accessible**
 
