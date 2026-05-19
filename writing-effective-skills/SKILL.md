@@ -10,15 +10,15 @@ description: >
 
 ## The Core Problem
 
-Instructions that merely describe desired behavior have a predictable failure mode: the agent will follow them until it doesn't feel like it. Under time pressure, apparent simplicity, or strong priors about the "right" approach, rules get rationalized away. The agent doesn't disobey — it convinces itself the rule doesn't apply *this particular time*.
+Agents don't disobey instructions — they rationalize them away. Under time pressure, apparent simplicity, or a strong prior about the "right" approach, the agent convinces itself the rule doesn't apply *this time*.
 
-Effective skills are designed around this failure mode. They describe what to do *and* intercept the moment before the agent stops doing it.
+Effective skills are built around this failure mode: they state what to do *and* intercept the rationalization before it becomes action.
 
 ---
 
 ## Research Foundation
 
-LLMs respond to the same persuasion principles as humans. This isn't accidental — they're trained on text where these patterns precede compliance.
+LLMs respond to the same persuasion principles as humans, because they're trained on text where these patterns precede compliance.
 
 **Meincke et al. (2025)** tested 7 persuasion principles across N=28,000 LLM conversations. Compliance increased from **33% → 72%** (p < .001) with persuasion techniques. Authority, commitment, and scarcity were the most effective. Liking actively degraded quality.
 
@@ -99,7 +99,7 @@ Actively counterproductive. Creates sycophancy. Never use for discipline enforce
 
 ## The Most Important Pattern: Anti-Rationalization Tables
 
-This is the highest-leverage technique in skill design and the most absent from typical instructions.
+Most instructions omit it.
 
 Every rule has a predictable bypass: the agent doesn't break the rule, it convinces itself the rule doesn't apply. Anti-rationalization tables name the specific internal thoughts that precede violation, and rebut them before they become output.
 
@@ -112,7 +112,7 @@ Every rule has a predictable bypass: the agent doesn't break the rule, it convin
 | "The rule doesn't apply here because..." | Violating the letter is violating the spirit. |
 ```
 
-The table works because it intercepts *at the moment of temptation*, not after. By the time the agent has written out a justification for skipping, it's already committed to the bypass. The table fires earlier.
+Place the rebuttal at the point of temptation. Once the agent has written out a justification for skipping, it's already committed to the bypass — the rebuttal has to land before that.
 
 **Write these tables by asking:** What will the agent think right before it violates this rule? Write that thought down. Then rebut it.
 
@@ -120,7 +120,7 @@ The table works because it intercepts *at the moment of temptation*, not after. 
 
 ## Closing the Meta-Loophole
 
-The most common sophisticated bypass: honoring the letter while evading the spirit. An agent can technically follow every rule while still missing the intent entirely.
+The sophisticated bypass: honor every rule's letter while evading its spirit — technically compliant, intent missed.
 
 Close this explicitly:
 
@@ -161,6 +161,8 @@ Don't use all seven. Two or three well-chosen principles are more effective than
 ---
 
 ## Pattern Library
+
+The `writing-pr-bodies` skill is the canonical worked exemplar of these patterns applied at scale and held against rot: recognition tables, atomic DO / DO NOT imperatives, and concrete reject/prefer pairs throughout. Read it when designing a new skill. The snippets below show each shape in isolation.
 
 ### The Iron Law
 For the single non-negotiable core of a discipline skill:
@@ -283,7 +285,7 @@ Any corpus can be mined for skills: technical books, codebases, past conversatio
 3. Ask it to write down only what's *new* — patterns not already covered by existing skills
 4. Pressure-test the result before adding it (see above)
 
-This works because the extraction step forces synthesis rather than summary — you get actionable patterns, not paraphrased content.
+The lens forces synthesis, not summary. Without it you get paraphrased content, not actionable patterns.
 
 ---
 
