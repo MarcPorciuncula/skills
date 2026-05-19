@@ -18,17 +18,20 @@ The pivot in one line: the skill stops being its `tidy-agent-guidance` origin
 improving, and reviewing* any agent guidance or skill. A positive,
 all-encompassing frame can absorb both source skills; a fixer frame cannot.
 
-This captures the real lesson of the `writing-pr-bodies` overhaul (PR #25). That
-rework did not succeed because it got terser. It succeeded because of two pieces
-of **content**:
+This captures the lesson of the `writing-pr-bodies` overhaul (PR #25), which is
+twofold:
 
-1. A **register/voice model** — it tells the agent exactly what language to
-   produce.
-2. **Concrete recognition tables** — literal bad sentences, the fix, and why,
-   caught at write-time.
+1. **Content the source skills lack** — a register/voice model (tells the agent
+   what language to produce) and concrete recognition tables (literal bad
+   sentences, the fix, why, caught at write-time).
+2. **Register conversion** — its prose was rewritten from long, winding,
+   conceptual, academic exposition into direct, grounded, accessible
+   directives. This is not cosmetic: winding academic prose is not reliably
+   followed by an LLM, so making it legible changes what the agent produces.
 
-Both source skills teach those lessons only abstractly. Porting that content —
-not reformatting prose — is the work.
+Both source skills are written in exactly the prose style that fails. The work
+is the content port **and** the register conversion, applied to every section —
+not one or the other.
 
 ## 2. Decisions (locked with the user)
 
@@ -38,7 +41,7 @@ not reformatting prose — is the work.
 | Canonical home | `writing-agent-guidance/` (broadest scope owns the home; skills become a specialised part within it) |
 | Skill name | `writing-agent-guidance` retained; `tidy-agent-guidance` symlink kept as a back-compat alias |
 | Alignment / reset step | In scope for this overhaul (structurally load-bearing in sections 3, 6, 7) — not a follow-up |
-| Cosmetic prose→bullet reformatting | Out of scope — low ROI, not done |
+| Prose register conversion | In scope and required — winding/academic → direct/grounded/accessible, every section; only change-for-change's-sake on already-direct text is excluded |
 | Sequencing | Single PR: plan commit (draft PR opens) → implementation commits → mark ready |
 
 **Responsibility placement.** The canonical home is `writing-agent-guidance`
@@ -219,6 +222,9 @@ pressure-test scenarios and extraction technique, kept as reusable blocks.
 - **Self-application check.** Run the merged skill's own standard against its
   own text top-to-bottom as a first-time reader. A skill that violates its
   own rules has rotted; fix the text.
+- **Prose register check.** No section retains long, winding, conceptual, or
+  academic sentences. Every directive reads as direct, grounded, and
+  accessible to a context-saturated model on first pass.
 - **Head-to-head subagent test.** Dispatch two subagents on the same realistic
   guidance-editing task — one against the pre-merge `writing-agent-guidance`,
   one against the new merged skill. The new one must produce tighter,
@@ -229,8 +235,10 @@ pressure-test scenarios and extraction technique, kept as reusable blocks.
 
 ## 9. Out of scope / non-goals
 
-- Cosmetic prose→bullet conversion that does not change what the agent
-  produces.
+- Change-for-change's-sake reformatting of text that is already direct and
+  followable (e.g. splitting a clear two-sentence directive into bullets to
+  look more skill-like). Rewriting winding, conceptual, or academic prose into
+  direct, grounded, accessible form is in scope and required.
 - Deprecation shims for the old skill name (internal; delete and update).
 - Any change to `writing-pr-bodies` (it is the reference, not a target).
 - Inventing new persuasion principles or guardrail forms.
@@ -248,6 +256,7 @@ pressure-test scenarios and extraction technique, kept as reusable blocks.
 - [ ] Section 7 — Skills procedure, caveats, strict-workflow technique (net-new technique)
 - [ ] Spine — consolidated Red flags STOP table + spirit line
 - [ ] `git rm` `writing-effective-skills/`; update/remove all references repo-wide
+- [ ] Register pass: every ported section rewritten from winding/academic prose to direct, grounded, accessible directives
 - [ ] Self-application check pass
 - [ ] Head-to-head subagent test
 - [ ] Pressure test the alignment step
