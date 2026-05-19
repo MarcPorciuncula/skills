@@ -7,7 +7,7 @@ description: >
 
 # Clean Up Workspaces
 
-**NEVER remove slot-based worktrees** (those ending in `-a`, `-b`, etc., e.g. `operator-ui-a`, `alcova-backend-b`). They are long-lived infrastructure. No merged PR, old age, or user phrasing justifies removing them automatically.
+**NEVER remove slot-based worktrees** (those ending in `-a`, `-b`, etc., e.g. `web-a`, `api-b`). They are long-lived infrastructure. No merged PR, old age, or user phrasing justifies removing them automatically.
 
 **NEVER force-remove a worktree with uncommitted changes.** Doing so permanently destroys that work. Always warn and skip.
 

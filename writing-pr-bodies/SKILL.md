@@ -299,7 +299,7 @@ Concrete reproduction steps for the reviewer. Goes at the bottom of the body.
 ## How to test
 
 1. Start the API server locally with `task dev`.
-2. In another terminal, find the API process: `pgrep -f 'alcova server'`.
+2. In another terminal, find the API process: `pgrep -f 'myapp server'`.
 3. Send `kill -TERM <pid>` and watch the logs. Expect "graceful shutdown: draining" followed by a clean exit within ~8s.
 4. Repeat with `kill -INT <pid>`. Expect "fast shutdown: dropping in-flight connections" and immediate exit.
 ```
@@ -319,9 +319,9 @@ Linear tickets, related PR numbers, parent or stacked PRs. Write them as a Markd
 - DO NOT include bare unclickable IDs ("Linear: AI-1234")
 
 ```
-- Linear: [AI-1297 Attach meeting references to Operator chats](https://linear.app/<workspace>/issue/AI-1297)
+- Linear: [AI-1297 Add upload progress to the attachment picker](https://linear.app/<workspace>/issue/AI-1297)
 - #1235
-- Alcova-AI/alcova-backend#1413
+- owner/repo#1413
 ```
 
 ### Stack
@@ -396,7 +396,7 @@ When merging or deploying this PR before another change lands breaks production,
 
 ```
 > [!WARNING]
-> Do not merge before Alcova-AI/alcova-backend#1413 deploys. The regenerated SDK here calls the `initial_references` proto that PR ships; merging first breaks session creation in production.
+> Do not merge before owner/repo#1413 deploys. The regenerated SDK here calls a proto that PR ships; merging first breaks request handling in production.
 ```
 
 - DO use `> [!WARNING]` and place it at the very top of the body, above the lede

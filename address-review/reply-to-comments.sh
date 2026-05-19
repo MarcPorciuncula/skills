@@ -13,7 +13,7 @@
 #   67890:[Claude] Not applicable — React 19 handles this natively.
 #
 # Example:
-#   reply-to-comments.sh Alcova-AI/operator-ui 314 replies.txt
+#   reply-to-comments.sh owner/repo 314 replies.txt
 
 set -euo pipefail
 

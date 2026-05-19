@@ -7,7 +7,7 @@
 #   ID, File, Line, Author, Body
 #
 # Example:
-#   fetch-review-comments.sh Alcova-AI/operator-ui 314
+#   fetch-review-comments.sh owner/repo 314
 
 set -euo pipefail
 
