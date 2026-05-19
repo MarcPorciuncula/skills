@@ -378,10 +378,47 @@ highest-yield places it could break and check them.
 
 ## 5. Stripping rotted guidance
 
-<!-- SCAFFOLD -->
-*Purpose:* how to remove argumentation and conversational artifacts without dropping load-bearing content. Demoted from the opening to one part.
-*Sources:* `writing-agent-guidance` Common violations + Safe vs destructive + What to keep.
-*Form:* definition + before/after + `Test:`.
+Stripping removes argumentation and conversational artifacts. It does not trim
+reference material. The patterns to recognise are in Hard restrictions and
+register reset; this is how to remove them without dropping anything
+load-bearing.
+
+**Strip**
+
+- DO strip the patterns from the recognition tables: war stories, strawmen, alignment leakage, weak justification
+- DO sharpen a vague directive first, then cut the prohibition list it was compensating for
+- DO consolidate duplicated explanations per "Consolidate across files" in Writing style
+- DO NOT strip a rule restated in a different working form; that is reinforcement
+
+```
+# Before: vague directive padded with a prohibition list
+The adapter layer sits between external and internal systems. It must
+not contain business logic, type translation, feature-flag evaluation,
+conditional workflow selection, or retry orchestration.
+
+# After: one precise directive, only the prohibitions that still earn it
+The adapter layer maps external request types to internal service calls.
+No business logic here.
+```
+
+**Keep**
+
+- DO keep reference material: diagrams, code examples, migration notes, checklists, command sequences
+- DO keep a track-record cost statement that names failure categories
+- DO keep a prohibition that blocks an observed failure the sharpened directive does not already prevent
+- The target is argumentation, not thoroughness
+
+**Safe, or needs confirmation**
+
+- DO make directly: strengthen a directive, remove clear argumentation, reorder, consolidate duplicates
+- DO get the user's confirmation before removing anything that might be load-bearing: a prohibition, architectural rationale, anything you are unsure carries weight. Present the recommendation and let them decide
+- DO convert a real architectural fact into a directive or a diagram rather than deleting it
+- DO get a human's confirmation before adding or removing an existential cost or personality-setting directive (see the technique catalogue)
+
+**Test:** remove the clause. If the file still tells the agent what to do and
+nothing load-bearing is lost, it was argumentation; keep it cut. If removal
+weakens the file against a recognisable default, it was interception; restore
+it and promote it with the technique catalogue.
 
 ## 6. Procedure — writing or revising guidance
 
