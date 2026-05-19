@@ -385,17 +385,17 @@ Prefer one sentence in the lede elaboration. Promote to this section only when s
 
 A bullet qualifies only if **another option existed** and the choice shapes the rest of the design. Same gate as moving prose out of the lede (see *Functional vs non-functional changes*): would a reviewer be surprised to learn it was done this way if it weren't flagged? If not, cut it; it's the diff.
 
-Shape each bullet as the decision, a colon, then why this option beat the alternative. One line. No paragraphs. No weighting labels in the text ("the key decision is", "load-bearing"); the heading already says these are the key decisions.
+Shape each bullet as the decision, a colon, then why this option over the alternative. One line. No paragraphs. No weighting labels in the text ("the key decision is", "load-bearing"); the heading already says these are the key decisions.
 
-Cramming the decisions into one prose paragraph defeats the section:
+The same decisions as one prose paragraph, then as bullets:
 
 > **Wall (reject):** An upload is carried on the existing multipart envelope, the same one inline attachments use, with no re-encode; a resumable upload reuses the `tus` endpoint with a `?partial` marker so resumable and one-shot parts stay distinguishable through the shared parser, the part round-trips through the gateway's buffer-and-forward path, and a per-request middleware modelled on the auth rewrite replaces every upload part with one header block while the auth rewrite skips `?partial` parts so the two middlewares own disjoint slices of the request.
 
 > **Bullets (accept):**
-> - Uploads ride the existing multipart envelope, not a new endpoint: the gateway already buffers and forwards it, so the hot path is unchanged
-> - Resumable vs one-shot split by a `?partial` marker on the existing endpoint, not a second one: a single parser stays authoritative
+> - Uploads are included in the existing multipart envelope, not a new endpoint: the gateway already buffers and forwards it, so the hot path is unchanged
+> - Resumable vs one-shot split by a `?partial` marker on the existing endpoint, not a second one: one parser still handles both
 
-The wall buries two decisions in five mechanisms the diff already carries.
+The wall mixes the two decisions with mechanism the diff already shows; the bullets keep only the decisions.
 
 ### Background
 
