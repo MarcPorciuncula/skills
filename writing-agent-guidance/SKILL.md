@@ -163,6 +163,7 @@ leakage. Cut it.
 
 - DO NOT carry recap, justification, or role-talk from the conversation into the file
 - DO cut content whose audience is a human understanding the design, not the agent executing it
+- DO distinguish leakage from anchoring to a widely-known concept (a standard convention, a named pattern). Anchoring is a technique; see *Anchor to a known concept* in the technique catalogue
 
 ### HARD RESTRICTION: DO NOT JUSTIFY A RULE THAT STANDS ON ITS OWN
 
@@ -213,6 +214,7 @@ manipulation and the agent discounts all of them.
 | A rule skipped under time pressure | Hard gate | "do this when you can" |
 | A multi-step process | numbered procedure + commitment announcement | a prose paragraph of steps |
 | A cost the agent cannot see | Cost statement | "this is important" |
+| A new term that maps to a widely-known concept | Anchor to a known concept | re-teaching the concept from scratch |
 | Letter-versus-spirit compliance risk | Spirit statement | trusting the letter |
 | A rule agents keep overriding despite the other techniques | Anti-rationalisation table | adding a row speculatively |
 | Judgement the prompt cannot enumerate | Personality-setting directive (human-confirmed) | a generic archetype |
@@ -228,21 +230,17 @@ The default form. State the behaviour as a direct instruction; add caveats,
 exceptions, or a one-line cost after it, only if needed. Most rules need
 nothing more.
 
-- DO write it as in "Lead with the desired behaviour" under Writing style (the canonical home for this rule)
-
 ```
 Use codes from pkg/errcodes in error responses. New codes go in this
 package, not inline in other packages.
 ```
 
+- DO write it as in "Lead with the desired behaviour" under Writing style (the canonical home for this rule)
+
 ### DO / DO NOT list
 
 A set of parallel requirements as atomic bullets, one action per bullet. The
 workhorse form of this skill itself.
-
-- DO use when three or more requirements share a subject
-- DO keep each bullet to one action a reader can check
-- DO NOT bury two rules in one bullet, or pad a bullet into a paragraph
 
 ```
 - DO <one action>
@@ -250,62 +248,83 @@ workhorse form of this skill itself.
 - DO NOT <one action>
 ```
 
+- DO use when three or more requirements share a subject
+- DO keep each bullet to one action a reader can check
+- DO NOT bury two rules in one bullet, or pad a bullet into a paragraph
+
 ### Iron Law
 
 The single non-negotiable core of a discipline, as one imperative, capitalised or bolded.
-
-- DO use for the one rule the whole skill exists to enforce
-- DO NOT attach a second Iron Law to a skill. A second one halves the first
 
 ```
 NO [BEHAVIOUR] WITHOUT [PREREQUISITE] FIRST
 ```
 
+- DO use for the one rule the whole skill exists to enforce
+- DO NOT attach a second Iron Law to a skill. A second one halves the first
+
 ### Cost statement
 
 One line naming what breaks if the rule is ignored, in terms the agent can already observe.
-
-- DO name an observable consequence: a build break, a stale read, a lost user
-- DO keep it true after a routine refactor of whatever it names. If a refactor makes it wrong, it named a mechanism; rephrase
-- DO NOT substitute "this is important" for a real cost
 
 ```
 Don't invent error codes inline. Unknown codes fall through to a generic 500.
 ```
 
+- DO name an observable consequence: a build break, a stale read, a lost user
+- DO keep it true after a routine refactor of whatever it names. If a refactor makes it wrong, it named a mechanism; rephrase
+- DO NOT substitute "this is important" for a real cost
+
+### Anchor to a known concept
+
+Bind a new term or rule to a concept the model already holds: a standard
+convention, a named pattern, common tooling, domain-standard jargon. Save the
+tokens you would spend teaching the concept from scratch.
+
+```
+Every PR is functional or non-functional. The split is the same as
+conventional-commit prefixes: `feat`/`fix`/`improvement` (functional) vs
+`chore`/`docs`/`refactor` (non-functional).
+```
+
+- DO anchor only on concepts that are stable and widely held (conventional commits, REST, MVC, TDD, semver)
+- DO state the binding as a fact ("X is the same as Y"), not as second-person reassurance ("you already know Y")
+- DO NOT anchor on a concept specific to one team, codebase, or your current session. That is alignment leakage, not anchoring
+- DO NOT invent a comparison that requires teaching the anchor. If the anchor needs explanation, it is not an anchor
+
 ### Hard versus soft trigger
 
 The condition that activates a rule. Hard triggers fire without judgement; soft triggers ask the agent to decide.
-
-- DO write the trigger as a condition that fires automatically
-- DO NOT write a trigger that needs interpretation
 
 ```
 Soft: "When you begin substantial work, declare intent."
 Hard: "Before your first tool call in any response where you edit a file, declare intent."
 ```
 
+- DO write the trigger as a condition that fires automatically
+- DO NOT write a trigger that needs interpretation
+
 ### Hard gate
 
 A blocking checkpoint that forbids progression until a condition holds.
-
-- DO use to stop a phase being skipped under pressure
-- DO state the condition and that perceived simplicity is not an exemption
 
 ```
 Do NOT proceed to [next phase] until [condition]. This holds regardless of how simple the case looks.
 ```
 
+- DO use to stop a phase being skipped under pressure
+- DO state the condition and that perceived simplicity is not an exemption
+
 ### Commitment announcement
 
 A required public statement before action, so that not doing it contradicts the agent's own words.
 
-- DO use for multi-step disciplines. The agent announces the step; the rest of the turn must honour it
-- DO pair a checklist with one tracked task per item. An unchecked item is a visible incomplete
-
 ```
 Announce at the start: "I'm using the [skill] skill to [purpose]."
 ```
+
+- DO use for multi-step disciplines. The agent announces the step; the rest of the turn must honour it
+- DO pair a checklist with one tracked task per item. An unchecked item is a visible incomplete
 
 ### Spirit statement
 
@@ -313,14 +332,13 @@ Closes the "I followed the intent, not the literal rule" loophole: an agent
 that reinterprets or partially complies, then excuses it as honouring the
 spirit. Used once per skill.
 
-- DO place it immediately after the anti-rationalisation table when the skill has one; otherwise beside the strictest restriction
-- DO keep the second sentence. The bare line is cryptic without it
-- DO NOT append it to individual rules. Per-rule use is what dilutes it
+```
+Violating the letter of these rules is violating the spirit of them.
+```
 
-```
-Violating the letter of these rules is violating the spirit of them. This
-cuts off the "I'm following the spirit" rationalisation.
-```
+- DO place it immediately after the anti-rationalisation table when the skill has one; otherwise beside the strictest restriction
+- DO NOT append it to individual rules. Per-rule use is what dilutes it
+- DO NOT paraphrase or add a rationale sentence to the deployed line. The reason the statement works lives in this entry, for you to understand; the line that ships is one sentence
 
 ### Anti-rationalisation table
 
@@ -386,11 +404,6 @@ load-bearing.
 
 **Strip**
 
-- DO strip the patterns from the recognition tables: war stories, strawmen, alignment leakage, weak justification
-- DO sharpen a vague directive first, then cut the prohibition list it was compensating for
-- DO consolidate duplicated explanations per "Consolidate across files" in Writing style
-- DO NOT strip a rule restated in a different working form; that is reinforcement
-
 ```
 # Before: vague directive padded with a prohibition list
 The adapter layer sits between external and internal systems. It must
@@ -401,6 +414,11 @@ conditional workflow selection, or retry orchestration.
 The adapter layer maps external request types to internal service calls.
 No business logic here.
 ```
+
+- DO strip the patterns from the recognition tables: war stories, strawmen, alignment leakage, weak justification
+- DO sharpen a vague directive first, then cut the prohibition list it was compensating for
+- DO consolidate duplicated explanations per "Consolidate across files" in Writing style
+- DO NOT strip a rule restated in a different working form; that is reinforcement
 
 **Keep**
 
