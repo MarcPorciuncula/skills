@@ -494,11 +494,17 @@ commit as a diff and the exact merge steps for them to run.
 - DO apply every rule in this skill to CLAUDE.md, with one difference: it is always in context, so it needs no trigger
 - DO NOT write an exception clause that invites estimation ("unless there are many"). Replace it with a check the agent runs: "count first; do not estimate"
 
-## Red flags — STOP
+## Red flags: STOP
 
-<!-- SCAFFOLD -->
-*Purpose:* intercept the rationalisations that precede each violation, at the moment of temptation.
-*Sources:* consolidated from both skills' red-flag/violation content; one row per high-risk bypass.
-*Form:* `Thought | Reality` table.
+If you catch yourself thinking any of these while writing or editing guidance, stop.
+
+| Thought | Reality |
+|---|---|
+| "I know this skill and this codebase; I can edit without the alignment step" | Skipping the alignment step is how the rot got in. Run it; it is fast |
+| "The user asked me to improve this, so I'll tighten and restructure the existing prose" | Tightening preserves the drifted register. Re-derive against the alignment statement; do not polish what is there |
+| "This justification explains why the rule exists, so it earns its place" | Run the recognisability test. A recognisable default becomes a directive plus cost; a strawman or war story is cut. Not kept by default |
+| "This rule would land harder with an existential cost or a personality directive" | Those are human-confirmed. Propose it; do not originate it |
+| "A future agent might do X, so I'll add a Red flags row now to be safe" | Speculative rows dilute the strong ones. Add one only on evidence: you hit it, repeat violations, or the user reports it |
+| "'See the technique catalogue' is wordy; 'see section 4' is shorter" | The agent holds the document in attention, not a numbered table of contents, and counts unreliably. Name it |
 
 **Violating the letter of these rules is violating the spirit of them.**
