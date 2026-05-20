@@ -33,6 +33,7 @@ You must communicate *the net change* of the PR and its motivation or justificat
 - DO use headings, paragraphs, and lists to make the content easily scannable
 - DO NOT repeat the diff, the reader has access to the "files changed" tab
 - DO NOT list out files UNLESS they are the crucial subject of the change
+- DO NOT recap routine lockfile or generated-file changes (`pnpm-lock.yaml`, `package-lock.json`, `go.sum`, regenerated clients, snapshot updates). They follow mechanically from the real change and are visible in the diff
 - DO NOT narrate changes over the lifecycle of the branch. A PR is merged atomically and intermediate states never get deployed
 - DO amend or correct the PR to ensure it matches the final net changes after a pivot or deviation from the original intent or design
 - DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
@@ -151,6 +152,7 @@ Accessible writing is the key to fast, clear comprehension.
 - DO NOT use long, winding clauses
 - DO NOT use verbs to evoke literary animation
 - DO NOT waste words to bridge paragraphs
+- DO NOT hard-wrap prose lines mid-paragraph as you would in code comments or terminal output. Markdown wraps automatically; manual wraps can break list continuations and render awkwardly in the GitHub UI
 
 ### HARD RESTRICTION: DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE
 
@@ -331,11 +333,41 @@ Linear tickets, related PR numbers, parent or stacked PRs. Write them as a Markd
 - DO NOT include bare unclickable IDs ("Linear: AI-1234")
 
 ```
-- Linear: [AI-1297 Add upload progress to the attachment picker](https://linear.app/<workspace>/issue/AI-1297)
+- Closes [AI-1297 Add upload progress to the attachment picker](https://linear.app/<workspace>/issue/AI-1297)
 - #1235
 - owner/repo#1413
 - Design: [docs/specs/2026-04-17-dev-entrypoint-design.md](docs/specs/2026-04-17-dev-entrypoint-design.md)
 ```
+
+### Linear ticket trigger words
+
+Linear's GitHub integration scans PR titles, descriptions, commit messages, and branch names for keywords paired with a ticket ID (e.g. `AI-1234`). The keyword you pick determines what Linear does to the ticket on merge.
+
+**Closing keywords** move the ticket to "In Progress" on branch push and "Done" when the PR merges to the default branch:
+
+- `close`, `closes`, `closed`, `closing`
+- `fix`, `fixes`, `fixed`, `fixing`
+- `resolve`, `resolves`, `resolved`, `resolving`
+- `complete`, `completes`, `completed`, `completing`
+- `implements`, `implemented`, `implementing`
+
+**Non-closing keywords** link the PR to the ticket without changing its state:
+
+- `ref`, `refs`, `references`
+- `part of`
+- `related to`
+- `contributes to`
+- `toward`, `towards`
+
+Pick the keyword based on the PR's relationship to the ticket.
+
+- DO use a closing keyword when the PR fully addresses the ticket and the ticket should close on merge (`Closes AI-1234`, `Fixes AI-1234`, `Resolves AI-1234`)
+- DO use a non-closing keyword for a partial implementation, a follow-up, or an incidental relationship (`Part of AI-1234`, `Refs AI-1234`)
+- DO prefix the Linear list item in External references with the keyword so the trigger and the reference stay in one place (`- Closes [AI-1297 …](url)`)
+- DO list multiple tickets after one keyword with commas (`Fixes AI-123, AI-256`)
+- DO NOT use a closing keyword on a PR that only addresses part of a ticket. The ticket will close prematurely
+- DO NOT separate the keyword from the ID. Linear binds them only when adjacent. Write `Closes AI-1234`, not `Closes the ticket AI-1234`
+- DO NOT invent keywords (`addresses`, `tackles`, `handles`). Linear only recognises the keywords listed above
 
 ### Stack
 
@@ -376,6 +408,7 @@ For secondary changes included in the PR such as dead code cleanup, a tooling fi
 - DO use one bullet per item, naming the behavioural or API consequence
 - DO use this heading verbatim
 - DO NOT include docs updates or renames. These can be easily read from the diff.
+- DO NOT include lockfile bumps or regenerated/generated-file churn. They follow mechanically from the real change
 
 ### Design / Key design decisions
 
