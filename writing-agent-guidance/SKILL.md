@@ -86,6 +86,11 @@ forms put the instruction first; everything else is optional context after it.
 - DO NOT reference incidents, prior implementations, or decisions from the editing session
 - DO NOT assume the reader saw the conversation that produced the rule
 
+**Use generic examples**
+
+- DO use generic, illustrative examples that demonstrate the pattern: a stand-in domain, made-up identifiers, a representative shape
+- DO NOT lift example phrasing from whatever you have just been working on. The work in immediate context (a file you just read, code you just wrote, the skill you are reviewing) is what comes most easily to mind, and pulling from it couples the guidance to that work, biases later reviews that find the same phrasing back, and lets the example drift whenever the work does
+
 **Keep one canonical home across files**
 
 - DO put the comprehensive version of a rule in one canonical location when it would otherwise be duplicated across files, and link to it from shorter mentions elsewhere
@@ -101,10 +106,18 @@ forms put the instruction first; everything else is optional context after it.
 **Keep the register technical and direct**
 
 - DO use precise technical terms and the codebase's own names
+- DO stack precise descriptors when each names a distinct property ("idempotent, ordered, durable" names three queue semantics; each is a separate anchor to a concept the model already holds)
 - DO use plain sentence shapes
 - DO use sentence fragments when they carry the instruction in fewer words
 - DO NOT use em dashes, threaded clauses, or long winding sentences
 - DO NOT colloquialise or reach for a literary or academic register
+- DO NOT confuse a precise descriptor with an intensifier. A descriptor names a property ("monotonically increasing", "deterministic"). An intensifier amplifies the adjacent word and adds no information ("really fast", "very important")
+
+**Use formatting devices to mark, not to perform**
+
+- DO use bold, italics, ALL-CAPS, code spans, and blockquotes to mark structure, label examples, or highlight a single key term per passage. They are typographic tools, not literary devices
+- DO NOT stack formatting on the same span (bold + italic + caps reads as decoration). One mark per span
+- DO NOT confuse formatting with literary register. Italicising a precise term to mark it is formatting; italicising whole sentences for tone or rhythm is literary
 
 ## 3. Hard restrictions and register reset
 
@@ -282,9 +295,8 @@ convention, a named pattern, common tooling, domain-standard jargon. Save the
 tokens you would spend teaching the concept from scratch.
 
 ```
-Every PR is functional or non-functional. The split is the same as
-conventional-commit prefixes: `feat`/`fix`/`improvement` (functional) vs
-`chore`/`docs`/`refactor` (non-functional).
+A retry handler has the same shape as exponential backoff: an initial
+interval, a multiplier per attempt, and a maximum.
 ```
 
 - DO anchor only on concepts that are stable and widely held (conventional commits, REST, MVC, TDD, semver)
