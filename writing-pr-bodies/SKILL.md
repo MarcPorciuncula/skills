@@ -621,8 +621,6 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
-| "I'll note the lockfile bump / regenerated SDK / snapshot churn so the reviewer knows it's there" | Lockfiles and generated files follow mechanically from the real change and are visible in the diff. Cut. |
-| "I'll write `addresses AI-1234` since this PR addresses the ticket" | `addresses` is not a Linear keyword. Use a closing keyword (`Closes`, `Fixes`, `Resolves`) when the PR closes the ticket; a non-closing keyword (`Part of`, `Refs`) when it doesn't. See Linear ticket trigger words. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
 | "I'll add a Test plan checkbox list" | Use How to test instead. No checkboxes. Drop entirely if every step is a generic CI command. |
 | "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
