@@ -24,7 +24,7 @@ A reviewer landing on your PR needs to be able to read, scan, or skim to grep th
 
 You must communicate *the net change* of the PR and its motivation or justification.
 
-On a large change the body has a second job: helping the reviewer *perform* the review, not only understand the net change. A diff spanning dozens of files is a wall of code. Beyond the net change, the body can map the change's structural shape so the reviewer can judge whether it is well-placed and well-formed. This is conditional on size; see *Shape*.
+On a large change the body has a second job: helping the reviewer *perform* the review, not only grasp the net change. A diff spanning dozens of files is a wall of code. The body can map the change's structural shape so the reviewer can judge whether it is well-formed. Conditional on size; see *Shape*.
 
 - DO state the change and its motivation immediately in the first paragraph, sentence, or heading
 - DO explain the design and its trade-offs
@@ -435,15 +435,13 @@ The wall mixes the two decisions with mechanism the diff already shows; the bull
 
 ### Shape
 
-A map of how a large change sits in the codebase: the structural moves it makes and how they relate. Title it `## Shape`, `## Structure`, or whatever fits. It primes the reviewer to judge whether the change is well-placed and well-formed, not to locate files.
+A map of how a large change sits in the codebase: the structural moves it makes and how they relate. Title it `## Shape`, `## Structure`, or whatever fits. It primes a reviewer to judge whether the change is well-placed, not to locate files.
 
-Gate it on diff size, the way Design gates on non-obvious decisions. A small or medium diff is its own best map and the section is padding below that size. Include it only when the diff is too large to review as a unit.
+Gate it on diff size, the way Design gates on non-obvious decisions: include it only when the diff is too large to review as a unit. Below that, the diff is its own map and the section is padding.
 
-Distinct from Design: Design covers a discrete decision where another option existed; Shape covers the overall composition of the change. A large PR can warrant both.
+Each entry names a structural element and the responsibility it owns: a new package and the logic it holds, a boundary the change draws, how a new piece relates to existing structure. Structure alone is a table of contents; function alone is diff narration.
 
-It answers a narrow "how": where new code lives, what responsibility boundaries the change establishes or crosses, how the pieces relate to each other and to existing structure. Not how the code works step by step; that is the diff.
-
-Each entry pairs a structural element with the responsibility it owns. Structure alone is a table of contents. Function alone is diff narration. The pairing is what lets a reviewer judge placement and soundness.
+Distinct from Design: Design is one decision where another option existed; Shape is the overall composition. A large PR can warrant both.
 
 - DO include only when the diff is too large to hold in the head
 - DO name the responsibility boundaries the change establishes or crosses
@@ -659,7 +657,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
 | "I'll give each changed package or component its own subheading and say what it does" | Component inventory. The large-diff section is Shape: name boundaries and how the pieces relate, weighted by significance, gated on diff size. See Shape. |
-| "I'll walk through what `Service.Create` does step by step" | Implementation how. The diff has it. Shape covers architectural how: placement, boundaries, how the pieces relate. |
+| "I'll walk through what `Service.Create` does step by step" | That's the algorithm; the diff has it. Shape names placement and boundaries, not behaviour. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
