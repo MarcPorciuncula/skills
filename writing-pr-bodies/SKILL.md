@@ -578,7 +578,7 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 
 Follow this procedure when drafting or revising a PR body.
 
-Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs and the Red flags table." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
+Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs, the Writing style rules, and the Red flags table." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
 
 ### 1. Read & orient
 
@@ -626,7 +626,7 @@ Write the body to a file before posting. Self-review must read from the file, no
 
 This is the self-review you announced before stage 1. Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
 
-1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding).
+1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding) and the mechanical Writing style bans (em dashes, threaded clauses, hard-wrapped lines).
 2. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
 3. Check the title against the PR titles self-test. Update or surface a rewrite if it fails.
 4. Verify a reviewer with no context grasps the change and motivation within 30 seconds.
@@ -634,7 +634,7 @@ This is the self-review you announced before stage 1. Read the draft file from t
 6. Check the body against the Red flags table. Cut anything that hits.
 
 - DO edit the file in place. Do not redraft from session memory.
-- DO state what the HARD RESTRICTIONs pass and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
+- DO state what the HARD RESTRICTIONs and Writing style pass and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
 
 ### 6. Post
 
