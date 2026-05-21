@@ -24,7 +24,7 @@ A reviewer landing on your PR needs to be able to read, scan, or skim to grep th
 
 You must communicate *the net change* of the PR and its motivation or justification.
 
-On a large change the body has a second job: helping the reviewer *perform* the review, not only grasp the net change. A diff spanning dozens of files is a wall of code. The body can map the change's structural shape so the reviewer can judge whether it is well-formed. Conditional on size; see *Shape*.
+On a large change the body has a second job: helping the reviewer *perform* the review, not only grasp the net change. A diff spanning dozens of files is a wall of code. The body can map the change's structural shape so the reviewer can judge whether the new architecture is well-placed. Conditional on size; see *Shape*.
 
 - DO state the change and its motivation immediately in the first paragraph, sentence, or heading
 - DO explain the design and its trade-offs
@@ -435,39 +435,40 @@ The wall mixes the two decisions with mechanism the diff already shows; the bull
 
 ### Shape
 
-A map of how a large change sits in the codebase: the structural moves it makes and how they relate. Title it `## Shape`, `## Structure`, or whatever fits. It primes a reviewer to judge whether the change is well-placed, not to locate files.
+A map of the architecture a large change introduces: each new component, where it sits in the codebase, and how it relates to existing structure. Title it `## Shape`, `## Structure`, or whatever fits. It primes a reviewer to judge whether the new architecture is well-placed, not to locate files.
 
 Gate it on diff size, the way Design gates on non-obvious decisions: include it only when the diff is too large to review as a unit. Below that, the diff is its own map and the section is padding.
 
-Each entry names a structural element and the responsibility it owns: a new package and the logic it holds, a boundary the change draws, how a new piece relates to existing structure. Structure alone is a table of contents; function alone is diff narration.
+Each entry names a new architectural piece: what it is, where it lives, and how it relates to what is already there. Structure alone is a table of contents; what the code does internally is diff narration.
 
 Distinct from Design: Design is one decision where another option existed; Shape is the overall composition. A large PR can warrant both.
 
-- DO include only when the diff is too large to hold in the head
-- DO name the responsibility boundaries the change establishes or crosses
-- DO state how the structural pieces relate, not just that they exist
+- DO include only when the diff is too large to review as a unit
+- DO name each new architectural piece: what it is, where it lives, its role
+- DO say how a new piece relates to existing structure: what it reuses, extends, or sits behind
+- DO name the responsibility boundaries the change draws or crosses
+- DO flag the piece whose placement most warrants scrutiny
 - DO weight entries by architectural significance, not code volume
-- DO point at the part most likely to be structurally wrong
-- DO NOT list files or directories as an inventory
-- DO NOT give each changed component its own entry
-- DO NOT walk through what a function does step by step
-- DO NOT let the section grow with the diff; shape is composition, not size
-- DO NOT argue the change is good; expose the structure for the reviewer's judgement
+- DO NOT describe what a component does step by step; that is the diff
+- DO NOT enumerate every changed file; name the new structure, not the diff
+- DO NOT let the section grow with the diff; it grows with new architecture, which stays small
+- DO NOT argue the change is good; give the reviewer what they need to judge it
 
 The same large change as a component inventory, then as a shape:
 
 > **Inventory (reject):**
-> - `pkg/domains/foo/`: new domain service. `Service.Create` looks up the parent folder, loads its state, makes a model call, then applies edits transactionally.
-> - `foo_create` tool: thin wrapper around the service.
-> - `foo-usage.md`: schema doc embedded in the prompt; teaches path and section conventions.
-> - Filestore: adds `ModuleFoo`, a `parent_id` column, a trigger branch, and eager provisioning hooks.
+> - `pkg/domains/foo/`: new domain service. `Service.Create` looks up the parent folder, loads its state, makes a model call, normalises the result, then applies edits transactionally.
+> - `foo_create` tool: validates the input, calls `Service.Create`, maps the returned error.
+> - `foo-usage.md`: a Markdown doc; teaches path conventions, per-scope section rules, and the parallel-read rule.
+> - Filestore: adds `ModuleFoo`, an `org_subject_id` column, a trigger branch, two provisioning hooks, and a benchmark fixture update.
 
 > **Shape (accept):**
-> - A new `foo` domain package owns the write logic; the `foo_create` tool is a thin wrapper, so validation and error handling stay in the domain.
-> - The model call runs outside the write transaction, so no DB connection is held across the roundtrip.
-> - The new filestore trigger branch grants `editor` on a new scope. It is the only change that can widen permissions and the part to review hardest.
+> - `pkg/domains/foo/`: a new domain package, the home for `foo` write logic. Sits alongside the existing domain packages, behind a service interface.
+> - `foo_create`: a new tool in the agent tool layer. A thin wrapper over the domain package; holds no logic of its own.
+> - `foo-usage.md`: a new schema doc, embedded in the agent's prompt stack.
+> - Filestore: a new `ModuleFoo` and an `org_subject_id` column, reusing the existing node and permission machinery rather than a parallel store. The permission wiring is worth the closest look.
 
-Both use bullets; the difference is selection. The inventory has one bullet per changed area at equal weight, restating what each does. The shape keeps only the load-bearing moves: the boundary, the soundness call, the risk.
+The inventory narrates what each piece does internally and enumerates its diff. The shape says what each piece is, where it sits, and how it relates to existing structure, so a reviewer can judge whether the change is built in the right shape.
 
 ### Background
 
@@ -658,7 +659,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
-| "I'll give each changed package or component its own subheading and say what it does" | Component inventory. The large-diff section is Shape: name boundaries and how the pieces relate, weighted by significance, gated on diff size. See Shape. |
+| "I'll describe what each new component does" | That's the inventory. Shape says what each component is, where it sits, and how it relates to existing structure, not how it works. See Shape. |
 | "I'll walk through what `Service.Create` does step by step" | That's the algorithm; the diff has it. Shape names placement and boundaries, not behaviour. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
