@@ -578,6 +578,8 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 
 Follow this procedure when drafting or revising a PR body.
 
+Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs and the Red flags table." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
+
 ### 1. Read & orient
 
 There may be changes in the PR you don't know about. The absolute source of truth for the **net changes** of the PR is the branch's commits and diff, not your own session memory. Read the PR and orient yourself to the changes. You can only skip this if you were the exclusive creator and contributor of the branch.
@@ -622,7 +624,7 @@ Write the body to a file before posting. Self-review must read from the file, no
 
 ### 5. Self-review
 
-Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
+This is the self-review you announced before stage 1. Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
 
 1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding).
 2. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
@@ -632,6 +634,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 6. Check the body against the Red flags table. Cut anything that hits.
 
 - DO edit the file in place. Do not redraft from session memory.
+- DO state what the HARD RESTRICTIONs pass and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
 
 ### 6. Post
 
