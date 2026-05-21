@@ -448,12 +448,12 @@ Shape places a piece; it does not explain it. Design holds the decisions, each o
 - DO say how a new piece relates to existing structure: what it reuses, extends, or sits behind
 - DO name a type or function only when it is load-bearing: a boundary, the risk, a dependency
 - DO name the responsibility boundaries the change draws or crosses
-- DO flag the piece whose placement most warrants scrutiny
 - DO weight entries by architectural significance, not code volume
 - DO NOT describe what a component does step by step; that is the diff
 - DO NOT enumerate every changed file or a package's members; name the new structure, not its contents
 - DO NOT let the section grow with the diff; it grows with new architecture, which stays small
 - DO NOT argue the change is good; give the reviewer what they need to judge it
+- DO NOT tell the reviewer what to scrutinise or check; present the architecture and let them judge it
 
 The same large change as a component inventory, then as a shape:
 
@@ -465,7 +465,7 @@ The same large change as a component inventory, then as a shape:
 
 > **Shape (accept):**
 > - `pkg/domains/foo/`: a new domain package, the home for `foo` write logic. Sits alongside the existing domain packages, behind a service interface.
-> - `pkg/handlers/foo/`: a new HTTP handler package. It binds the transport to the domain service behind an auth middleware that verifies tokens locally. The auth middleware is the piece whose placement most warrants scrutiny.
+> - `pkg/handlers/foo/`: a new HTTP handler package. It binds the transport to the domain service behind an auth middleware that verifies tokens locally.
 > - `foo-usage.md`: a new schema doc, embedded in the agent's prompt stack.
 > - Filestore: a new `ModuleFoo` and an `org_subject_id` column, reusing the existing node and permission machinery rather than a parallel store.
 
@@ -661,7 +661,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
 | "Listing a package's exported types is describing its structure, so it belongs in Shape" | A flat list of types, one label each, is the inventory at a finer grain. Name a type only where it is load-bearing: a boundary, the risk, a dependency. See Shape. |
-| "I flagged this piece as the one to scrutinise, so I should spell out what it does" | Flagging places it; what it does is the diff. A choice it embodies, where another option existed, is a Design bullet. See Shape. |
+| "This piece is sensitive, so the reviewer needs to see how it works" | Name it and place it; how it works is the diff. A choice it embodies, where another option existed, is a Design bullet. See Shape. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
