@@ -463,9 +463,11 @@ The same large change as a component inventory, then as a shape:
 > - Filestore: adds `ModuleFoo`, a `parent_id` column, a trigger branch, and eager provisioning hooks.
 
 > **Shape (accept):**
-> A new `foo` domain package owns the write logic. The `foo_create` tool stays a thin wrapper over it, so input validation and error semantics live in the domain, not the tool. The model call runs outside the write transaction, so no DB connection is pinned across the roundtrip. The new filestore trigger branch is the part to scrutinise hardest: it grants `editor` on a new scope and is the only change that can widen permissions.
+> - A new `foo` domain package owns the write logic; the `foo_create` tool is a thin wrapper, so validation and error handling stay in the domain.
+> - The model call runs outside the write transaction, so no DB connection is held across the roundtrip.
+> - The new filestore trigger branch grants `editor` on a new scope. It is the only change that can widen permissions and the part to review hardest.
 
-The inventory adds one bullet per changed area at equal weight and restates what each does. The shape names the boundaries, says where logic lives, and points the reviewer at the risk.
+Both use bullets; the difference is selection. The inventory has one bullet per changed area at equal weight, restating what each does. The shape keeps only the load-bearing moves: the boundary, the soundness call, the risk.
 
 ### Background
 
