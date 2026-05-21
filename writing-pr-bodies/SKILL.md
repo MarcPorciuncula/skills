@@ -441,7 +441,7 @@ Gate it on diff size, the way Design gates on non-obvious decisions: include it 
 
 Each entry names a new architectural piece (a package, a module, a layer): what it is, where it lives, how it relates to what is already there. Name a type or function inside it only when it is load-bearing: a boundary, the risk, or what another piece depends on. Structure alone is a table of contents; what the code does internally is diff narration.
 
-Distinct from Design: Design is one decision where another option existed; Shape is the overall composition. A large PR can warrant both.
+Shape places a piece; it does not explain it. Design holds the decisions, each one where another option existed. When a Shape entry pulls toward how a piece works or why a choice was made, that content is not Shape: a decision goes to Design, pure behaviour to the diff. A large PR can warrant both; judge whether the decisions earn a Design section (see *Design / Key design decisions*).
 
 - DO include only when the diff is too large to review as a unit
 - DO name each new architectural piece: what it is, where it lives, its role
@@ -661,7 +661,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
 | "Listing a package's exported types is describing its structure, so it belongs in Shape" | A flat list of types, one label each, is the inventory at a finer grain. Name a type only where it is load-bearing: a boundary, the risk, a dependency. See Shape. |
-| "I'll walk through what `Service.Create` does step by step" | That's the algorithm; the diff has it. Shape names placement and boundaries, not behaviour. |
+| "I flagged this piece as the one to scrutinise, so I should spell out what it does" | Flagging places it; what it does is the diff. A choice it embodies, where another option existed, is a Design bullet. See Shape. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
