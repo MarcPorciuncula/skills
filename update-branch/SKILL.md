@@ -21,13 +21,24 @@ Run `git fetch origin` before doing anything else. **This is mandatory even if t
 - **All branches** (user says "update branches", "update all branches", etc.): Discover branches first:
   1. List open PRs via `gh pr list --author @me --state open --json number,title,headRefName`.
   2. Cross-reference with `git worktree list` — only branches with a worktree can be updated. Report any PR branches without a worktree.
-  3. Group branches by git-spice stack: for each branch with a worktree, run `git-spice ls` from within that worktree. If multiple PR branches belong to the same stack, group them — they'll be updated as a single unit. Standalone branches are each their own group.
+  3. Group branches into stacks. `git-spice ls` may be empty on a fresh clone, so do not rely on it alone — also group by PR base relationships, where a branch whose PR base is another open PR branch belongs to that branch's stack (see the git-spice detection in Step 3). Branches in the same stack are updated as a single unit. Standalone branches are each their own group.
   4. Apply Step 3 to each group. For git-spice stacks, only process once per stack (not per branch).
   5. Report a summary: which branches were updated, which were skipped (and why), and any errors.
 
 ## Step 3: Update a branch/stack
 
-**Determine if the branch is managed by git-spice** by running `git-spice ls` — if the current branch appears in the output, it's git-spice managed.
+### Detect git-spice management — do not trust `git-spice ls` alone
+
+git-spice's local state is empty on a fresh clone, so a branch missing from `git-spice ls` is not proof the stack is unmanaged. Check both signals:
+
+1. Run `git-spice ls`. If the branch appears, the stack is tracked locally.
+2. If it does not appear, check the branch's PR for the git-spice stack-navigation comment — the comment git-spice posts listing every branch in the stack (`gh pr view --comments`). Its presence means the stack is git-spice managed and only the local state is missing.
+
+### Use git-spice for any stack of 3+ branches
+
+A stack of 3+ branches MUST be updated with git-spice. The manual rebase flow is far too slow at that size. Determine the stack size from the navigation comment if present, otherwise by following the PR base chain (`gh pr view --json baseRefName` on each branch up the chain).
+
+If the stack is 3+ branches and the local git-spice state is missing, adopt it into git-spice before restacking: starting from the branch closest to `main` and working up, run `git-spice branch track --base <base-branch>` for each branch. Then follow the Git-spice managed flow.
 
 ### Git-spice managed
 
@@ -42,6 +53,8 @@ Run `git-spice repo sync` (ensures git-spice internal state is updated), then `g
 - **If restacking reports a stash error but the working tree is clean:** git-spice sometimes reports "Dirty changes in the worktree were stashed, but could not be re-applied" even when the rebase succeeded and the working tree is clean. This is a cosmetic error. Verify with `git status` — if the branch has diverged from its remote tracking branch and the working tree is clean, the restack succeeded despite the error. Continue with the next step.
 
 ### Normal branch
+
+Use this flow only for a standalone branch or a 1-2 branch stack with no git-spice management. Any stack of 3+ branches uses the Git-spice managed flow.
 
 **Determine the base branch.** Check if the branch has a PR and what its base is:
 ```bash
@@ -72,6 +85,7 @@ Do not ask for confirmation — the user has already authorized pushing by reque
 |---------|---------|
 | "The rebase reported 'already up to date' — done" | The tracking ref may be stale. Verify the base branch hasn't been merged and moved underneath this one. |
 | "The base branch hasn't changed, I can skip the PR check" | A branch that hasn't changed in diff can still have been merged into main. Check PR state, not just the diff. |
+| "`git-spice ls` doesn't list this branch, so it's a normal branch — rebase it manually" | git-spice's local state is empty on a fresh clone. Check the PR for the stack-navigation comment before deciding the stack is unmanaged. |
 
 ## Conflict resolution
 
