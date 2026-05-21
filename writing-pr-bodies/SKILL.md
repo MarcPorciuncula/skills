@@ -24,6 +24,8 @@ A reviewer landing on your PR needs to be able to read, scan, or skim to grep th
 
 You must communicate *the net change* of the PR and its motivation or justification.
 
+On a large change the body has a second job: helping the reviewer *perform* the review, not only grasp the net change. A diff spanning dozens of files is a wall of code. The body can map the change's structural shape so the reviewer can judge whether the new architecture is well-placed. Conditional on size; see *Shape*.
+
 - DO state the change and its motivation immediately in the first paragraph, sentence, or heading
 - DO explain the design and its trade-offs
 - DO explain how design decisions are justified
@@ -228,6 +230,7 @@ DO INCLUDE:
 - A behavioural difference (before vs after) that the diff doesn't make legible
 - A constraint, invariant, or assumption the change rests on
 - An unusual diff shape that would surprise a reviewer if not flagged (large mechanical churn, restructured tests, regenerated vendored files)
+- The structural shape of a change too large to review as a unit (see *Shape*)
 
 DON'T INCLUDE CONTENT THAT:
 
@@ -430,6 +433,44 @@ The same decisions as one prose paragraph, then as bullets:
 
 The wall mixes the two decisions with mechanism the diff already shows; the bullets keep only the decisions.
 
+### Shape
+
+A map of the architecture a large change introduces: each new component, where it sits in the codebase, and how it relates to existing structure. Title it `## Shape`, `## Structure`, or whatever fits. It primes a reviewer to judge whether the new architecture is well-placed, not to locate files.
+
+Gate it on diff size, the way Design gates on non-obvious decisions: include it only when the diff is too large to review as a unit. Below that, the diff is its own map and the section is padding.
+
+Each entry names a new architectural piece (a package, a module, a layer): what it is, where it lives, how it relates to what is already there. Name a type or function inside it only when it is load-bearing: a boundary, the risk, or what another piece depends on. Structure alone is a table of contents; what the code does internally is diff narration.
+
+Shape places a piece; it does not explain it. Design holds the decisions, each one where another option existed. When a Shape entry pulls toward how a piece works or why a choice was made, that content is not Shape: a decision goes to Design, pure behaviour to the diff. A large PR can warrant both; judge whether the decisions earn a Design section (see *Design / Key design decisions*).
+
+- DO include only when the diff is too large to review as a unit
+- DO name each new architectural piece: what it is, where it lives, its role
+- DO say how a new piece relates to existing structure: what it reuses, extends, or sits behind
+- DO name a type or function only when it is load-bearing: a boundary, the risk, a dependency
+- DO name the responsibility boundaries the change draws or crosses
+- DO weight entries by architectural significance, not code volume
+- DO NOT describe what a component does step by step; that is the diff
+- DO NOT enumerate every changed file or a package's members; name the new structure, not its contents
+- DO NOT let the section grow with the diff; it grows with new architecture, which stays small
+- DO NOT argue the change is good; give the reviewer what they need to judge it
+- DO NOT tell the reviewer what to scrutinise or check; present the architecture and let them judge it
+
+The same large change as a component inventory, then as a shape:
+
+> **Inventory (reject):**
+> - `pkg/domains/foo/`: new domain service. `Service.Create` looks up the parent folder, loads its state, makes a model call, normalises the result, then applies edits transactionally.
+> - `pkg/handlers/foo/`: new HTTP handler package. `Handler` serves the endpoint, `authMiddleware` verifies the token, `rateLimit` throttles per user, `serveMetadata` returns the discovery document.
+> - `foo-usage.md`: a Markdown doc; teaches path conventions, per-scope section rules, and the parallel-read rule.
+> - Filestore: adds `ModuleFoo`, an `org_subject_id` column, a trigger branch, two provisioning hooks, and a benchmark fixture update.
+
+> **Shape (accept):**
+> - `pkg/domains/foo/`: a new domain package, the home for `foo` write logic. Sits alongside the existing domain packages, behind a service interface.
+> - `pkg/handlers/foo/`: a new HTTP handler package. It binds the transport to the domain service behind an auth middleware that verifies tokens locally.
+> - `foo-usage.md`: a new schema doc, embedded in the agent's prompt stack.
+> - Filestore: a new `ModuleFoo` and an `org_subject_id` column, reusing the existing node and permission machinery rather than a parallel store.
+
+The inventory narrates what each piece does internally and enumerates its members. The shape says what each piece is, where it sits, and how it relates to existing structure, naming a type only where it is load-bearing, like the auth middleware here. A reviewer reads it to judge whether the new architecture is well-placed.
+
 ### Background
 
 For context the commits don't carry. Only include when the PR's motivation or constraints aren't legible from the PR scope alone.
@@ -537,6 +578,8 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 
 Follow this procedure when drafting or revising a PR body.
 
+Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs, the Writing style rules, and the Red flags table." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
+
 ### 1. Read & orient
 
 There may be changes in the PR you don't know about. The absolute source of truth for the **net changes** of the PR is the branch's commits and diff, not your own session memory. Read the PR and orient yourself to the changes. You can only skip this if you were the exclusive creator and contributor of the branch.
@@ -581,9 +624,9 @@ Write the body to a file before posting. Self-review must read from the file, no
 
 ### 5. Self-review
 
-Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
+This is the self-review you announced before stage 1. Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
 
-1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding).
+1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding) and the mechanical Writing style bans (em dashes, threaded clauses, hard-wrapped lines).
 2. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
 3. Check the title against the PR titles self-test. Update or surface a rewrite if it fails.
 4. Verify a reviewer with no context grasps the change and motivation within 30 seconds.
@@ -591,6 +634,7 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 6. Check the body against the Red flags table. Cut anything that hits.
 
 - DO edit the file in place. Do not redraft from session memory.
+- DO state what the HARD RESTRICTIONs and Writing style pass and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
 
 ### 6. Post
 
@@ -619,6 +663,8 @@ Read the draft file from top to bottom, as if seeing it for the first time. Comp
 | "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
+| "Listing a package's exported types is describing its structure, so it belongs in Shape" | A flat list of types, one label each, is the inventory at a finer grain. Name a type only where it is load-bearing: a boundary, the risk, a dependency. See Shape. |
+| "This piece is sensitive, so the reviewer needs to see how it works" | Name it and place it; how it works is the diff. A choice it embodies, where another option existed, is a Design bullet. See Shape. |
 | "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
 | "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
