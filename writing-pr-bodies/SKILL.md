@@ -262,17 +262,20 @@ Right-size to the PR. A small diff is one sentence with no elaboration. A comple
 
 First sentence: the change, with the PR as the subject. The rest: what the reader now sees, with the feature as the subject. One paragraph, right-sized.
 
-**Fix variant.** For a `fix:` PR, lead with the prior fault, then the fix. A small adjacent fix can ride along.
+**Prior-state variant.** When the prior state is a stronger first-sentence headline than the change, lead with the prior state, then the change. A small adjacent fix can ride along.
 
-- DO use for `fix:` work where the fault fits in one sentence and naming it adds more than naming the fix alone
-- DO state the fault in user-visible terms, then the fix
+- DO use only when the prior state is a stronger first-sentence headline than the change. Test: would a reviewer scanning 50 PRs get more from the prior state or from the change as the first sentence? If from the change, use the standard lede with prior state in elaboration
+- DO state the prior state in concrete user-visible or behavioral terms
+- DO state the prior state and the change in two sentences total
 - DO put a small adjacent fix at the end of the same paragraph, when it earns its place in one sentence
-- DO NOT use for `feat:` / `improve:` / `refactor:`. The prior state is not the headline there
-- DO NOT use when the fault needs a paragraph; promote to Problem/Change (see *Problem/Change*)
+- DO NOT use when "Adds X" / "Moves Y" / "Switches A to B" carries the motivation. If the prior state is just "no X existed" or "X was less good", it adds nothing as a headline
+- DO NOT use when the prior state needs more than one sentence. For `fix:` work, promote to Problem/Change (see *Problem/Change*); for other work, use the standard lede with prior state in elaboration
 
-> Previously, copying a snippet from the docs included the leading "$" prompt character. The copy action now strips the prompt. Also adds a tooltip on the copy button.
+> **Fix example:** Previously, copying a snippet from the docs included the leading "$" prompt character. The copy action now strips the prompt. Also adds a tooltip on the copy button.
 
-First sentence: the fault in user-visible terms. Second: the fix. Third: an incidental fix that earned its place in one sentence.
+> **Improvement example:** Previously the cache keyed on `(user, asset)`, so two users hitting the same asset missed each other's warmth. The key is now `(asset, user)`.
+
+First sentence in each: the prior state in concrete terms. Second: the change.
 
 ### Problem / Change
 
@@ -282,7 +285,7 @@ Heading pairs can be `## Problem` / `## Change`, `## Issue` / `## Fix`, or any p
 
 - DO use for genuine bugs or faults closed by this PR
 - DO use when the problem requires at least a paragraph to explain
-- DO NOT use when the fault fits in one sentence; use the Lede or its Fix variant (see *Lede*)
+- DO NOT use when the fault fits in one sentence; use the Lede or its Prior-state variant (see *Lede*)
 - DO NOT use for improvements, refactors, or feature additions. They aren't bug fixes even if the prior state was undesirable
 
 > ## Problem
