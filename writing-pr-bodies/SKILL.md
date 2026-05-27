@@ -407,6 +407,7 @@ When the PR's branch is independent (branched off the base, shares no git histor
 - DO use the cross-repo `owner/repo#N` form and carry the same link in External references
 - DO lead the body with a Deployability `> [!WARNING]` when merging before the dependency lands breaks production
 - DO NOT call this a stack or write "stacked on"
+- DO NOT use when this PR is the prerequisite the other depends on. The direction is reversed; a Dependency heading misleads scanners into checking for a merge gate that doesn't exist. Put the relationship in the lede elaboration or as a `- Refs owner/repo#N` item in External references
 
 ```
 Depends on owner/repo#N, which ships the proto the regenerated client here builds against. Merges after #N lands on the base branch.
@@ -693,6 +694,7 @@ This is the self-review you announced before stage 1. Read the draft file from t
 | "`[AI-1234](url)` with the bare ID as the link text is enough" | Linear never unfurls. Put the ticket title in the link text so the reference is useful at a glance. |
 | "I'll add a `> [!NOTE]` / `> [!TIP]` banner to highlight context or a caveat" | Alerts are only for merge or deploy blockers (`> [!WARNING]` in Deployability). A decorative banner trains reviewers to ignore the real ones. |
 | "PR B depends on PR A landing, so B is stacked on A" / "## Stack — Stacked on cross-repo#N" | Stack means shared git ancestry in one repo (B branched off A). An independent or cross-repo ordering dependency is not a stack. Use the Dependency section and carry the link in External references. |
+| "Another PR depends on this one landing first, so I'll add a `## Dependency` section to flag the relationship" | Wrong direction. Dependency is for when this PR is blocked. Putting it on the prerequisite makes scanners assume a merge gate that doesn't exist. Mention the consumer in the lede elaboration or as a `- Refs owner/repo#N` item in External references. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
 | "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
 | "This needs more structure to feel complete" | A short prose body is complete for a small PR. |
