@@ -6,7 +6,7 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 - **general-communication** — Response tone and formatting baselines (no flattery, no emojis, direct answers). Always applicable.
 - **design-and-change-proposals** — State responsibility, boundary, and a rejected alternative before implementing. Always applicable.
 - **visual-explanations** — ASCII diagrams and markdown tables for explaining code. Always applicable.
-- **attributing-content** — Prefix GitHub/Linear content with `[AI Generated - Claude]` (autonomous posts) or `[AI Assisted - Claude / NAME]` (drafts the user posts); preserve human-overview sections in PR bodies. Contains a `{{USER_NAME}}` placeholder substituted at apply time. Skip for users who don't collaborate on shared issue trackers.
+- **attributing-content** — Prefix GitHub/Linear comments with `[AI Generated - Claude]` (autonomous), `[AI Assisted - Claude / NAME]` (user shaped the text), or no label (strictly verbatim user-provided text); PR/issue bodies are excepted but human-overview sections inside them must be preserved. Contains a `{{USER_NAME}}` placeholder substituted at apply time. Skip for users who don't collaborate on shared issue trackers.
 - **writing-tests** — Two-pass self-check before writing any test: justify it (five gates), then design it (verification questions). Always applicable.
 - **frontend-tests** — Default to no component test; refactor first so the code is visibly trivial. Applies when writing component tests; skip for backend-only work.
 - **code-removal-and-refactoring** — Delete internal code rather than deprecate. Applies to internal codebases; less relevant for public-API maintenance.

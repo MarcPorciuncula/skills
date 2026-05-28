@@ -1,16 +1,19 @@
 ---
 id: attributing-content
-description: Prefix AI-generated or AI-assisted GitHub and Linear content with provenance labels (`[AI Generated - Claude]` / `[AI Assisted - Claude / NAME]`); preserve human-overview sections in PR bodies verbatim.
+description: Prefix GitHub and Linear comments with provenance labels (`[AI Generated - Claude]` / `[AI Assisted - Claude / NAME]`) chosen by who authored the text; preserve human-overview sections in PR/issue bodies verbatim.
 ---
 
 ## Attributing content on GitHub and Linear
 
-The goal: anyone reading the PR or issue — the user, reviewers, future readers — needs to tell at a glance which content came from an AI agent autonomously, which was AI-drafted but human-posted, and which the human wrote themselves. Prefix anything you author or co-author on those platforms with a provenance label.
+The goal: anyone reading the PR or issue — the user, reviewers, future readers — needs to tell at a glance which content came from an AI agent autonomously, which was AI-drafted with the user in the loop, and which the user wrote themselves. Prefix anything you author or co-author on those platforms with a provenance label.
 
-**Two labels — pick by who is actually posting:**
+**Two labels — pick by who authored the text, not who requested the work:**
 
-- **`[AI Generated - Claude]`** — content Claude wrote and posted directly with no human review before posting. Use for autonomous replies, comments, status updates, and anything else the agent posts on behalf of the user without first surfacing it for review.
-- **`[AI Assisted - Claude / {{USER_NAME}}]`** — content Claude drafted that the human ({{USER_NAME}}) posts themselves, with or without editing. Use when surfacing a drafted reply for the user to post, and keep the prefix on the drafted text so the user can post it verbatim and the provenance stays accurate.
+- **`[AI Generated - Claude]`** — Claude wrote the text autonomously while carrying out a user-requested task. The user asked for an outcome (e.g. "address the review", "reply to the bot"); Claude composed the post itself with no further user involvement.
+- **`[AI Assisted - Claude / {{USER_NAME}}]`** — the user shaped the text. Use when *any* of these apply:
+  - The user specifically drove the inquiry whose answer became this text (e.g. asked Claude to investigate a question and post the findings).
+  - The user approved a draft Claude prepared before it was posted.
+  - The user provided text or talking points that Claude altered, expanded, or polished before posting.
 
 <!--
 {{USER_NAME}} is a placeholder. When this chunk is rendered into a user's CLAUDE.md,
@@ -19,14 +22,15 @@ the setup-claude-preferences skill substitutes the user's preferred attribution 
 chunk source. See setup-claude-preferences/SKILL.md → "Placeholder substitution".
 -->
 
+**No label** — only when the user gave Claude strictly verbatim text and asked the agent to post it on their behalf. Anything the agent added, rephrased, or restructured moves the post into "AI Assisted".
+
 **Applies to:**
 
 - Any comment on a GitHub pull request, including PR review comments and inline code-review comments
 - Any comment on a Linear issue
-- The body of any Linear issue you create or modify
 
-**Exception — PR body:** The GitHub PR body is assumed to be Claude-authored by default, so no prefix is needed there. But:
+**Exception — PR and Linear issue bodies:** The GitHub PR body and the body of a Linear issue Claude creates or modifies are assumed to be Claude-authored by default, so no prefix is needed on the body itself. The human-overview rules still apply:
 
 - Never author a `## Human overview` (or similarly named) section yourself. The heading is a provenance claim about the user — writing under it lies about authorship. If you have framing to add, put it in the lede prose, not under that heading.
-- If such a section is present in the PR body, preserve it verbatim. Never modify, rewrite, or overwrite it without explicit permission from the user — it is the user's own words added after the fact.
-- When editing a PR body that has a human overview section, leave that section untouched and only change the surrounding Claude-authored content.
+- If such a section is present, preserve it verbatim. Never modify, rewrite, or overwrite it without explicit permission from the user — it is the user's own words added after the fact.
+- When editing a body that has a human overview section, leave that section untouched and only change the surrounding Claude-authored content.
