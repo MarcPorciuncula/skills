@@ -48,6 +48,12 @@ Dealt-with threads are context, not content. Read them to spot repeated reviewer
 In ALL modes — including address mode where execution follows immediately — you MUST present the analysis table before taking any action. This applies even when all comments look obviously simple or trivial. The table is the commitment: it shows the user exactly what you are about to do and creates an opportunity to redirect before any changes are made.
 </HARD-GATE>
 
+## Reply attribution label
+
+Posts from this skill carry an attribution prefix so reviewers can tell agent comments from human ones at a glance. The default is `[Claude]`. If CLAUDE.md (user-level or project-level) configures a different attribution label for PR review replies (e.g. `[Agent]`, `[Bot]`, a tool name), use that label everywhere this skill writes `[Claude]` — the dealt-with detection signal, the allowlist gate, and every template in Phase 3.
+
+Without an explicit override in CLAUDE.md, the default `[Claude]` stands.
+
 ## Reviewer reply allowlist
 
 Claude only posts `[Claude]` replies and resolves threads on behalf of the user for authors that are pre-approved. This prevents auto-replies going out to human reviewers who haven't agreed to receive them.
@@ -197,9 +203,9 @@ For each not-dealt-with thread analysed in Phase 1, decide whether Claude is all
 
 - **Bot author:** Claude posts the reply per the category rules below.
 - **Allowlisted human author** (per CLAUDE.md): Claude posts the reply per the category rules below.
-- **Non-allowlisted human author:** Claude does **not** post anything. Draft the reply body using the same category rules and pass it through to "Needs your attention" along with the comment URL — but do not include the `[Claude]` prefix since the user will post in their own voice. Skip this comment when assembling the reply file.
+- **Non-allowlisted human author:** Claude does **not** post anything. Draft the reply body using the same category rules and pass it through to "Needs your attention" along with the comment URL — but do not include the attribution prefix since the user will post in their own voice. Skip this comment when assembling the reply file.
 
-For comments Claude is allowed to post, write a temp file with one `comment_id:body` pair per line, then pass it to `reply-to-comments.sh`. Every reply body **must** be prefixed with `[Claude]`. Keep replies concise — one or two sentences. The reply content depends on the category:
+For comments Claude is allowed to post, write a temp file with one `comment_id:body` pair per line, then pass it to `reply-to-comments.sh`. Every reply body **must** be prefixed with the configured attribution label (default `[Claude]`; see "Reply attribution label"). Keep replies concise — one or two sentences. The reply content depends on the category — the templates use `[Claude]` as the default; substitute the configured label if one is set:
 
 - **Outdated / already fixed:** `[Claude] This was already addressed in {commit short hash}.`
 - **Question / discussion:** `[Claude] {the draft explanation from the analysis table}.`
@@ -253,7 +259,7 @@ The bar for inclusion is high: include only items from this run's analysis where
 
 Include:
 
-- **Threads needing your reply (non-allowlisted human reviewer)** — every not-dealt-with thread whose author is a human not on the CLAUDE.md allowlist. Claude has not posted anything on these threads. Include the comment URL, the drafted reply text (without the `[Claude]` prefix, since the user posts in their own voice), and a note on any code change Claude already made so the reply can reference it (e.g. "Fixed in {commit short hash}").
+- **Threads needing your reply (non-allowlisted human reviewer)** — every not-dealt-with thread whose author is a human not on the CLAUDE.md allowlist. Claude has not posted anything on these threads. Include the comment URL, the drafted reply text (without the attribution prefix, since the user posts in their own voice), and a note on any code change Claude already made so the reply can reference it (e.g. "Fixed in {commit short hash}").
 - **Threads left open after a Claude reply** — for allowlisted human reviewers: questions about architecture/design, correctness, subjective suggestions, or out-of-scope items where Claude posted a reply but left the thread open. Include the reply text Claude posted so the user can read it without leaving the terminal.
 - **Out of scope items** — even when the reply was posted, the user needs to decide whether to open a follow-up issue or PR.
 
