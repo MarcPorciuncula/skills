@@ -76,3 +76,26 @@ When rendering or updating such a chunk:
 4. On a re-sync, treat a flip in installation state as drift and surface it to the user before applying.
 
 Surface this decision in the diff so the user can override.
+
+## Placeholder substitution
+
+A chunk may contain `{{PLACEHOLDER}}` tokens (double-brace, uppercase identifier) that get personalised at render time. The chunk source keeps the literal token; the rendered chunk in `~/.claude/CLAUDE.md` contains the substituted value.
+
+Current placeholders:
+
+- **`{{USER_NAME}}`** — the user's preferred attribution name for AI-assisted content (typically their first name). Used in `attributing-content.md`.
+
+When applying a chunk that contains placeholders:
+
+1. For each placeholder, find or ask for the value:
+   - `{{USER_NAME}}`: on first apply, ask the user ("What name should appear in AI attribution labels, e.g. `[AI Assisted - Claude / Marc]`?"). On later runs, recover the value from the existing rendered chunk in `~/.claude/CLAUDE.md` before substituting again so the user isn't asked twice.
+2. Substitute every occurrence of the placeholder with the value in the rendered output.
+3. Leave the chunk source unchanged.
+
+When checking drift on a chunk that contains placeholders:
+
+1. `check-sync.py` will flag the chunk as DRIFT because the source token doesn't match the rendered value. Treat this as advisory.
+2. Re-verify by reverse-substituting (replace the rendered value with the placeholder) before comparing. If the only difference is the substitution, the chunk is in sync.
+3. If real drift remains, surface the diff to the user as usual.
+
+The chunk source annotates each placeholder with an HTML comment near its first use so the rule is obvious without needing to consult this section.
