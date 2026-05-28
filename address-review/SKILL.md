@@ -11,6 +11,24 @@ description: >
 
 Analyze review comments on the current branch's PR, categorize each one, and present recommendations. Depending on the user's phrasing, either proceed to fix immediately or wait for input.
 
+## Each run targets not-dealt-with threads
+
+This skill is invoked iteratively. A PR may have been through prior cycles — possibly in a different session this agent has no memory of. Determine state from the PR itself, not from session continuity.
+
+Analyse and surface only **not-dealt-with** threads.
+
+**A thread is dealt with when:**
+- some party has addressed the original issue (dismissal, the reviewer retracting, or acknowledgment plus fix), AND
+- the latest comment does not raise a new question or reopen the concern.
+
+Otherwise it is not dealt with.
+
+A `[Claude]` reply is a signal, not the determinant — the contents matter, and the resolving comment may come from anyone (PR author, the reviewer themselves, or Claude). GitHub's resolved/open state is also not the determinant — the auto-resolve rules deliberately keep some dealt-with threads open for human visibility.
+
+Read each thread's full comment history before classifying.
+
+Dealt-with threads are context, not content. Read them to spot repeated reviewer behaviour, recurring concerns, or structural issues worth addressing. They do not appear in the analysis table, in "Needs your attention", or in narration.
+
 ## Red Flags — Stop
 
 | Thought | Reality |
@@ -35,10 +53,11 @@ In ALL modes — including address mode where execution follows immediately — 
 ### Gather comments
 
 1. Determine the PR for the current branch: `gh pr view --json number,url`
-2. Fetch all inline review comments using `fetch-review-comments.sh`.
+2. Fetch all inline review comments using `fetch-review-comments.sh`. Group into threads using the `Reply to` field (a comment with no reply-to is its thread's root).
 3. Fetch PR conversation comments: `gh pr view --comments`
 4. Fetch review statuses using `fetch-reviews.sh`.
-5. Record every comment ID from step 2 that you analyze. These IDs are needed in Phase 3 to scope replies and thread resolution to only the comments you actually reviewed.
+5. For each thread, read the full comment history in order and classify it as dealt-with or not-dealt-with per "Each run targets not-dealt-with threads". Only not-dealt-with threads enter the analysis table.
+6. Record every comment ID from step 2 that you analyze (i.e., comments in not-dealt-with threads). These IDs are needed in Phase 3 to scope replies and thread resolution to only the comments you actually reviewed.
 
 ### Assess each comment
 
@@ -201,7 +220,7 @@ After replying and resolving, present a brief summary: how many comments were re
 
 After the summary, re-surface every item that **still requires the user to take action**. This is the last thing in the conversation by design — the Phase 1 table scrolls away under Phase 2/3 tool output, and these items get lost otherwise.
 
-The bar for inclusion is high: include only items where the user must do something *by the skill's own rules*. If a comment was auto-resolved or declined per the rules, the standard behaviour was applied and there is nothing for the user to do — re-surfacing it implicitly asks the user to override the skill's own classification, which is the opposite of why this section exists. Trust the classification.
+The bar for inclusion is high: include only items from this run's analysis where the user must do something *by the skill's own rules*. If a comment was auto-resolved or declined per the rules, the standard behaviour was applied and there is nothing for the user to do — re-surfacing it implicitly asks the user to override the skill's own classification, which is the opposite of why this section exists. Trust the classification.
 
 Include only:
 
@@ -210,6 +229,7 @@ Include only:
 
 Do **not** include:
 
+- Threads dealt with in prior runs (regardless of GitHub resolved/open state). "Needs your attention" covers this run's analysed items only; prior-run state never reappears here.
 - Anything that was auto-resolved per the rules (bot comments of any category, trivial directives from humans, outdated). Auto-resolve *is* the standard behaviour — these are deliberately handled without the user.
 - Pedantic or stale-docs items where Claude declined and the thread was auto-resolved. The decline *is* the standard behaviour by the gates in Phase 1; surfacing it asks the user to override the skill's own logic.
 - Simple fixes that have already been applied and replied to.
