@@ -45,4 +45,4 @@ The human-overview preservation rule applies inside body fields (titles have no 
 
 - GitHub PR title
 - GitHub PR body
-- Linear issue body
+- Linear issue title
