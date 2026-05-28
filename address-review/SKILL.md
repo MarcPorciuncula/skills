@@ -48,6 +48,28 @@ Dealt-with threads are context, not content. Read them to spot repeated reviewer
 In ALL modes — including address mode where execution follows immediately — you MUST present the analysis table before taking any action. This applies even when all comments look obviously simple or trivial. The table is the commitment: it shows the user exactly what you are about to do and creates an opportunity to redirect before any changes are made.
 </HARD-GATE>
 
+## Reply attribution label
+
+Posts from this skill carry an attribution prefix so reviewers can tell agent comments from human ones at a glance. The default is `[Claude]`. If CLAUDE.md (user-level or project-level) configures a different attribution label for PR review replies (e.g. `[Agent]`, `[Bot]`, a tool name), use that label everywhere this skill writes `[Claude]` — the dealt-with detection signal, the allowlist gate, and every template in Phase 3.
+
+Without an explicit override in CLAUDE.md, the default `[Claude]` stands.
+
+## Reviewer reply allowlist
+
+Claude only posts `[Claude]` replies and resolves threads on behalf of the user for authors that are pre-approved. This prevents auto-replies going out to human reviewers who haven't agreed to receive them.
+
+**Always auto-handled (reply + resolve per the category rules):**
+- Bot / automated reviewers (e.g. `copilot-pull-request-reviewer`, `github-actions`, `dependabot`, anything with the `[bot]` suffix or an account that exists to run automation).
+
+**Auto-handled only when explicitly allowlisted in CLAUDE.md guidance** (user-level or project-level):
+- Human reviewers. The allowlist names specific GitHub usernames the user has explicitly approved for `[Claude]` auto-replies on PR review comments. Treat "no allowlist found" as "no human is allowlisted" — default to the escalation path below. Do not infer allowlist status from other signals (collaborator status, prior friendly exchanges, repo ownership, etc.) — only an explicit name in CLAUDE.md counts.
+
+**For non-allowlisted human reviewers:** do not post a reply, do not resolve the thread. Instead, draft the reply (or the context the user would need to write one) and surface it in "Needs your attention" with the comment URL, so the user can post it themselves.
+
+This gate applies regardless of category. A "trivial directive" or "outdated" comment from a non-allowlisted human still goes to "Needs your attention" — the user owns the conversation with that reviewer.
+
+**Phase 2 (code changes) is not gated by the allowlist** — only Phase 3 (reply and resolve) is. If a non-allowlisted human flagged a valid simple fix, make the fix in Phase 2 and surface a draft "Fixed in commit X" reply for the user to post.
+
 ## Phase 1: Analysis
 
 ### Gather comments
@@ -127,19 +149,21 @@ Common shape that fails this filter: a bot asks for a test of a debounce/throttl
 
 Present a numbered table summarizing the findings:
 
-| # | Location | Comment | Author | Category | Recommendation | Auto-resolve? |
-|---|----------|---------|--------|----------|----------------|---------------|
-| 1 | `file.go:47` | "This could panic on nil" | reviewer | Valid — simple fix | Add nil guard | No (substantive) |
-| 2 | `api.go:120` | "Why not use X?" | reviewer | Question | Reply: explain that Y is preferred because... | No (question) |
+The "Auto-handle?" column captures whether Claude will post the reply and resolve the thread end-to-end in Phase 3. For non-allowlisted human reviewers it is always "No (user reply)" regardless of category — see "Reviewer reply allowlist". For allowlisted humans, the column reflects the category-based rules in Phase 3.
+
+| # | Location | Comment | Author | Category | Recommendation | Auto-handle? |
+|---|----------|---------|--------|----------|----------------|--------------|
+| 1 | `file.go:47` | "This could panic on nil" | reviewer | Valid — simple fix | Add nil guard | No (user reply) |
+| 2 | `api.go:120` | "Why not use X?" | reviewer | Question | Draft reply: explain that Y is preferred because... | No (user reply) |
 | 3 | `batch.go:33` | "Unused import" | copilot | Outdated | Already removed in latest push | Yes (bot) |
-| 4 | `process.go:89` | "Edge case: empty input" | reviewer | Valid — test gap | Add test + fix (red-green) | No (substantive) |
-| 5 | `handler.go:15` | "Nit: rename this var" | reviewer | Valid — simple fix | Rename variable | Yes (trivial directive) |
-| 6 | `utils.go:200` | "Consider extracting this" | reviewer | Out of scope | Acknowledge, defer to follow-up | No (out of scope) |
+| 4 | `process.go:89` | "Edge case: empty input" | reviewer | Valid — test gap | Add test + fix (red-green) | No (user reply) |
+| 5 | `handler.go:15` | "Nit: rename this var" | reviewer | Valid — simple fix | Rename variable | No (user reply) |
+| 6 | `utils.go:200` | "Consider extracting this" | reviewer | Out of scope | Draft acknowledgment, user defers to follow-up | No (user reply) |
 | 7 | `hook.go:30` | "Both caller and callee subscribe" | copilot | Pedantic | Intentional colocation; coupling not worth it | Yes (bot) |
 | 8 | `api.go:50` | "PR description says X but code does Y" | copilot | Stale docs | Update PR description (commits confirm intent) | Yes (bot) |
 | 9 | `user.go:12` | "plan.md step 3 specifies util extraction" | copilot | Stale docs | No action — plan is historical | Yes (bot) |
 
-For question/discussion items, include the full draft reply text below the table so the user can copy and post it.
+For every item with "Auto-handle? = No (user reply)" — i.e. all non-allowlisted human reviewer comments — include the full draft reply text and the comment URL below the table so the user can copy and post it. The same applies to question/discussion items from allowlisted humans where the reply needs user review before posting.
 
 ### Flag convergence
 
@@ -171,9 +195,17 @@ In address mode: continue to Phase 3 after all code changes are committed and pu
 
 This phase runs in address mode after Phase 2 completes. It does not run in evaluate mode.
 
+Phase 3 is gated by the **Reviewer reply allowlist**: Claude only posts replies to bots and to humans explicitly allowlisted in CLAUDE.md. For non-allowlisted human reviewers, Phase 3 produces no GitHub side-effects on their threads — those threads are surfaced in "Needs your attention" with drafted replies and comment URLs for the user to handle.
+
 ### Reply to comments
 
-Write a temp file with one `comment_id:body` pair per line, then pass it to `reply-to-comments.sh`. Every reply body **must** be prefixed with `[Claude]`. Keep replies concise — one or two sentences. The reply content depends on the category:
+For each not-dealt-with thread analysed in Phase 1, decide whether Claude is allowed to post the reply:
+
+- **Bot author:** Claude posts the reply per the category rules below.
+- **Allowlisted human author** (per CLAUDE.md): Claude posts the reply per the category rules below.
+- **Non-allowlisted human author:** Claude does **not** post anything. Draft the reply body using the same category rules and pass it through to "Needs your attention" along with the comment URL — but do not include the attribution prefix since the user will post in their own voice. Skip this comment when assembling the reply file.
+
+For comments Claude is allowed to post, write a temp file with one `comment_id:body` pair per line, then pass it to `reply-to-comments.sh`. Every reply body **must** be prefixed with the configured attribution label (default `[Claude]`; see "Reply attribution label"). Keep replies concise — one or two sentences. The reply content depends on the category — the templates use `[Claude]` as the default; substitute the configured label if one is set:
 
 - **Outdated / already fixed:** `[Claude] This was already addressed in {commit short hash}.`
 - **Question / discussion:** `[Claude] {the draft explanation from the analysis table}.`
@@ -188,11 +220,13 @@ Write a temp file with one `comment_id:body` pair per line, then pass it to `rep
 
 ### Resolve threads
 
-After replying, write a temp file with the comment IDs to resolve (one per line), then pass it to `resolve-threads.sh`. Which threads to resolve depends on the comment author and nature:
+After replying, write a temp file with the comment IDs to resolve (one per line), then pass it to `resolve-threads.sh`. **Never resolve a thread Claude didn't post a reply on** — silently closing a non-allowlisted human reviewer's thread leaves them without an answer. Which threads to resolve depends on the comment author and nature:
 
-**Always auto-resolve (pass these comment IDs to `resolve-threads.sh`):**
+**Always auto-resolve:**
 - **All bot/automated comments** (e.g. Copilot, copilot-pull-request-reviewer, github-actions) — regardless of category.
-- **Trivial directive comments from human reviewers** — comments that are specific, actionable, and don't require discussion. Examples:
+
+**Auto-resolve only when the author is allowlisted in CLAUDE.md:**
+- **Trivial directive comments from allowlisted human reviewers** — comments that are specific, actionable, and don't require discussion. Examples:
   - "Nit: rename this to X"
   - "Remove this unused import"
   - "Move this to file Y"
@@ -200,15 +234,16 @@ After replying, write a temp file with the comment IDs to resolve (one per line)
   - "Add a nil check here"
   - "Typo: foo → bar"
   - Basically any comment where the fix is unambiguous and the reply makes it clear the change was made.
-- **Outdated / already fixed comments** from any author — the code has moved on, there's nothing left to discuss.
+- **Outdated / already fixed comments from allowlisted human reviewers** — the code has moved on, there's nothing left to discuss.
 
-**Do NOT auto-resolve (leave these open for user review):**
-- **Questions about architecture or design** from human reviewers — "Why did you choose X over Y?", "Should this be extracted into its own module?"
-- **Questions about correctness** from human reviewers — "Does this handle the case where...?", "What happens if X is null?"
-- **Subjective suggestions** from human reviewers — "I think this would be cleaner if...", "Have you considered..."
-- **Out of scope items** — leave open so the user can respond and track follow-up.
+**Do NOT auto-resolve:**
+- **Any thread from a non-allowlisted human reviewer** — Claude didn't post a reply, so resolving would close the conversation without acknowledgment.
+- **Questions about architecture or design** from allowlisted human reviewers — "Why did you choose X over Y?", "Should this be extracted into its own module?"
+- **Questions about correctness** from allowlisted human reviewers — "Does this handle the case where...?", "What happens if X is null?"
+- **Subjective suggestions** from allowlisted human reviewers — "I think this would be cleaner if...", "Have you considered..."
+- **Out of scope items** from allowlisted human reviewers — leave open so the user can respond and track follow-up.
 
-**The guiding principle:** If a human reviewer would want to see the reply and confirm it's satisfactory before the thread closes, leave it open. If the fix is mechanical and the reply makes it self-evident, resolve it.
+**The guiding principle:** If a human reviewer would want to see the reply and confirm it's satisfactory before the thread closes, leave it open. If the fix is mechanical and the reply makes it self-evident, resolve it. If Claude didn't reply at all (non-allowlisted author), never resolve.
 
 **CRITICAL: Only pass comment IDs that were recorded in Phase 1.** New review comments may have appeared after the code was pushed in Phase 2 — resolving them without analysis would be silently wrong. The allow-list you built in Phase 1 is the only source of truth for what gets resolved. Do not expand it here.
 
@@ -222,20 +257,21 @@ After the summary, re-surface every item that **still requires the user to take 
 
 The bar for inclusion is high: include only items from this run's analysis where the user must do something *by the skill's own rules*. If a comment was auto-resolved or declined per the rules, the standard behaviour was applied and there is nothing for the user to do — re-surfacing it implicitly asks the user to override the skill's own classification, which is the opposite of why this section exists. Trust the classification.
 
-Include only:
+Include:
 
-- **Threads left open** — per the auto-resolve rules, this means questions about architecture/design, correctness, or subjective suggestions from human reviewers. The user needs to read Claude's reply and decide whether to follow up. Include the reply text Claude posted.
-- **Out of scope items** — the user needs to decide whether to open a follow-up issue or PR.
+- **Threads needing your reply (non-allowlisted human reviewer)** — every not-dealt-with thread whose author is a human not on the CLAUDE.md allowlist. Claude has not posted anything on these threads. Include the comment URL, the drafted reply text (without the attribution prefix, since the user posts in their own voice), and a note on any code change Claude already made so the reply can reference it (e.g. "Fixed in {commit short hash}").
+- **Threads left open after a Claude reply** — for allowlisted human reviewers: questions about architecture/design, correctness, subjective suggestions, or out-of-scope items where Claude posted a reply but left the thread open. Include the reply text Claude posted so the user can read it without leaving the terminal.
+- **Out of scope items** — even when the reply was posted, the user needs to decide whether to open a follow-up issue or PR.
 
 Do **not** include:
 
 - Threads dealt with in prior runs (regardless of GitHub resolved/open state). "Needs your attention" covers this run's analysed items only; prior-run state never reappears here.
-- Anything that was auto-resolved per the rules (bot comments of any category, trivial directives from humans, outdated). Auto-resolve *is* the standard behaviour — these are deliberately handled without the user.
-- Pedantic or stale-docs items where Claude declined and the thread was auto-resolved. The decline *is* the standard behaviour by the gates in Phase 1; surfacing it asks the user to override the skill's own logic.
-- Simple fixes that have already been applied and replied to.
-- Outdated / already-fixed items.
+- Anything that was auto-resolved per the rules (bot comments of any category, trivial directives or outdated comments from allowlisted humans). Auto-resolve *is* the standard behaviour — these are deliberately handled without the user.
+- Pedantic or stale-docs items from bots or allowlisted humans where Claude declined and the thread was auto-resolved. The decline *is* the standard behaviour by the gates in Phase 1; surfacing it asks the user to override the skill's own logic.
+- Simple fixes that have already been applied and replied to (allowlisted-human or bot author).
+- Outdated / already-fixed items handled end-to-end by Claude.
 
-Format as a numbered list. For each item include: location (`file:line`), the original comment (truncated if long), the category, what action is needed, and — for items where Claude posted a reply — the reply text.
+Format as a numbered list. For each item include: location (`file:line`), comment URL, the original comment (truncated if long), the author, the category, what action is needed, and the reply text — labelled "Claude posted:" if it was posted, or "Suggested reply:" if it's a draft for the user to post.
 
 Skip this section entirely if there are no items requiring user action. This is the common case when the run converges (most comments auto-resolved or auto-declined per the rules) — silence is the correct outcome, not a regression.
 
