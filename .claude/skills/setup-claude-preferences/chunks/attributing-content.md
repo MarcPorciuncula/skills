@@ -1,6 +1,6 @@
 ---
 id: attributing-content
-description: Prefix GitHub and Linear comments with provenance labels (`[AI Generated - Claude]` / `[AI Assisted - Claude / NAME]`) chosen by who authored the text; preserve human-overview sections in PR/issue bodies verbatim.
+description: Prefix GitHub and Linear comments with provenance labels (`[AI Generated - Claude]` / `[AI Assisted - Claude / NAME]`) chosen by who authored the text; customisable list of primary-content fields is excepted, with human-overview sections inside them preserved verbatim.
 ---
 
 ## Attributing content on GitHub and Linear
@@ -29,8 +29,20 @@ chunk source. See setup-claude-preferences/SKILL.md → "Placeholder substitutio
 - Any comment on a GitHub pull request, including PR review comments and inline code-review comments
 - Any comment on a Linear issue
 
-**Exception — PR and Linear issue bodies:** The GitHub PR body and the body of a Linear issue Claude creates or modifies are assumed to be Claude-authored by default, so no prefix is needed on the body itself. The human-overview rules still apply:
+**Exception — primary-content fields.** The fields listed below are assumed to be Claude-authored by default, so no prefix is needed on the field itself.
+
+The human-overview preservation rule applies inside body fields (titles have no inner sections):
 
 - Never author a `## Human overview` (or similarly named) section yourself. The heading is a provenance claim about the user — writing under it lies about authorship. If you have framing to add, put it in the lede prose, not under that heading.
 - If such a section is present, preserve it verbatim. Never modify, rewrite, or overwrite it without explicit permission from the user — it is the user's own words added after the fact.
 - When editing a body that has a human overview section, leave that section untouched and only change the surrounding Claude-authored content.
+
+**Self-update.** When the user adds or removes an excepted field (e.g. "stop prefixing PR review summaries", "treat ADR titles as primary content"), edit the list below to match. Only act on explicit directives — do not infer changes from indirect signals.
+
+<!-- customisable: edit the list below per machine. Each entry names a specific platform field where Claude composes primary content (not a comment). -->
+
+### Excepted fields
+
+- GitHub PR title
+- GitHub PR body
+- Linear issue body
