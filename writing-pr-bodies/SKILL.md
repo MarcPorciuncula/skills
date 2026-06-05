@@ -156,6 +156,18 @@ Accessible writing is the key to fast, clear comprehension.
 - DO NOT waste words to bridge paragraphs
 - DO NOT hard-wrap prose lines mid-paragraph as you would in code comments or terminal output. Markdown wraps automatically; manual wraps can break list continuations and render awkwardly in the GitHub UI
 
+**It must be digestible**
+
+Digestible text is graspable in a single forward pass. The reviewer is scanning a dozen open PRs and cannot spend working memory reassembling your point. This is a property of the passage, not the sentence: clean grammar does not make it digestible.
+
+- DO make each sentence stand on its own, parseable without holding the previous one
+- DO lead each paragraph with its conclusion, then support it
+- DO split a sentence that chains three or more facts into separate sentences
+- DO break a long paragraph with a list, table, or before/after block so the reader can land and resync
+- DO NOT build a point across a chain of sentences where each one depends on the last
+- DO NOT defer the main clause behind stacked qualifiers
+- DO NOT mistake individually clean sentences for a digestible passage. A run of clean sentences can still force the reader to hold state across all of them
+
 ### HARD RESTRICTION: DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE
 
 RECOGNISE these common literary signposting patterns.
@@ -594,7 +606,7 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 
 Follow this procedure when drafting or revising a PR body.
 
-Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs, the Writing style rules, and the Red flags table." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
+Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs, the Writing style rules, and the Red flags table, and re-read it once as a scanning reviewer to revise anything that isn't digestible." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
 
 ### 1. Read & orient
 
@@ -643,14 +655,15 @@ Write the body to a file before posting. Self-review must read from the file, no
 This is the self-review you announced before stage 1. Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
 
 1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding) and the mechanical Writing style bans (em dashes, threaded clauses, hard-wrapped lines).
-2. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
-3. Check the title against the PR titles self-test. Update or surface a rewrite if it fails.
-4. Verify a reviewer with no context grasps the change and motivation within 30 seconds.
-5. Check each section: would a reviewer skip it without losing the PR? If yes, cut it.
-6. Check the body against the Red flags table. Cut anything that hits.
+2. Read the body once as a reviewer scanning a dozen PRs. Wherever a sentence only parses if you hold the previous one, or the point arrives at the end of a chain, revise it to be digestible (see *It must be digestible*).
+3. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
+4. Check the title against the PR titles self-test. Update or surface a rewrite if it fails.
+5. Verify a reviewer with no context grasps the change and motivation within 30 seconds.
+6. Check each section: would a reviewer skip it without losing the PR? If yes, cut it.
+7. Check the body against the Red flags table. Cut anything that hits.
 
 - DO edit the file in place. Do not redraft from session memory.
-- DO state what the HARD RESTRICTIONs and Writing style pass and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
+- DO state what the HARD RESTRICTIONs and Writing style pass, the digestibility re-read, and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
 
 ### 6. Post
 
@@ -676,6 +689,7 @@ This is the self-review you announced before stage 1. Read the draft file from t
 | "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle. |
 | "Let me narrate which files changed and what changed in each" | The diff has it. Name a file path only when the reviewer needs to find something the diff doesn't surface. |
 | "It's a 24-line PR but the lede is a 100-word sentence threading five things" | Right-size to the diff. |
+| "Each sentence is clean on its own, so the body reads fine" | Clean sentences still chain into a wall that forces the reader to hold state. Re-read as a scanning reviewer and revise for digestibility. See *It must be digestible*. |
 | "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
 | "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
 | "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
