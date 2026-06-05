@@ -10,7 +10,7 @@ Guide completion of development work by presenting clear options and handling ch
 
 ### Step 1: Confirm Verification
 
-Confirm the adversarial pass from `execution.md` "After All Tasks" returned clean. If issues were flagged but not fixed, return to that step before proceeding.
+Confirm the final cross-cutting review from `execution.md` "After All Tasks" returned clean. If issues were flagged but not fixed, return to that step before proceeding.
 
 **If verification is incomplete:**
 ```
@@ -63,7 +63,7 @@ git pull
 # Merge feature branch
 git merge <feature-branch>
 
-# If the merge resolved conflicts, re-run the adversarial pass.
+# If the merge resolved conflicts, re-run the final cross-cutting review.
 
 git branch -d <feature-branch>
 ```
@@ -128,7 +128,7 @@ git branch -D <feature-branch>
 
 **Never:**
 - Proceed with failing tests
-- Proceed with unresolved issues from the adversarial pass
+- Proceed with unresolved issues from the final cross-cutting review
 - Delete work without confirmation
 - Force-push without explicit request
 
