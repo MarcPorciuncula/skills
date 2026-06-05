@@ -50,6 +50,8 @@ Cut on sight:
 - **List preambles that only announce a list** — *"Three subtleties:"*, *"Two routes now:"*, *"The flow is two-legged:"*. If the bullets read the same way without the preamble, cut it.
 - **LLM padding** — *just, simply, really, actually, basically, essentially, fundamentally, particularly, clearly, obviously, notably*.
 
+Before Phase 1, announce the commitment: "Writing the walkthrough. Before presenting it I will write it to a file, re-read it as a scanning reviewer, and revise anything that isn't digestible or breaks the skill's rules." The self-review is the step dropped under the urge to present; announcing it up front commits you, and the rest of the turn must honour the announcement.
+
 ## Phase 1 — Gather external context
 
 Assemble the context the PR was written in before reading any source.
@@ -116,7 +118,9 @@ One order per walkthrough.
 
 Closing on a file map alone is fine when the PR is a pure structural refactor and file layout *is* the synthesis. Otherwise the close is domain-level — a combined diagram, a flat paragraph, or an observation that assembles the pieces. No "closing reflective note" header. No announced wrap-up.
 
-## Phase 4 — Write, weaving in diagrams where they amplify understanding
+## Phase 4 — Write to a file, weaving in diagrams where they amplify understanding
+
+Write the walkthrough to a file (e.g. `.claude/pr-overview.md`). Self-review reads from the file, not from composition memory. Present it to the user only after the Phase 6 self-review.
 
 Each paragraph advances the reader's mental model. No paragraph exists to set up, recap, or reflect on another paragraph.
 
@@ -152,6 +156,20 @@ Close with two short sections.
 - **Worth flagging** — concerns, open questions, merge blockers, invariants preserved, test-plan items still unchecked. Prose or short bullets.
 - **Honesty** — what you read, what you didn't, what's inferred from the PR body rather than verified in code.
 
+## Phase 6 — Self-review
+
+Read the file top to bottom as a reviewer seeing it for the first time. Composition memory is unreliable; the file is what the reader gets.
+
+Digestible text is graspable in a single forward pass. The reviewer is scanning a dozen open PRs and cannot spend working memory reassembling your point. This is a property of the passage, not the sentence: clean grammar does not make it digestible.
+
+1. Check the walkthrough against the Forbidden ornaments and the Red flags table. Cut anything that hits.
+2. Read it once as a scanning reviewer. Wherever a sentence only parses if you hold the previous one, or the point arrives at the end of a chain, revise it: lead with the conclusion, split a sentence that chains three or more facts, break a long paragraph with a list, table, or diagram so the reader can land and resync.
+3. Check each diagram: if it collapses to a single prose sentence, use the sentence.
+
+- DO edit the file in place. Do not redraft from session memory.
+- DO present the walkthrough to the user only after this pass.
+- DO state what the Forbidden-ornaments and Red-flags pass and the digestibility re-read each caught, or that they caught nothing. A pass with no stated result was not run.
+
 ## Red flags — STOP
 
 | Thought | Reality |
@@ -169,6 +187,7 @@ Close with two short sections.
 | "Read it as X with N meaningful divergences" | Anticipation. State the divergences directly. |
 | "The reader will infer the synthesis from the sections" | Close with a diagram, paragraph, or observation that assembles the pieces. |
 | "The diagram makes the section feel complete" | If the diagram would collapse to a single prose sentence, the sentence is the better form. |
+| "Each sentence is clean on its own, so the walkthrough reads fine" | Clean sentences still chain into a wall that forces the reader to hold state. Re-read as a scanning reviewer and revise for digestibility. |
 | "Let me call-tree the hot path with line numbers" | Line numbers are navigation. A walkthrough is about shape. |
 
 **Violating the letter of these rules is violating the spirit of them.**
