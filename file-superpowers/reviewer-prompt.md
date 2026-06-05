@@ -16,6 +16,22 @@ Read this before doing anything else:
 
 - `<skill-dir>/code-review.md`
 
+## Review mode
+
+Mode: `<per-batch | final>` — set by the orchestrator.
+
+- **per-batch** — review one batch's tasks. Do NOT surface deferred concerns at all — not as findings, not as notes or asides. Flagging them sends the implementer back for a comment rewrite and a full re-verify cycle, which this workflow defers to the end.
+- **final** — cross-cutting review of the whole branch diff. Flag deferred concerns per the Output section.
+
+## Deferred concerns
+
+Non-behavioral cleanup the workflow fixes once, at the end:
+
+- **Plan-referential comments** — comments that explain a change against the plan or a sibling task ("mirrors the retry path", "as the previous task set up") instead of documenting the code for a reader who never saw the plan.
+- **Cross-task comment duplication** — the same explanation repeated across paths.
+- **Superseded scaffolding** — code or comments a later task left dead.
+- **Naming drift** — diverged names for one concept across tasks.
+
 ## Task(s) under review
 
 <task-spec>
@@ -51,3 +67,4 @@ Report:
 - **Code quality** — `✅ approved` / `⚠️ approved with fixes` / `❌ needs rework`.
 - **Overall assessment** — Approved / Approved with fixes / Needs rework.
 - **For each issue:** severity (Critical / Important / Nit), location (`file:line`), what's wrong, suggested fix.
+- **Deferred concerns** (`final` mode only) — list items from "Deferred concerns" under their own heading, each with `file:line` and the suggested cleanup. Keep them separate from the severity-ranked issues above: they are non-blocking cosmetic cleanup, not rework. In `per-batch` mode, omit this entirely.
