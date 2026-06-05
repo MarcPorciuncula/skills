@@ -66,7 +66,7 @@ Depends on: Task 1
 
 - Tasks are sequential by default; `Depends on:` declares non-adjacent dependencies.
 - Status is binary: `- [ ]` (pending) or `- [x]` (done).
-- On completion, append a `### Result` sub-section to the task with 1-3 sentences ending in `Commit: <sha>`, then amend the plan changes into the task's implementation commit.
+- On completion, append a `### Result` sub-section to the task with 1-3 sentences, then amend the plan changes into the task's implementation commit.
 
 ## Supporting References
 
@@ -79,5 +79,4 @@ These are loaded on demand by the phase documents that reference them:
 | `condition-based-waiting.md` | Replace arbitrary timeouts with condition polling |
 | `implementer-prompt.md` | Subagent template for task implementation |
 | `reviewer-prompt.md` | Subagent template for unified spec + quality review |
-| `adversarial-prompt.md` | Subagent template for end-of-workflow proportional breakage hunt |
 | `plan-reviewer-prompt.md` | Subagent template for plan review after task decomposition |

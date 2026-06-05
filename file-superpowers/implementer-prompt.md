@@ -33,7 +33,7 @@ The plan file is not for context — your task spec above is. Touch the plan fil
 1. After implementing, testing, and committing, open the plan file
 2. Locate your task section by header (e.g., `## Task 3: <title>`)
 3. Flip `- [ ] Status` → `- [x] Status`
-4. Append a new `### Result` sub-section under your task with 1-3 sentences (what was implemented, key decisions, test results) ending with `Commit: <sha>`
+4. Append a new `### Result` sub-section under your task with 1-3 sentences (what was implemented, key decisions, test results). Do not record a commit SHA. The amend in the next step changes it, and any later rebase stales it
 5. Amend the plan changes into your task's implementation commit: `git add <plan-path>; git commit --amend --no-edit`
 6. Do NOT read or modify any other task section in the plan
 
