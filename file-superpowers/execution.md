@@ -33,6 +33,7 @@ For each batch, in order:
    - Brief scene-setting context about where these tasks fit in the broader feature
 5. **Handle implementer status** (DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED — see "Handling Implementer Status" below).
 6. **Dispatch reviewer subagent** using `reviewer-prompt.md` with:
+   - Review mode `per-batch` — the reviewer skips deferred concerns (see "Deferred Concerns")
    - The same `<task-spec>` block(s) given to the implementer
    - The spec file path
    - The implementer's status report (verbatim)
@@ -118,10 +119,26 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
 
+## Deferred Concerns
+
+Some cleanup is correct to do once, at the end — never per batch. Defer a concern when both hold:
+
+- **Nothing downstream depends on it.** Later tasks don't read it.
+- **It is only judgeable on the whole, plan-free diff.** A subagent that sees one task can't tell the concern apart from legitimate work — the plan is its entire world.
+
+Standard deferred concerns:
+
+- **Plan-referential comments** — comments that explain a change against the plan or a sibling task ("mirrors the retry path", "as the previous task set up") instead of documenting the code for a reader who never saw the plan.
+- **Cross-task comment duplication** — the same explanation repeated across paths that only the whole diff reveals.
+- **Superseded scaffolding** — code or comments a later task left dead.
+- **Naming drift** — diverged names for one concept across tasks.
+
+Handle all of them in the final pass (see "After All Tasks"). The per-batch reviewer does NOT flag them: sending the implementer back to rewrite a comment forces a full re-verify cycle — tests, vet, lint — for a change that alters no behavior. Leave them in place while batches run; they are harmless working scaffolding until the branch is done.
+
 ## After All Tasks
 
-1. **Dispatch final cross-cutting reviewer** with the full branch diff range. Use `reviewer-prompt.md`. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list).
-2. **Address any issues** from the cross-cutting review.
+1. **Dispatch final cross-cutting reviewer** with the full branch diff range. Use `reviewer-prompt.md` in review mode `final`. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list). `final` mode tells the reviewer to flag deferred concerns.
+2. **Address any issues** from the cross-cutting review. Fix the deferred concerns in a single cleanup commit. It changes no behavior, so verify it proportionally — build or a re-read of the touched lines, not a full test re-run (see `verification.md` "Scope of verification").
 3. **Load `finishing.md`** to complete the branch.
 
 The final cross-cutting review is the last in-session gate; the full test suite runs on CI when the PR opens.
