@@ -208,7 +208,7 @@ For each not-dealt-with thread analysed in Phase 1, decide whether Claude is all
 
 ### Drafting replies for the user
 
-A draft reply is a plain, factual starting point the user will edit before posting. It is not written in the user's voice. You do not know how the user writes, and you have not looked. Mimicking a voice you have not seen produces fabricated pleasantries that read as patronising over an agent's signature.
+A draft reply is a plain, factual starting point the user will edit before posting. It is not written in the user's voice. You do not know how the user writes, and you have not looked. Mimicking a voice you have not seen produces fabricated pleasantries. "Good point", "Nice catch", and similar appraisals of a reviewer's comment read as patronising when an agent generates them, and they put words in the user's mouth the user never chose.
 
 - State only what was done or found: the fix, the commit, the reason, the answer to the question. Same content as the bot/allowlisted templates, minus the prefix, one or two sentences.
 - No pleasantries. Do not open with or insert "Good point", "Nice catch", "Great question", "You're right", or any appraisal of the reviewer's comment.
