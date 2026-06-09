@@ -7,6 +7,7 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | Skill | Description |
 |-------|-------------|
 | **address-review** | Analyze and address PR review comments |
+| **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
 | **red-green** | TDD red-green-refactor workflow |
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
