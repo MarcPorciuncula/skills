@@ -35,6 +35,7 @@ Dealt-with threads are context, not content. Read them to spot repeated reviewer
 |---------|---------|
 | "These all look like simple fixes, I'll just start executing" | The analysis table comes first in every mode. Always. |
 | "The username looks like a bot so I'll auto-resolve without checking the category" | Bot status affects auto-resolve eligibility, not whether analysis is required. Check the category. |
+| "This reviewer isn't allowlisted, so I'll leave the fix for them too" | The allowlist gates the reply and the resolve, never the code change. Make the fix in Phase 2; only the reply is held back for the user. |
 | "I reviewed this comment already, I can add its ID to the resolve list" | Only IDs recorded during Phase 1 may be resolved. Post-push comments are out of scope regardless of content. |
 | "The plan says X but the code does Y, I should sync the plan" | Single-use plans are historical. Don't sync them to final code. Only update living design/architecture docs. |
 | "The PR description contradicts the code, so the code must be wrong" | Check commit history first. Intentional divergence → update the description. Unexplained divergence → may be a real bug. |
@@ -68,7 +69,7 @@ Claude only posts `[Claude]` replies and resolves threads on behalf of the user 
 
 This gate applies regardless of category. A "trivial directive" or "outdated" comment from a non-allowlisted human still goes to "Needs your attention" — the user owns the conversation with that reviewer.
 
-**Phase 2 (code changes) is not gated by the allowlist** — only Phase 3 (reply and resolve) is. If a non-allowlisted human flagged a valid simple fix, make the fix in Phase 2 and surface a draft "Fixed in commit X" reply for the user to post.
+**Phase 2 (code changes) is not gated by the allowlist.** Only Phase 3 (reply and resolve) is. When a non-allowlisted human flags anything the rules say to address (a valid simple fix, a real bug, a test gap), make the change in Phase 2 exactly as you would for an allowlisted author. Hold back only the reply: surface a draft "Fixed in commit X" reply for the user to post. Not being allowed to reply never means not addressing the issue.
 
 ## Phase 1: Analysis
 
@@ -203,7 +204,15 @@ For each not-dealt-with thread analysed in Phase 1, decide whether Claude is all
 
 - **Bot author:** Claude posts the reply per the category rules below.
 - **Allowlisted human author** (per CLAUDE.md): Claude posts the reply per the category rules below.
-- **Non-allowlisted human author:** Claude does **not** post anything. Draft the reply body using the same category rules and pass it through to "Needs your attention" along with the comment URL — but do not include the attribution prefix since the user will post in their own voice. Skip this comment when assembling the reply file.
+- **Non-allowlisted human author:** Claude does **not** post anything. Draft the reply body using the same category rules and pass it through to "Needs your attention" along with the comment URL. Omit the attribution prefix. Skip this comment when assembling the reply file. Write the draft per "Drafting replies for the user" below.
+
+### Drafting replies for the user
+
+A draft reply is a plain, factual starting point the user will edit before posting. It is not written in the user's voice. You do not know how the user writes, and you have not looked. Mimicking a voice you have not seen produces fabricated pleasantries. "Good point", "Nice catch", and similar appraisals of a reviewer's comment read as patronising when an agent generates them, and they put words in the user's mouth the user never chose.
+
+- State only what was done or found: the fix, the commit, the reason, the answer to the question. Same content as the bot/allowlisted templates, minus the prefix, one or two sentences.
+- No pleasantries. Do not open with or insert "Good point", "Nice catch", "Great question", "You're right", or any appraisal of the reviewer's comment.
+- Do not describe the draft as being in the user's voice, in their style, or how they would phrase it. It is a neutral draft; the user supplies the voice.
 
 For comments Claude is allowed to post, write a temp file with one `comment_id:body` pair per line, then pass it to `reply-to-comments.sh`. Every reply body **must** be prefixed with the configured attribution label (default `[Claude]`; see "Reply attribution label"). Keep replies concise — one or two sentences. The reply content depends on the category — the templates use `[Claude]` as the default; substitute the configured label if one is set:
 
@@ -259,7 +268,7 @@ The bar for inclusion is high: include only items from this run's analysis where
 
 Include:
 
-- **Threads needing your reply (non-allowlisted human reviewer)** — every not-dealt-with thread whose author is a human not on the CLAUDE.md allowlist. Claude has not posted anything on these threads. Include the comment URL, the drafted reply text (without the attribution prefix, since the user posts in their own voice), and a note on any code change Claude already made so the reply can reference it (e.g. "Fixed in {commit short hash}").
+- **Threads needing your reply (non-allowlisted human reviewer)** — every not-dealt-with thread whose author is a human not on the CLAUDE.md allowlist. Claude has not posted anything on these threads. Include the comment URL, the drafted reply text (no attribution prefix, written per "Drafting replies for the user"), and a note on any code change Claude already made so the reply can reference it (e.g. "Fixed in {commit short hash}").
 - **Threads left open after a Claude reply** — for allowlisted human reviewers: questions about architecture/design, correctness, subjective suggestions, or out-of-scope items where Claude posted a reply but left the thread open. Include the reply text Claude posted so the user can read it without leaving the terminal.
 - **Out of scope items** — even when the reply was posted, the user needs to decide whether to open a follow-up issue or PR.
 
