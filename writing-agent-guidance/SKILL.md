@@ -94,6 +94,7 @@ forms put the instruction first; everything else is optional context after it.
 **Keep one canonical home across files**
 
 - DO put the comprehensive version of a rule in one canonical location when it would otherwise be duplicated across files, and link to it from shorter mentions elsewhere
+- DO NOT summarise the linked content at the link site. Name the file and section, then stop; an inline summary duplicates the canonical home and drifts when it changes
 - DO NOT keep the same full explanation in parallel across files or docs. Copies drift and the agent reads the stale one
 - DO cut dead redundancy wherever it sits, including within one file: the same point, in the same form, adding nothing
 - DO keep a rule restated in a different form when the form does work: a directive, a recognition row, a red flag, the spirit line. That is reinforcement, not duplication. Do not strip it
@@ -187,6 +188,7 @@ RECOGNISE these weak justifications.
 | "The reason for this is…" (after a clear directive) | argues a rule the reader already accepts |
 | "This is important because…" (no failure named) | asserts weight instead of stating a cost |
 | "Without this, things become significantly harder" | vague consequence, not observable |
+| "Add it, so the next reader doesn't have to re-derive that it's safe" | justification welded mid-sentence to a directive that lands without it |
 
 - DO NOT append rationale to a directive that already lands
 - DO replace the justification with a one-line cost the agent can observe, when a real failure mode exists (see the technique catalogue)
@@ -198,6 +200,23 @@ Before cutting any rebuttal or justification, apply this:
 - A fresh reader would plausibly default to the rebutted behaviour → interception. Promote it to a directive form from the technique catalogue. Do not cut
 - It only parses with session context → war story. Cut
 - No one would do it → strawman. Cut
+
+### HARD RESTRICTION: DO NOT COIN CONCEPT LABELS
+
+RECOGNISE these invented noun phrases and label-colon constructions standing in for an instruction.
+
+| Sentence | What it hides |
+|---|---|
+| "The motivating bug pattern is the silent mutation" | the bug itself, statable in one direct sentence |
+| "Reads get latitude" | the actual read rules |
+| "The tell: a constructor taking deps most of its methods never touch" | a plain signal sentence with no label |
+| "The failure mode this section guards against is the missed emission: …" | the directive, plus a self-reference to the section |
+
+A coined label gives the reader a concept to hold instead of an action to take, and a label-colon makes the reader wait for the label to resolve. State the instruction or the fact directly.
+
+- DO NOT define a term of your own and refer back to it later in the document
+- DO NOT prefix an instruction with a label and a colon ("The tell:", "The bug to catch:", "The key insight:")
+- DO use a term only when it names a greppable artifact the reader can look up (a doc header, a table, a file)
 
 ### REGISTER RESET: before editing existing guidance
 
@@ -458,13 +477,21 @@ when writing one from scratch.
 
 1. **Align.** State the objective, audience, register, and structural devices of the guidance you are writing or editing, in its own register. When editing, read the file end to end first and state them back from it. When writing fresh, state what you will write to. Get the user to confirm or correct it. Hold that statement as the model of correct output for the file. This is the alignment step.
 2. **Diff against the model.** Check the current text and every proposed change against the alignment statement, the recognition tables in Hard restrictions and register reset, and the rules in Writing style.
-3. **Edit against the file.** Apply changes to the file, not from composition memory. Re-deriving prose from memory reintroduces the register you are removing (see REGISTER RESET).
-4. **Review the delta.** Read the change against the previous version; violations cluster in what was added. Then read the whole file once as a first-time reader and run its own standard against its own text. A skill that breaks its own rules has rotted.
-5. **Verify, if behaviour changed.** For a substantive change, run the old and new guidance head to head: dispatch two subagents on the same realistic task, one per version, and compare which produces tighter, more directive-led output.
+3. **Draft as points.** Before composing any prose, write every directive, caveat, trigger, and cost as a flat dot point, one fact per point. A point that is not an instruction, a trigger, or a cost is justification — cut it now, while it is still visible as a separate point. Prose composed before the points exist arrives carrying justification and threaded clauses; points make elaboration visible.
+4. **Compose from the points.** Read `examples.md` next to this skill first and match its after-forms. Three or more points sharing a subject become a DO/DO NOT list as they stand. Prose is for the lede and for cost statements; everything else stays a point.
+5. **Edit against the file.** Apply changes to the file, not from composition memory. Re-deriving prose from memory reintroduces the register you are removing (see REGISTER RESET).
+6. **Condense.** Treat the draft as another author's text and rewrite it shorter without dropping an instruction. Apply three checks to every sentence:
+   - It parses without the sentence before it.
+   - It contains no noun phrase invented for this document.
+   - It does not restate the contents of a file or section it links to.
+   State what the pass cut. A condense pass that cut nothing was not run.
+7. **Review the delta.** Read the change against the previous version; violations cluster in what was added. Then read the whole file once as a first-time reader and run its own standard against its own text. A skill that breaks its own rules has rotted.
+8. **Verify, if behaviour changed.** For a substantive change, run the old and new guidance head to head: dispatch two subagents on the same realistic task, one per version, and compare which produces tighter, more directive-led output.
 
 - DO produce the alignment statement as written text and get it confirmed before editing. Once confirmed, editing in a different register is a visible break from your own stated model
 - DO NOT skip the alignment step because you already know the skill. Skipping it is how the rot got in
 - DO NOT treat the existing text as a baseline to preserve. Re-derive from the model, not from what is there
+- DO NOT compose prose directly from the alignment statement. Points come first
 
 ## 7. Skills: procedure and caveats
 
@@ -536,5 +563,8 @@ If you catch yourself thinking any of these while writing or editing guidance, s
 | "This rule would land harder with an existential cost or a personality directive" | Those are human-confirmed. Propose it; do not originate it |
 | "A future agent might do X, so I'll add a Red flags row now to be safe" / "I'm introducing a new rule; the Red flags row reinforces it at the point of failure" | Speculative rows dilute the strong ones — 'to be safe' and 'reinforcement at the point of failure' are the same drift dressed differently. The DO/DO NOT bullet is the rule's home. Add a Red flags row only on evidence: you hit it, repeat violations, or the user reports it |
 | "'See the technique catalogue' is wordy; 'see section 4' is shorter" | The agent holds the document in attention, not a numbered table of contents, and counts unreliably. Name it |
+| "This concept needs a name so the rule reads cleanly" | A label gives the reader a concept to hold instead of an action to take. State the instruction; use a term only when it names a greppable artifact |
+| "I'll note what the linked file covers so the reader knows what's there" | The link names the section; that is enough. A summary duplicates the canonical home and drifts when it changes |
+| "My draft is already tight; the condense pass would cut nothing" | The author parses their own prose at no cost, so the verbosity is invisible from the inside. Run the three sentence checks mechanically |
 
 **Violating the letter of these rules is violating the spirit of them.**
