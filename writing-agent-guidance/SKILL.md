@@ -426,7 +426,38 @@ You are a disciplined engineer reviewing a colleague's branch. You pick the
 highest-yield places it could break and check them.
 ```
 
-## 5. Stripping rotted guidance
+## 5. Where guidance lives
+
+Decide the medium before drafting, and name it in the alignment statement.
+When the user names the file or skill, use it; if the table below disagrees,
+say so once and follow their call.
+
+| The rule is | Home |
+|---|---|
+| Fired by a nameable action (writing a query, running tests, opening a PR) | A skill, plus a one-line loader in the CLAUDE.md nearest to where the action happens ("BEFORE running tests, load the `running-tests` skill") |
+| Orientation the agent won't discover from the code path it is on (structure, where X lives, what tooling exists) | CLAUDE.md |
+| An ordered procedure that must survive pressure | A skill |
+| Detailed reference or educational content | A skill or a linked doc, not inline in CLAUDE.md |
+| Always relevant with no trigger moment (register, naming, security posture) | CLAUDE.md |
+| Data bound to specific code (what a package owns, which events it emits) | A doc header next to the code, in a fixed greppable form |
+| Scoped to one directory | That directory's CLAUDE.md. Root CLAUDE.md carries repo-wide rules only |
+
+The mechanics the table rests on:
+
+- Root CLAUDE.md is always in context. Every line competes with the whole
+  session for attention, and long files bury their own rules.
+- A directory CLAUDE.md loads when the agent first reads a file in that
+  directory, and never refreshes. By the time the rule matters it can be
+  thousands of lines back.
+- A skill loads at its trigger or on manual invocation. Its content is fresh
+  at the moment of use, and a user can re-invoke it by name.
+- A skill's description alone misfires. Pair every action-fired skill with a
+  one-line loader in CLAUDE.md.
+
+A rule whose value is at a specific moment does more work as a skill loaded
+at that moment than as an always-on sentence the agent read hours ago.
+
+## 6. Stripping rotted guidance
 
 Stripping removes argumentation and conversational artifacts. It does not trim
 reference material. The patterns to recognise are in Hard restrictions and
@@ -470,12 +501,12 @@ nothing load-bearing is lost, it was argumentation; keep it cut. If removal
 weakens the file against a recognisable default, it was interception; restore
 it and promote it with the technique catalogue.
 
-## 6. Procedure for writing or revising guidance
+## 7. Procedure for writing or revising guidance
 
 Run this before editing the load-bearing text of any guidance or skill, and
 when writing one from scratch.
 
-1. **Align.** State the objective, audience, register, and structural devices of the guidance you are writing or editing, in its own register. When editing, read the file end to end first and state them back from it. When writing fresh, state what you will write to. Get the user to confirm or correct it. Hold that statement as the model of correct output for the file. This is the alignment step.
+1. **Align.** State the medium, objective, audience, register, and structural devices of the guidance you are writing or editing, in its own register. When the user did not name a home, choose one per Where guidance lives and name it in the statement. When editing, read the file end to end first and state them back from it. When writing fresh, state what you will write to. Get the user to confirm or correct it. Hold that statement as the model of correct output for the file. This is the alignment step.
 2. **Diff against the model.** Check the current text and every proposed change against the alignment statement, the recognition tables in Hard restrictions and register reset, and the rules in Writing style.
 3. **Draft as points.** Before composing any prose, write every directive, caveat, trigger, and cost as a flat dot point, one fact per point. A point that is not an instruction, a trigger, or a cost is justification — cut it now, while it is still visible as a separate point. Prose composed before the points exist arrives carrying justification and threaded clauses; points make elaboration visible.
 4. **Compose from the points.** Read `examples.md` next to this skill first and match its after-forms. Three or more points sharing a subject become a DO/DO NOT list as they stand. Prose is for the lede and for cost statements; everything else stays a point.
@@ -493,7 +524,7 @@ when writing one from scratch.
 - DO NOT treat the existing text as a baseline to preserve. Re-derive from the model, not from what is there
 - DO NOT compose prose directly from the alignment statement. Points come first
 
-## 7. Skills: procedure and caveats
+## 8. Skills: procedure and caveats
 
 A skill is guidance invoked on demand, not always in context. Its description
 is the trigger. Two things are skill-specific: the description must fire
@@ -563,6 +594,8 @@ If you catch yourself thinking any of these while writing or editing guidance, s
 | "This rule would land harder with an existential cost or a personality directive" | Those are human-confirmed. Propose it; do not originate it |
 | "A future agent might do X, so I'll add a Red flags row now to be safe" / "I'm introducing a new rule; the Red flags row reinforces it at the point of failure" | Speculative rows dilute the strong ones — 'to be safe' and 'reinforcement at the point of failure' are the same drift dressed differently. The DO/DO NOT bullet is the rule's home. Add a Red flags row only on evidence: you hit it, repeat violations, or the user reports it |
 | "'See the technique catalogue' is wordy; 'see section 4' is shorter" | The agent holds the document in attention, not a numbered table of contents, and counts unreliably. Name it |
+| "The user asked for guidance, so I'll add it to the CLAUDE.md I'm already looking at" | Proximity is not placement. Decide the medium per Where guidance lives and name it in the alignment statement |
+| "This rule is important, so it belongs in the always-on file" | Importance doesn't pick the medium; the moment of use does. An action-fired rule intercepts better as a skill with a one-line loader in CLAUDE.md |
 | "This concept needs a name so the rule reads cleanly" | A label gives the reader a concept to hold instead of an action to take. State the instruction; use a term only when it names a greppable artifact |
 | "I'll note what the linked file covers so the reader knows what's there" | The link names the section; that is enough. A summary duplicates the canonical home and drifts when it changes |
 | "My draft is already tight; the condense pass would cut nothing" | The author parses their own prose at no cost, so the verbosity is invisible from the inside. Run the three sentence checks mechanically |
