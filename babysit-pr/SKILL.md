@@ -99,10 +99,19 @@ mergeability/CI, and anything handed back for the user.
 ### 6. Pick the next cadence (self-paced runner only)
 
 When the runner lets you choose the next wake-up (a `/loop` with no fixed
-interval), set it from what you observed:
+interval), re-read the step 2 signals first, then set the wait from that
+fresh read.
+
+**Re-read before you wait.** Steps 3–4 take minutes. New bot comments or a
+freshly-advanced base can land while address-review or update-branch runs, so
+the signals you gathered in step 2 are stale by the time you reach here.
+Re-run the step 2 checks. If either signal fires, start the next iteration now
+instead of waiting. A long sleep here misses work already queued.
+
+Set the wait from the fresh read:
 
 - **Active** — comments just addressed, branch just rebased, CI running → short wait (minutes).
-- **Quiet** — nothing pending, CI green, branch current → long wait (up to an hour).
+- **Quiet** — nothing pending on the re-read, CI green, branch current → long wait (up to an hour).
 - **Blocked on a human** — address-review handed back a thread, or update-branch hit an unresolvable conflict → report, send a push notification if the user has stepped away, and end the loop. Spinning changes nothing until the human acts.
 - **Done** — PR merged or closed → end the loop.
 
@@ -117,6 +126,7 @@ A fixed-interval runner or a routine ignores this step; it re-fires on its own s
 | "address-review already ran this PR last session, so the threads are handled" | State comes from the PR, not memory. Re-read. A thread reopened since then is not-dealt-with again. |
 | "`mergeable` is UNKNOWN but `mergeStateStatus` says BEHIND, I'll rebase anyway" | UNKNOWN means GitHub is still computing. Re-read next iteration rather than acting on a half-computed state. |
 | "Nothing is pending, but I'll invoke address-review each tick just to be sure" | With zero unresolved threads there is nothing to analyze. Skip it; the cheap signal in step 2 is the gate. |
+| "I just finished addressing comments and rebasing, so nothing new can have arrived, I'll sleep an hour" | Those runs took minutes; bot comments and base advances land during them. Re-read the step 2 signals before scheduling any wait. |
 
 Violating the letter of these rules is violating the spirit of them.
 
