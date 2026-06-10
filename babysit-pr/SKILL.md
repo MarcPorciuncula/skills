@@ -16,8 +16,8 @@ Keep one PR healthy over time. Each iteration: address new bot review
 comments via the address-review skill, rebase the branch via the
 update-branch skill when it has gone stale, then report.
 
-This skill is the loop *body*. How it gets re-invoked — an in-session
-`/loop`, or a cloud Routine — is the runner, covered at the end.
+This skill is the loop *body*. It runs under an in-session `/loop`,
+covered at the end.
 
 ## Iron Law
 
@@ -32,9 +32,9 @@ work here bypasses those gates and posts or pushes things it should not.
 
 ## Each run reads state from the PR, not from memory
 
-A loop iteration or a routine run starts fresh. It may have no memory of
-prior iterations, possibly across sessions. Determine everything from the
-PR itself: mergeability, unresolved threads, CI, merge/close state. Never
+A loop iteration starts fresh. It may have no memory of prior iterations
+once context is summarised between them. Determine everything from the PR
+itself: mergeability, unresolved threads, CI, merge/close state. Never
 assume work from a previous iteration is done or not done.
 
 ## Loop body
@@ -116,7 +116,7 @@ Set the wait from the fresh read:
 - **Blocked on a human** — address-review handed back a thread, or update-branch hit an unresolvable conflict → report, send a push notification if the user has stepped away, and end the loop. Spinning changes nothing until the human acts.
 - **Done** — PR merged or closed → end the loop.
 
-A fixed-interval runner or a routine ignores this step; it re-fires on its own schedule and re-reads state each time.
+A fixed-interval `/loop` ignores this step; it re-fires on its own schedule and re-reads state each time.
 
 ## Red flags: STOP
 
@@ -131,16 +131,10 @@ A fixed-interval runner or a routine ignores this step; it re-fires on its own s
 
 Violating the letter of these rules is violating the spirit of them.
 
-## Runners
+## Runner
 
-The loop body above is the same under every runner. Pick the runner by
-whether the watch must survive your terminal closing.
-
-### In-session `/loop`
-
-Runs while the Claude Code session stays open. Best for watching a PR
-during a working session, with full local context and the installed
-skills.
+Run the loop body under an in-session `/loop`, while the Claude Code
+session stays open, with full local context and the installed skills.
 
 ```text
 /loop /babysit-pr 1234          # fixed cadence you set
@@ -150,20 +144,3 @@ skills.
 - A self-paced `/loop` (no interval) lets step 6 choose each wake-up.
 - Closing the terminal stops the loop. Recurring loops expire 7 days after creation.
 - To make a bare `/loop` babysit a specific PR by default, put the instruction in `.claude/loop.md` (project) or `~/.claude/loop.md` (user).
-
-### Cloud Routine
-
-Runs on Anthropic-managed infrastructure, so it survives the machine
-being off. Best for unattended babysitting. Create with `/schedule` or at
-claude.ai/code/routines.
-
-Attach two triggers to cover both signals:
-
-- **GitHub `pull_request` trigger** — fires on PR events (opened, synchronized, labeled, review activity) within minutes. Configured via the web UI only.
-- **Schedule trigger (hourly)** — the only way to catch a *stale* branch. A base branch advancing emits no PR event and no routine GitHub trigger, so staleness is invisible to the event path and must be polled. One hour is the minimum routine interval.
-
-Caveats specific to the cloud runner:
-
-- DO enable **Allow unrestricted branch pushes** for the repo. By default a routine pushes only to `claude/*` branches; babysitting an existing PR branch needs to push to that branch.
-- DO ensure the address-review and update-branch skills are reachable in the run — committed to the repo, or installed in the cloud environment. A fresh clone has no machine-local skills.
-- A routine run is a fresh clone with no local state. The "read state from the PR" rule above is what makes this work.
