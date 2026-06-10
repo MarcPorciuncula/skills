@@ -442,8 +442,6 @@ say so once and follow their call.
 | Data bound to specific code (what a package owns, which events it emits) | A doc header next to the code, in a fixed greppable form |
 | Scoped to one directory | That directory's CLAUDE.md. Root CLAUDE.md carries repo-wide rules only |
 
-The mechanics the table rests on:
-
 - Root CLAUDE.md is always in context. Every line competes with the whole
   session for attention, and long files bury their own rules.
 - A directory CLAUDE.md loads when the agent first reads a file in that
