@@ -126,7 +126,6 @@ A fixed-interval runner or a routine ignores this step; it re-fires on its own s
 | "The branch conflicts; I'll resolve it inline, it's faster than invoking update-branch" | Iron Law: rebases go through update-branch. Inline resolution skips its git-spice handling and its fetch-first rule. |
 | "address-review already ran this PR last session, so the threads are handled" | State comes from the PR, not memory. Re-read. A thread reopened since then is not-dealt-with again. |
 | "`mergeable` is UNKNOWN but `mergeStateStatus` says BEHIND, I'll rebase anyway" | UNKNOWN means GitHub is still computing. Re-read next iteration rather than acting on a half-computed state. |
-| "The PR is in the merge queue, it's as good as merged, I'll end the loop" | A queued PR is still `OPEN` and can be knocked back. Exit only when `state` is MERGED. |
 | "Nothing is pending, but I'll invoke address-review each tick just to be sure" | With zero unresolved threads there is nothing to analyze. Skip it; the cheap signal in step 2 is the gate. |
 | "I just finished addressing comments and rebasing, so nothing new can have arrived, I'll sleep an hour" | Those runs took minutes; bot comments and base advances land during them. Re-read the step 2 signals before scheduling any wait. |
 
