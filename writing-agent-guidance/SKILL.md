@@ -452,9 +452,6 @@ say so once and follow their call.
 - A skill's description alone misfires. Pair every action-fired skill with a
   one-line loader in CLAUDE.md.
 
-A rule whose value is at a specific moment does more work as a skill loaded
-at that moment than as an always-on sentence the agent read hours ago.
-
 ## 6. Stripping rotted guidance
 
 Stripping removes argumentation and conversational artifacts. It does not trim
