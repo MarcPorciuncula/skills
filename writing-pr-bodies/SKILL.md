@@ -36,7 +36,7 @@ On a large change the body has a second job: helping the reviewer *perform* the 
 - DO NOT repeat the diff, the reader has access to the "files changed" tab
 - DO NOT list out files UNLESS they are the crucial subject of the change
 - DO NOT recap routine lockfile or generated-file changes (`pnpm-lock.yaml`, `package-lock.json`, `go.sum`, regenerated clients, snapshot updates). They follow mechanically from the real change and are visible in the diff
-- DO NOT narrate changes over the lifecycle of the branch. A PR is merged atomically and intermediate states never get deployed
+- DO NOT narrate changes over the lifecycle of the branch. A PR is merged atomically and intermediate states never get deployed. (Exception: a *Background & Motivation* note may give a short causal arc, origin to insight to capability, explaining why the PR exists; that is the motivation for the change, not a narration of how the diff evolved.)
 - DO amend or correct the PR to ensure it matches the final net changes after a pivot or deviation from the original intent or design
 - DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
 - DO NOT use a "summary" title. The PR body **IS** the summary of the changes in the PR
@@ -499,12 +499,32 @@ The same large change as a component inventory, then as a shape:
 
 The inventory narrates what each piece does internally and enumerates its members. The shape says what each piece is, where it sits, and how it relates to existing structure, naming a type only where it is load-bearing, like the auth middleware here. A reviewer reads it to judge whether the new architecture is well-placed.
 
-### Background
+### Background & Motivation
 
-For context the commits don't carry. Only include when the PR's motivation or constraints aren't legible from the PR scope alone.
+Why the PR exists, when the diff alone doesn't make that legible. Two cases earn it: context the commits don't carry (a constraint, a prior incident, an external dependency the change responds to), and a PR whose connection to its ticket is non-obvious, such as a change a reviewer didn't expect or one that diverges from how the ticket implied the work would go. A reviewer who would ask "why is this here?" before "is this correct?" needs this first.
 
-- DO use when the why isn't obvious from the change
-- DO NOT use as filler for "thoroughness"
+This is the one place a short causal arc belongs. The body proper stays subjectless present active and never narrates the branch's evolution (see *Core requirements* and *The change of a PR is atomic*), but explaining why a PR exists is a different job from describing what changed, and the clearest shape for it is the reasoning that produced the change:
+
+1. **Origin**: the problem or ticket the work came from.
+2. **The fork**: the choice the author faced and the insight that resolved it (migrate the old behaviour, or eliminate the need for it).
+3. **The new model**: the capability the change leaves in place.
+
+- DO lead with the problem the ticket surfaced, then the insight, then the resulting capability. The arc makes a surprising change legible because the reader follows the reasoning that motivated it.
+- DO use concept vocabulary the reviewer can grasp cold (what the system did and now does), not internal identifiers (function names, predicates, field names) the reader hasn't met yet.
+- DO end on the new capability the design makes possible, not on what was removed or what work it saved.
+- DO place it first, before the lede, when the PR's relevance to its ticket is non-obvious; the reviewer should learn why the change belongs before reading what it is. Most PRs are self-evidently on-ticket and open with the lede instead.
+- DO keep it short, a few sentences. It frames the change; it does not re-explain it.
+- DO NOT lead with bookkeeping: the PR's position in a stack, or the work it saves a sibling PR. That is accounting the reviewer of this PR does not need.
+- DO NOT frame the payoff as a metric ("N fewer call sites", "shrinks the other PR"). State the idea, not the count.
+- DO NOT use as filler for "thoroughness". Omit it when the change is self-evidently on-ticket.
+
+The same motivation note as bookkeeping, then as an arc:
+
+> **Bookkeeping (reject):** Bottom of the AI-1234 cleanup stack. Keying the importer on the record id removes its type-tag reads outright, so the stacked removal (#NN) has two fewer migration sites.
+
+> **Motivation (accept):** AI-1234 set out to remove the type tag. The importer was one of its consumers; rather than migrate that read, this PR drops type-based matching altogether, so an importer can address a record directly or build a new one from raw input.
+
+The bookkeeping version leads with stack position and counts what it saves another PR; the arc version leads with the problem, names the fork (migrate vs. eliminate), and ends on the new capability, all in terms a reviewer follows without opening the diff.
 
 ### Deployability
 
@@ -700,6 +720,7 @@ This is the self-review you announced before stage 1. Read the draft file from t
 | "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
 | "I'll add a Test plan checkbox list" | Use How to test instead. No checkboxes. Drop entirely if every step is a generic CI command. |
 | "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
+| "I'll frame why this PR exists by where it sits in the stack, or what it saves the sibling PR" | That's bookkeeping. Lead with the problem the ticket surfaced and the insight that resolved it; end on the new capability, in concept terms not internal identifiers. See *Background & Motivation*. |
 | "I'll restate the title in the first sentence" | Cut. The reader has the title. |
 | "Let me name the types and packages I touched" | Plain language for functional PRs; identifiers and file paths belong in non-functional PRs where they're the subject. |
 | "I'll add the 🤖 attribution" | Don't. |
