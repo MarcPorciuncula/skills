@@ -52,7 +52,7 @@ gh pr view <pr> --json number,state,isDraft,headRefName,baseRefName,mergeable,me
 
 - DO stop the loop if `state` is `MERGED` or `CLOSED`. Report it done. Nothing left to babysit.
 - DO keep babysitting a PR sitting in a merge queue. A queued PR is still `OPEN` and can be knocked back if a required check fails or the base advances. Only `state: MERGED` means it landed — exit on that, not on "queued".
-- DO treat `mergeable: UNKNOWN` as "GitHub is still computing" — skip the staleness check this iteration, re-read next time. Do not act on UNKNOWN.
+- DO treat `mergeable: UNKNOWN` as "GitHub is still computing the conflict signal" — skip the conflict check this iteration, re-read next time. The `behind_by` check is independent and still runs.
 - DO keep babysitting a `DRAFT` PR. Bots still comment on drafts.
 
 ### 2. Gather the two signals cheaply
@@ -60,15 +60,17 @@ gh pr view <pr> --json number,state,isDraft,headRefName,baseRefName,mergeable,me
 Before invoking the heavy skills, check whether either has work to do.
 
 - **New review activity** — are there unresolved review threads? Check with `gh pr view <pr> --comments`, or reuse address-review's fetch scripts. Presence of unresolved threads is the signal; the dealt-with analysis belongs to address-review, not here.
-- **Branch staleness** — read `mergeStateStatus` from step 1:
+- **Branch staleness** — two independent signals, read separately:
 
-  | `mergeStateStatus` | Meaning | Action |
-  |---|---|---|
-  | `BEHIND` | Base branch advanced; head is out of date | Update the branch |
-  | `DIRTY` | Merge conflict with base | Update the branch |
-  | `CLEAN`, `UNSTABLE`, `BLOCKED`, `HAS_HOOKS` | Up to date with base | Leave the branch alone |
+  - **Behind base** — read `behind_by` from the compare API, not from `mergeStateStatus`:
 
-  `mergeable: CONFLICTING` is the same signal as `DIRTY` — update the branch.
+    ```bash
+    gh api repos/{owner}/{repo}/compare/<base>...<head> --jq '.behind_by'
+    ```
+
+    Use `baseRefName` for `<base>` and `headRefName` for `<head>`. `behind_by > 0` → update the branch. `mergeStateStatus` is a single precedence-ordered value: `BLOCKED` and `UNSTABLE` outrank `BEHIND`, so a branch behind a protected base reports `BLOCKED` and its behind status is masked. Never infer "behind" from `mergeStateStatus`.
+
+  - **Conflict with base** — `mergeStateStatus: DIRTY` or `mergeable: CONFLICTING` → update the branch.
 
 If neither signal fires, skip to the report. Do not invoke the composed skills with no work for them.
 
@@ -83,7 +85,7 @@ address mode (analyze, then execute). Delegate completely:
 
 ### 4. Update the branch if it went stale
 
-When step 2 flagged the branch `BEHIND`, `DIRTY`, or `CONFLICTING`,
+When step 2 found the branch behind base or in conflict with it,
 invoke the update-branch skill for the current branch. Run this *after*
 step 3 so any commits address-review just pushed are included in the
 rebase.
@@ -125,7 +127,8 @@ A fixed-interval `/loop` ignores this step; it re-fires on its own schedule and 
 | "There's a new comment from a human reviewer, I'll just reply to keep things moving" | babysit-pr never posts. Hand it to address-review, which decides reply eligibility by its allowlist. |
 | "The branch conflicts; I'll resolve it inline, it's faster than invoking update-branch" | Iron Law: rebases go through update-branch. Inline resolution skips its git-spice handling and its fetch-first rule. |
 | "address-review already ran this PR last session, so the threads are handled" | State comes from the PR, not memory. Re-read. A thread reopened since then is not-dealt-with again. |
-| "`mergeable` is UNKNOWN but `mergeStateStatus` says BEHIND, I'll rebase anyway" | UNKNOWN means GitHub is still computing. Re-read next iteration rather than acting on a half-computed state. |
+| "`mergeStateStatus` is `BLOCKED`, not `BEHIND`, so the branch is up to date with base" | `BLOCKED` and `UNSTABLE` outrank `BEHIND` in a single precedence-ordered field and mask it. Read `behind_by` from the compare API; don't infer behind from `mergeStateStatus`. |
+| "`mergeable` is UNKNOWN, I'll still read the conflict state from `mergeStateStatus`" | UNKNOWN means GitHub is still computing the merge state. Skip the conflict check this tick; the `behind_by` compare check is independent and still runs. |
 | "Nothing is pending, but I'll invoke address-review each tick just to be sure" | With zero unresolved threads there is nothing to analyze. Skip it; the cheap signal in step 2 is the gate. |
 | "I just finished addressing comments and rebasing, so nothing new can have arrived, I'll sleep an hour" | Those runs took minutes; bot comments and base advances land during them. Re-read the step 2 signals before scheduling any wait. |
 
