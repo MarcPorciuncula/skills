@@ -405,10 +405,29 @@ When the PR's branch is stacked on another branch in the same repo: branched off
 
 - DO name the parent PR this branch is stacked on
 - DO NOT use for an independent branch that merely depends on another PR landing. Cross-repo dependencies are always that case, never a stack. Use Dependency.
+- DO NOT add a Deployability `> [!WARNING]` for the stack's own order. The stack already enforces the sequence (see *Deployability*)
 
 ```
 Stacked on #N.
 ```
+
+### Stack pre-lede
+
+When the PR is one mechanical slice of a single unit of work (one ticket) split into a stack for shipping reasons. The split reflects how the work has to ship (e.g. one part must deploy before the next), not conceptually distinct steps. A one-sentence pre-lede above the lede carries the shared intent, so a reviewer landing on any PR in the stack grasps the whole before the detail.
+
+- DO state the shared intent: what the whole unit does, plus the prior state it replaces when that is the point
+- DO size it like a lede, one or two sentences, above the lede (below a `> [!WARNING]` banner if one is present)
+- DO write the same pre-lede on every PR in the stack
+- DO let the per-PR lede follow and say what this PR does
+- DO NOT map or enumerate the stack's PRs, or mark "this PR is #N". Ordering and links live in the Stack line and External references (see *DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE*)
+- DO NOT put links in the pre-lede, or explain the whole change's design or each PR's role
+- DO NOT use it for a stack of conceptually distinct steps (a large ordered ticket); one sentence cannot carry that. Use *Background & Motivation*, or just the per-PR ledes
+
+> **Accept:** Part of moving session storage from cookies to Redis, split across three PRs so each deploys while the app keeps serving.
+>
+> **Reject:** a `## Why this stack` heading, a three-bullet map of the PRs, their links, and a "This PR is #2 of 3" marker.
+
+The accept line carries the shared intent. The reject documents the stack's structure, which the Stack line, External references, and the stack tooling's own navigation already carry.
 
 ### Dependency
 
@@ -545,6 +564,7 @@ When merging or deploying this PR before another change lands breaks production,
 - DO carry the gating reference as an unfurling list item in External references
 - DO use only for a genuine merge or deploy gate. A reviewer who ignores it can break production
 - DO NOT use it for notes, context, caveats, or risk commentary. A banner that cries wolf gets ignored
+- DO NOT use it for a stacked PR's own merge or deploy order. The stack already enforces the sequence (git ancestry for merges, bottom-up for deploys), so the banner guards nothing. Reserve it for cross-repo gates nothing enforces (see *Stack*, *Dependency*)
 - DO remove the banner in the same PR once the blocker clears
 
 ## Human overview sections
@@ -730,6 +750,8 @@ This is the self-review you announced before stage 1. Read the draft file from t
 | "I'll add a `> [!NOTE]` / `> [!TIP]` banner to highlight context or a caveat" | Alerts are only for merge or deploy blockers (`> [!WARNING]` in Deployability). A decorative banner trains reviewers to ignore the real ones. |
 | "PR B depends on PR A landing, so B is stacked on A" / "## Stack — Stacked on cross-repo#N" | Stack means shared git ancestry in one repo (B branched off A). An independent or cross-repo ordering dependency is not a stack. Use the Dependency section and carry the link in External references. |
 | "Another PR depends on this one landing first, so I'll add a `## Dependency` section to flag the relationship" | Wrong direction. Dependency is for when this PR is blocked. Putting it on the prerequisite makes scanners assume a merge gate that doesn't exist. Mention the consumer in the lede elaboration or as a `- Refs owner/repo#N` item in External references. |
+| "This is a stack with a strict order, so a `## Why this stack` overview mapping the PRs helps reviewers follow it" | The Stack line, External references, and the stack tooling already carry the map. State the shared intent in a one-sentence Stack pre-lede; drop the enumeration. See *Stack pre-lede*. |
+| "These PRs are ordered, so a `> [!WARNING]` keeps anyone from merging them out of sequence" | A stacked child cannot merge before its parent; git ancestry enforces it. The banner is for cross-repo gates nothing enforces. See *Deployability*. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
 | "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
 | "This needs more structure to feel complete" | A short prose body is complete for a small PR. |
