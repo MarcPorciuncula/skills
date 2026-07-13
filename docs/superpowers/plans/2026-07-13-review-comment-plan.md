@@ -74,3 +74,31 @@ Dispatch a second fresh agent with a generic component tree where a provider own
 - The hard-bug pressure test keeps correctness mandatory and implementation optional.
 - The architectural pressure test uses current/suggested structure, establishes ownership, and stays above code-level implementation.
 - Both fresh-agent outputs are understandable without access to this plan, spec, or conversation.
+
+## Task 4: Align the skill with writing-agent-guidance conventions
+- [ ] Status
+
+### Scope
+Revise the existing skill in place to strengthen its register, cold-read standard, outcome/remedy distinction, and examples. Remove the repository-inconsistent Codex UI metadata. Do not rebuild the skill around every enforcement device available in `writing-agent-guidance`, change its responsibility boundary, or alter the README catalogue entry.
+
+### Approach
+Replace the opening with a governing requirement that the comment must stand alone beside the diff. Keep the six-step procedure and evidence-selection table, but make evidence prove the concern and give required outcomes versus suggested remedies a dedicated concise section. Rewrite the drafting checklist as direct `DO` / `DO NOT` rules.
+
+Add a compact recognition table covering only observed failures: unresolved references, unqualified component relationships, unexplained implementation identifiers, architectural alternatives framed as targets, and remedies stated without a demonstrated concern. Tighten the generic list-scoped-state example and add a compact partial-success correctness example. Delete `review-comment/agents/openai.yaml` because the repository's portable skills do not use Codex UI metadata.
+
+Validate the skill. Pressure-test a correctness bug, an architectural redundancy, a time-pressure drafting request, and a sunk-cost revision request with fresh agents. Compare the revised outputs against the current skill for cold-read accessibility, firm correctness requirements, and avoidance of code-level over-prescription.
+
+### Files
+- `review-comment/SKILL.md` (modify)
+- `review-comment/agents/openai.yaml` (delete)
+- `docs/superpowers/plans/2026-07-13-review-comment-plan.md` (modify on completion)
+
+### Done criteria
+- Cold-read accessibility governs the whole skill rather than appearing only as a final check.
+- The skill keeps one concise workflow while matching the direct register of `writing-agent-guidance`.
+- Correctness requirements remain firm and implementation remedies remain optional.
+- Architectural alternatives are labelled suggestions, never targets.
+- Recognition guidance covers only failures observed while drafting the motivating review.
+- The correctness and architecture examples are balanced and understandable without conversation context.
+- Codex UI metadata is removed without changing the portable-skills catalogue.
+- Skill validation and all four fresh-agent pressure tests pass.

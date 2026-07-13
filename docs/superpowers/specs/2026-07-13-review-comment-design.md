@@ -50,3 +50,16 @@ Use a generic list-scoped-state example. The current structure places state in a
 - Run the skill validator.
 - Pressure-test one hard-bug review and one architectural-redundancy review with fresh agents.
 - Confirm the hard-bug output does not soften correctness and the architectural output uses current/suggested structure without prescribing implementation.
+
+## Guidance-style revision
+
+Strengthen the skill against the repository's `writing-agent-guidance` conventions without reproducing every enforcement device from that skill.
+
+- Make cold-read accessibility the governing requirement for the whole skill.
+- Keep the ordered procedure and evidence-selection table, but require evidence to prove the concern.
+- Give required outcomes and optional remedies their own concise section. Correctness and invariant violations stay firm; architectural alternatives and implementation choices remain suggestions.
+- Express drafting constraints as direct `DO` / `DO NOT` rules.
+- Add a small recognition table for observed failures: unresolved antecedents, ambiguous relationships, unexplained implementation identifiers, prescribed architectural targets, and remedies without a demonstrated concern.
+- Keep the list-ownership example as a conditional architectural technique and add one compact correctness example so the skill does not learn architecture as its default shape.
+- Remove `review-comment/agents/openai.yaml`; portable skills in this repository do not otherwise carry Codex UI metadata.
+- Do not add an Iron Law, commitment announcement, broad Red flags table, personality directive, or repository-local loader without evidence that the simpler guidance is being skipped.
