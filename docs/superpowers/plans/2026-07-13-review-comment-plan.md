@@ -3,7 +3,9 @@
 Spec: docs/superpowers/specs/2026-07-13-review-comment-design.md
 
 ## Task 1: Author the review-comment skill
-- [ ] Status
+- [x] Status
+
+Result: Added the portable `review-comment` skill with concern-specific evidence selection, outcome/remedy separation, cold-read checks, and a generic list-scoped-state example. The system validator passed, the scoped content checks and `git diff --check` passed, and independent self-review found no actionable violations.
 
 ### Scope
 Create the portable `review-comment` skill content and generic worked example. The skill drafts and revises comments from code context supplied or inspected locally. It does not inspect GitHub review state, post reviews, process comments received from other reviewers, or summarize an entire PR.
