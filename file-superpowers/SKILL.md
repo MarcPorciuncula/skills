@@ -1,17 +1,29 @@
 ---
 name: file-superpowers
 description: >
-  Use before any creative work, feature implementation, bug fixing, or behavior change.
-  Covers brainstorming, design, TDD, debugging, verification, code review, parallel dispatch,
-  and branch completion. Persists specs at `docs/superpowers/specs/` and plans at
-  `docs/superpowers/plans/`, with checkbox-tracked tasks inside each plan file.
-  Use when: starting a new feature, implementing a design, writing tests, fixing bugs,
-  claiming work is done, reviewing code, finishing a branch, or dispatching parallel agents.
+  TRIGGER: Use when the user invokes `file-superpowers` by name or slash command,
+  asks to write a spec, or asks to write a plan. SKIP: Do not infer a trigger from
+  synonymous wording or inline planning requests, including “create a spec”, “spec
+  this out”, “give me a spec”, “give me a plan”, “outline this”, “how would you
+  approach this?”, or “what is the plan?” Do not use by default for implementation,
+  bug fixes, testing, review, or branch completion.
 ---
 
 # file-superpowers
 
 Unified development workflow skill. Each phase has its own document — read the right one before acting.
+
+## Entry gate
+
+Start the workflow only when the user invokes `file-superpowers`, asks to write a
+spec, or asks to write a plan.
+
+Do not infer this trigger from synonymous wording. “Create a spec”, “spec this
+out”, and similar wording request an inline response. Do not create workflow
+artifacts or follow the phased process.
+
+For routine work, phase documents may be consulted as reference material without
+starting the workflow, creating a spec, or creating a plan.
 
 Specs live at `docs/superpowers/specs/`. Plans live at `docs/superpowers/plans/`. Tasks are checkbox-tracked sections inside the plan file. Progress is recorded by flipping a task's checkbox and appending a `### Result` sub-section, both amended into the task's implementation commit.
 
