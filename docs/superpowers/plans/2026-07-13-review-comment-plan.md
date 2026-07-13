@@ -5,7 +5,9 @@ Spec: docs/superpowers/specs/2026-07-13-review-comment-design.md
 ## Task 1: Author the review-comment skill
 - [x] Status
 
-Result: Added the portable `review-comment` skill with concern-specific evidence selection, outcome/remedy separation, cold-read checks, and a generic list-scoped-state example. The system validator passed, the scoped content checks and `git diff --check` passed, and independent self-review found no actionable violations.
+### Result
+
+Added the portable `review-comment` skill with concern-specific evidence selection, outcome/remedy separation, cold-read checks, and a generic list-scoped-state example. The system validator passed, the scoped content checks and `git diff --check` passed, and independent self-review found no actionable violations.
 
 ### Scope
 Create the portable `review-comment` skill content and generic worked example. The skill drafts and revises comments from code context supplied or inspected locally. It does not inspect GitHub review state, post reviews, process comments received from other reviewers, or summarize an entire PR.
@@ -29,7 +31,9 @@ Require comments to introduce identifiers before use; qualify parent, child, and
 ## Task 2: Add skill metadata and catalogue entry
 - [x] Status
 
-Result: Generated `review-comment/agents/openai.yaml` with the system skill metadata generator and added the skill to the portable-skills catalogue without changing existing entries. The system validator, scoped metadata/catalogue assertions, and `git diff --check` passed.
+### Result
+
+Generated `review-comment/agents/openai.yaml` with the system skill metadata generator and added the skill to the portable-skills catalogue without changing existing entries. The system validator, scoped metadata/catalogue assertions, and `git diff --check` passed.
 
 ### Scope
 Generate the skill's UI metadata and add it to the portable-skills catalogue. Do not change metadata or catalogue descriptions for existing skills.
@@ -50,7 +54,9 @@ Generate `agents/openai.yaml` from the completed skill. Use `Review Comment` as 
 - [x] Status
 Depends on: Task 1, Task 2
 
-Result: The system skill validator passed. In fresh-agent pressure tests, the partial-success fan-out comment identified that an early rejection can start a refetch while another RPC is still committing, required reconciliation only after every request has settled, and presented observing all outcomes before refetching or using a transactional bulk endpoint as alternative implementations. The architectural comment stated the current provider/list topology as fact, labelled the alternative `Suggested shape`, assigned list-scoped state to `SearchResultList`, qualified its rendered consumers, and stayed above implementation details. Both comments were understandable from their raw scenarios alone.
+### Result
+
+The system skill validator passed. In fresh-agent pressure tests, the partial-success fan-out comment identified that an early rejection can start a refetch while another RPC is still committing, required reconciliation only after every request has settled, and presented observing all outcomes before refetching or using a transactional bulk endpoint as alternative implementations. The architectural comment stated the current provider/list topology as fact, labelled the alternative `Suggested shape`, assigned list-scoped state to `SearchResultList`, qualified its rendered consumers, and stayed above implementation details. Both comments were understandable from their raw scenarios alone.
 
 ### Scope
 Validate the completed skill and test its behavior with two fresh agents. Keep prompts and results ephemeral; do not add test artifacts to the repository.
