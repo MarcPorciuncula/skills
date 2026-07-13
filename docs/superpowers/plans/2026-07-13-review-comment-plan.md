@@ -27,7 +27,9 @@ Require comments to introduce identifiers before use; qualify parent, child, and
 - The example is understandable without this plan, spec, or conversation.
 
 ## Task 2: Add skill metadata and catalogue entry
-- [ ] Status
+- [x] Status
+
+Result: Generated `review-comment/agents/openai.yaml` with the system skill metadata generator and added the skill to the portable-skills catalogue without changing existing entries. The system validator, scoped metadata/catalogue assertions, and `git diff --check` passed.
 
 ### Scope
 Generate the skill's UI metadata and add it to the portable-skills catalogue. Do not change metadata or catalogue descriptions for existing skills.

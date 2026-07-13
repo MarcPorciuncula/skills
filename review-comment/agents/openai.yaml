@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Comment"
+  short_description: "Draft cold-read-accessible code review comments"
+  default_prompt: "Use $review-comment to draft a focused review comment from an identified concern and the relevant code context."
