@@ -1,12 +1,10 @@
 ---
 name: file-superpowers
 description: >
-  Use before any creative work, feature implementation, bug fixing, or behavior change.
-  Covers brainstorming, design, TDD, debugging, verification, code review, parallel dispatch,
-  and branch completion. Persists specs at `docs/superpowers/specs/` and plans at
-  `docs/superpowers/plans/`, with checkbox-tracked tasks inside each plan file.
-  Use when: starting a new feature, implementing a design, writing tests, fixing bugs,
-  claiming work is done, reviewing code, finishing a branch, or dispatching parallel agents.
+  Use only when the user explicitly asks for the file-superpowers planning and
+  implementation workflow. It is intended for large or domain-complex changes.
+  Otherwise, agents may consult its phase documents for implementation or testing
+  guidance, or offer the workflow, but must not follow its phased process by default.
 ---
 
 # file-superpowers
