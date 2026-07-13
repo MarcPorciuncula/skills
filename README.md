@@ -10,6 +10,7 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
 | **red-green** | TDD red-green-refactor workflow |
+| **review-comment** | Draft focused, cold-read-accessible code review comments |
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
 | **update-branch** | Rebase branches or restack git-spice stacks |
