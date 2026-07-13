@@ -50,4 +50,3 @@ Use a generic list-scoped-state example. The current structure places state in a
 - Run the skill validator.
 - Pressure-test one hard-bug review and one architectural-redundancy review with fresh agents.
 - Confirm the hard-bug output does not soften correctness and the architectural output uses current/suggested structure without prescribing implementation.
-
