@@ -76,7 +76,16 @@ Dispatch a second fresh agent with a generic component tree where a provider own
 - Both fresh-agent outputs are understandable without access to this plan, spec, or conversation.
 
 ## Task 4: Align the skill with writing-agent-guidance conventions
-- [ ] Status
+- [x] Status
+
+### Result
+
+Revised the skill around a governing cold-read requirement, direct drafting
+rules, proven evidence, explicit outcome/remedy separation, targeted recognition
+guidance, and balanced correctness and architecture examples; removed Codex UI
+metadata without changing the catalogue. The validator and four fresh-agent
+baseline comparisons passed, with the revised outputs matching or improving
+cold-read clarity, firm requirements, and remedy-level implementation freedom.
 
 ### Scope
 Revise the existing skill in place to strengthen its register, cold-read standard, outcome/remedy distinction, and examples. Remove the repository-inconsistent Codex UI metadata. Do not rebuild the skill around every enforcement device available in `writing-agent-guidance`, change its responsibility boundary, or alter the README catalogue entry.
