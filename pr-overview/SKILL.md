@@ -1,14 +1,28 @@
 ---
 name: pr-overview
 description: >
-  Use when the user asks for an overview of a pull request or branch (e.g.
-  "what changed in PR X", "give me an overview of branch Y", "walk me
-  through this PR"), before diving into the diff.
+  TRIGGER: Use only when the user invokes `pr-overview` by name or slash
+  command, or explicitly asks for a "PR overview" (for example, "give me a
+  PR overview of #111" or "PR overview 111"). SKIP: Do not infer this from
+  a reference to a PR or a request to read, investigate, review, summarize,
+  or glean information from one.
 ---
 
 # PR Walkthrough
 
 Write a report for a reviewer about to read the diff. Give them the framing, concepts, and reasoning that GitHub's UI does not.
+
+## Entry gate
+
+Start this workflow only when the user invokes `pr-overview` or explicitly
+asks for a PR overview.
+
+Do not infer this trigger from a PR number, branch name, or a request to read,
+investigate, review, summarize, or glean information from a PR. Handle those
+requests directly without starting this workflow.
+
+If this skill was loaded but the request does not meet the entry gate, do not
+follow the walkthrough phases. Continue with the user's actual request.
 
 ## Iron Law
 
