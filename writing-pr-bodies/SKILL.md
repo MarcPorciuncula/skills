@@ -404,6 +404,8 @@ Pick the keyword based on the PR's relationship to the ticket.
 When the PR's branch is stacked on another branch in the same repo: branched off that branch instead of the base, so its diff includes the parent's commits and git ancestry enforces the merge order. The git-spice / Graphite / ghstack case.
 
 - DO name the parent PR this branch is stacked on
+- DO preserve the original `Stacked on #N` reference when revising the body after the parent PR merges. It records the branch's lineage and does not need to match the parent's current state.
+- DO update the reference only when the branch was actually rebased or reordered onto a different parent.
 - DO NOT use for an independent branch that merely depends on another PR landing. Cross-repo dependencies are always that case, never a stack. Use Dependency.
 - DO NOT add a Deployability `> [!WARNING]` for the stack's own order. The stack already enforces the sequence (see *Deployability*)
 
@@ -751,6 +753,7 @@ This is the self-review you announced before stage 1. Read the draft file from t
 | "PR B depends on PR A landing, so B is stacked on A" / "## Stack — Stacked on cross-repo#N" | Stack means shared git ancestry in one repo (B branched off A). An independent or cross-repo ordering dependency is not a stack. Use the Dependency section and carry the link in External references. |
 | "Another PR depends on this one landing first, so I'll add a `## Dependency` section to flag the relationship" | Wrong direction. Dependency is for when this PR is blocked. Putting it on the prerequisite makes scanners assume a merge gate that doesn't exist. Mention the consumer in the lede elaboration or as a `- Refs owner/repo#N` item in External references. |
 | "This is a stack with a strict order, so a `## Why this stack` overview mapping the PRs helps reviewers follow it" | The Stack line, External references, and the stack tooling already carry the map. State the shared intent in a one-sentence Stack pre-lede; drop the enumeration. See *Stack pre-lede*. |
+| "The parent PR merged, so I'll remove or replace the `Stacked on #N` line" | Preserve the line as historical branch lineage. Update it only when the branch was actually rebased or reordered onto a different parent. |
 | "These PRs are ordered, so a `> [!WARNING]` keeps anyone from merging them out of sequence" | A stacked child cannot merge before its parent; git ancestry enforces it. The banner is for cross-repo gates nothing enforces. See *Deployability*. |
 | "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
 | "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
