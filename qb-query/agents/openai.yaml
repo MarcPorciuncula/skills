@@ -1,0 +1,4 @@
+interface:
+  display_name: "Query with qb"
+  short_description: "Run basic database debugging queries with qb"
+  default_prompt: "Use $qb-query to inspect the database for this debugging task."
