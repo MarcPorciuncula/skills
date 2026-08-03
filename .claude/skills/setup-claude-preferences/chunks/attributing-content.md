@@ -5,10 +5,18 @@ description: Label AI-authored GitHub and Linear comments by authorship; preserv
 
 ## Attributing content on GitHub and Linear
 
-Prefix AI-authored or AI-assisted comments on GitHub pull requests and Linear issues with a provenance label:
+Prefix AI-authored or AI-assisted comments on GitHub pull requests and Linear issues with a provenance label.
 
-- **`[AI Generated - Claude]`** when Claude composed the text without the user shaping the wording or investigation.
-- **`[AI Assisted - Claude / {{USER_NAME}}]`** when the user supplied talking points, directed the investigation that became the post, edited or approved a draft, or otherwise shaped the content.
+Choose the label for the model family producing the content. Do not default to Claude because this guidance is stored in `CLAUDE.md`:
+
+- ChatGPT or Codex using an OpenAI model: **`ChatGPT`**
+- Claude or Claude Code using an Anthropic model: **`Claude`**
+- Another model or harness: its recognizable model-family or harness name
+
+Then choose authorship:
+
+- **`[AI Generated - <MODEL>]`** when the agent composed the text without the user shaping the wording or investigation.
+- **`[AI Assisted - <MODEL> / {{USER_NAME}}]`** when the user supplied talking points, directed the investigation that became the post, edited or approved a draft, or otherwise shaped the content.
 - **No label** only when posting strictly verbatim user-provided text. Any rewording makes it AI Assisted.
 
 <!--
@@ -22,7 +30,7 @@ Never create a `## Human overview` or similarly named section. Preserve any exis
 
 Update the excepted-field list only when the user explicitly changes it.
 
-<!-- customisable: each entry names a platform field where Claude composes primary content rather than a comment. -->
+<!-- customisable: each entry names a platform field where the agent composes primary content rather than a comment. -->
 
 ### Excepted fields
 
