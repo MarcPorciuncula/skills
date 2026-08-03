@@ -1,6 +1,6 @@
 ---
 id: task-tracking-dex
-description: `dex` is a task tracking CLI — data lives under `~/.dex-data/<project>/`. Opt-in; only apply for users who use dex.
+description: Dex task-tracking CLI conventions.
 ---
 
 ## Task Tracking: `dex`

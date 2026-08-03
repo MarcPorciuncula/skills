@@ -1,26 +1,24 @@
 ---
 id: visual-explanations
-description: ASCII diagram and markdown table guidance for leading explanations with structure before prose.
+description: Visual formats for code and design explanations.
 ---
 
 ## Visual Explanations
 
-When explaining code, designs, or proposed changes, lead with a diagram, table, or call tree before prose. Assume the reader has not read the code under discussion.
+When explaining structure or relationships, lead with a diagram, table, or call tree. When the subject has three or more connected components, branching or fan-out, lifecycle or state changes, schema or ownership relationships, nesting, dependencies, an execution path, data flow, or a before/after inventory, use a visual. When prose would make the reader reconstruct a spatial or sequential relationship, use a visual.
 
-Use ASCII for diagrams — boxes-and-arrows (`┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼`), indented call trees, bordered boxes for data shapes. ASCII renders in the terminal and copy-pastes cleanly. For tabular data, use regular markdown tables — Claude Code renders them more reliably than hand-drawn ASCII tables.
-
-Match the form to the intent:
+Choose the smallest useful form:
 
 | Intent | Form |
 |---|---|
-| Component topology — who calls whom, where data lives | ASCII boxes-and-arrows |
-| Request path with branching or fan-out | numbered steps or indented lanes |
-| Lifecycle or states | labelled boxes with arrow transitions |
-| Schema / relationships | indented field lists with arrows for relations |
-| Before/after, enumerable mappings, file inventory | markdown table |
-| Execution path through functions | indented call tree |
+| Component topology, ownership, or data location | ASCII boxes-and-arrows |
+| Branching request path or fan-out | numbered steps or indented lanes |
+| Lifecycle or state transitions | labelled boxes with arrows |
+| Schema or relationships | indented fields with relation arrows |
+| Before/after, mappings, or file inventory | markdown table |
+| Function execution path | indented call tree |
 | Data or payload shape | bordered ASCII box |
 
-Keep one abstraction layer per diagram. Don't mix domain or user-visible flow with code-level call paths in the same picture — produce two diagrams.
+When creating a visual, use ASCII diagrams or markdown tables so the result renders in a terminal and copies cleanly. Keep one abstraction layer per diagram. Mark new or changed elements, include file locations when useful for navigation, and use prose to interpret the visual rather than restating it.
 
-Highlight what's new or changed with markers like `*` or `[new]`. Include file paths and line numbers as navigation aids. State what the diagram does not cover.
+When none of the triggers above apply and the subject is a single fact, a one-step action, or an explanation already clear in one short paragraph, skip the visual.

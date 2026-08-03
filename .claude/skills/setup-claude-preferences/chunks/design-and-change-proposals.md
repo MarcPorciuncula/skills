@@ -1,14 +1,16 @@
 ---
 id: design-and-change-proposals
-description: Before writing code, name where responsibility lives, any boundary crossed, and one rejected alternative.
+description: Responsibility and boundary declarations for design changes.
 ---
 
 ## Design and Change Proposals
 
-Before writing implementation code, state:
+Before implementing a change with multiple plausible owners or an architectural boundary, state:
 
-- **Where responsibility for the change lives and why.** "It's the nearest existing file" and "this module already handles similar concerns" are proximity arguments, not responsibility arguments — if that's the whole reason, the change is in the wrong place.
-- **Any responsibility boundary the change establishes or crosses**, explicitly named.
-- **At least one alternative you considered and rejected**, and why.
+- where responsibility belongs and why;
+- which responsibility or runtime boundary the change establishes or crosses;
+- one plausible alternative and why it is worse.
 
-Skip this and the change looks right in isolation but rots in context: rejected in review, or quietly wrong until someone traces a bug back to misplaced responsibility.
+Responsibility follows ownership of the behavior or invariant, not file proximity.
+
+Skip this declaration for localized changes whose owner and boundaries are already unambiguous.

@@ -1,19 +1,19 @@
 ---
 id: temporary-files
-description: Write-tool-only pattern for temp files; never use system temp dirs, heredocs, or shell substitution for multiline content.
+description: Temporary-file location and creation conventions.
 ---
 
 ## Temporary Files
 
 Permission prompts interrupt the user's flow and require them to stop and approve before work can continue. Each one is a small failure of preparation — a sign that the approach was wrong, not that the user needs to grant more access. The rules below exist to prevent them entirely. Follow them; don't look for alternatives.
 
-**NEVER use the system temp folder (`/tmp`, `/var/tmp`, `$TMPDIR`, `os.tmpdir()`, `tempfile`, or any OS-provided temp directory).** These always trigger permission prompts and are harder to track. There are no exceptions to this rule.
+**When creating a temporary file, never use the system temp folder (`/tmp`, `/var/tmp`, `$TMPDIR`, `os.tmpdir()`, `tempfile`, or any OS-provided temp directory).** These locations trigger permission prompts and are harder to track. There are no exceptions.
 
-**ALWAYS write temp files in the current working directory/worktree.** Write the file locally, use it, then delete it immediately. Never commit temporary files.
+**When a temporary file is needed, write it in the current working directory or worktree.** Use it, then delete it immediately. Never commit temporary files.
 
-**Any multiline input to a command must be written to a temp file using the Write file tool.** This applies to commit messages, PR bodies, and anything else with more than one line.
+**When passing multiline input to a command, write it to a temporary file with the Write file tool.** This includes commit messages, PR bodies, and any other multiline content.
 
-**NEVER use heredocs (`<< 'EOF'`) or shell string substitution (`$(...)`) to pass multiline content.** These are convoluted and trigger permission prompts. The Write tool is always the right approach.
+**When passing multiline content, do not use heredocs (`<< 'EOF'`) or shell string substitution (`$(...)`).** Use a temporary file written with the Write file tool.
 
 The required pattern:
 

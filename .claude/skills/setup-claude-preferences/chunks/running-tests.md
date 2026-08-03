@@ -1,12 +1,14 @@
 ---
 id: running-tests
-description: Scope local test runs to changed files and neighbours; rely on CI for the full suite.
+description: Local test and verification scope.
 ---
 
 ## Running Tests
 
-Scope local test runs to the files you've touched and their immediate neighbours — the specific test files, package, or directory affected by your changes. Do not run the full repo-wide suite locally to validate a change.
+Local verification provides tight feedback on the changed behavior; it does not duplicate repository-wide CI.
 
-**Why:** Full suites are slow, burn context on unrelated output, and duplicate work CI already does. Opening a PR always triggers the repo-wide suite, so full-suite coverage is guaranteed at the point it matters. Local runs are for tight feedback on the code you just wrote.
+When verifying locally, run the narrowest check that can exercise the change: a test file, name filter, package, or affected directory. Match the check type to what could have changed; do not run tests, lint, type checks, or builds that cannot produce a different result.
 
-**How to apply:** Run the narrowest invocation that exercises your change — a single test file, a `-run`/`-k`/`--testNamePattern` filter, or the package directory. Expand scope only if a targeted run surfaces something that suggests wider impact (e.g., a shared helper changed, a failure hints at a cross-package regression). Rely on CI for the full sweep.
+When considering broader verification, expand only if a targeted result indicates wider impact or the changed boundary is shared across packages. When the PR workflow guarantees a full CI suite, rely on CI for repository-wide coverage.
+
+Documentation, comments, and copy-only changes usually need review rather than automated verification. A clean rebase with no conflicts needs no local test run.

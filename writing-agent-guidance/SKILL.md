@@ -38,7 +38,7 @@ gives false confidence that the case is covered, and it fails silently.
 Effective guidance:
 
 - DO state the behaviour as a direct instruction, not a description or a preference
-- DO lead with what to do; put caveats, exceptions, and rationale after, if they are needed at all
+- DO lead conditional rules with the trigger followed immediately by the action; lead unconditional rules with the action
 - DO make the trigger concrete enough to fire without a judgement call
 - DO intercept the rationalisation the agent will reach for, written at the point it reaches for it
 - DO ground each rule in the concrete cost of breaking it, in terms the agent can already observe
@@ -51,11 +51,16 @@ Effective guidance:
 
 The form and phrasing of your instructions have direct consequences for how closely an agent will follow them. The same rule, written as an instruction or as an argument, produces different agent behaviour. Write in a direct, accessible, authoritative register.
 
-**Lead with the desired behaviour**
+**Lead with the trigger, then the behaviour**
 
-- DO open every rule with the action to take
+- DO open a conditional rule with a concrete condition followed by the action: "When X, do Y"
+- DO open an unconditional rule with the action to take
+- DO preserve prerequisite semantics such as `only if`, `unless`, `before`, and `after`; moving a condition must not turn a necessary condition into a sufficient trigger
+- DO NOT manufacture a self-referential condition around an unconditional substep. Write "Name the session X," not "When naming the session, name it X"
+- DO introduce a cluster of related rules with one short mental model when it helps the agent classify the situation, decision boundary, or shared scope
+- DO keep the mental model declarative and to one sentence; name the category or boundary instead of recapping the directives
 - DO put caveats, exceptions, and rationale after the directive, if at all
-- DO absorb scope into the directive instead of a sentence whose only job is to name the subject
+- DO absorb a single rule's scope into its trigger or directive; use a shared lead-in when several rules depend on the same classification context
 - DO NOT open with the prohibition, the rationale, or the alternative being rejected
 - DO NOT write a directive that needs a paragraph of justification to land. Rewrite the directive instead
 
@@ -75,9 +80,9 @@ Error responses include a `code` field. Use codes from `pkg/errcodes`.
 Use codes from `pkg/errcodes` in error responses.
 ```
 
-The bad forms make the agent read an argument or a scope-setup sentence before
-it learns what to do. Under load it may not reach the instruction. The good
-forms put the instruction first; everything else is optional context after it.
+The bad forms make the agent read an argument or a redundant scope-setup sentence before
+it learns when the rule fires and what to do. The good forms put the trigger
+and instruction first; everything else is optional context after them.
 
 **Write for a fresh reader**
 
@@ -240,7 +245,8 @@ manipulation and the agent discounts all of them.
 
 | Situation | Use | Avoid |
 |---|---|---|
-| A single rule that just needs stating | Plain directive, caveats after | leading with the caveat or rationale |
+| A single rule that just needs stating | Trigger then action, or a plain directive when unconditional | leading with the caveat or rationale |
+| Several rules share a classification or boundary | One-sentence mental model, then triggers | repeating the scope on every rule or omitting it entirely |
 | A set of parallel requirements | DO / DO NOT list | a prose paragraph |
 | The one non-negotiable core of a discipline | Iron Law | softening it with caveats |
 | A rule skipped under time pressure | Hard gate | "do this when you can" |
@@ -258,16 +264,16 @@ manipulation and the agent discounts all of them.
 
 ### Plain directive
 
-The default form. State the behaviour as a direct instruction; add caveats,
-exceptions, or a one-line cost after it, only if needed. Most rules need
-nothing more.
+The default form. When the rule is conditional, state the concrete trigger
+followed by the action. When it is unconditional, state the action directly.
+Add caveats, exceptions, or a one-line cost after it only if needed.
 
 ```
 Use codes from pkg/errcodes in error responses. New codes go in this
 package, not inline in other packages.
 ```
 
-- DO write it as in "Lead with the desired behaviour" under Writing style (the canonical home for this rule)
+- DO write it as in "Lead with the trigger, then the behaviour" under Writing style (the canonical home for this rule)
 
 ### DO / DO NOT list
 
@@ -503,7 +509,7 @@ when writing one from scratch.
 
 1. **Align.** State the medium, objective, audience, register, and structural devices of the guidance you are writing or editing, in its own register. When the user did not name a home, choose one per Where guidance lives and name it in the statement. When editing, read the file end to end first and state them back from it. When writing fresh, state what you will write to. Get the user to confirm or correct it. Hold that statement as the model of correct output for the file. This is the alignment step.
 2. **Diff against the model.** Check the current text and every proposed change against the alignment statement, the recognition tables in Hard restrictions and register reset, and the rules in Writing style.
-3. **Draft as points.** Before composing any prose, write every directive, caveat, trigger, and cost as a flat dot point, one fact per point. A point that is not an instruction, a trigger, or a cost is justification — cut it now, while it is still visible as a separate point. Prose composed before the points exist arrives carrying justification and threaded clauses; points make elaboration visible.
+3. **Draft as points.** Before composing any prose, write every mental model, directive, caveat, trigger, and cost as a flat dot point, one fact per point. A point that is not classification context, an instruction, a trigger, or a cost is justification — cut it now, while it is still visible as a separate point. Prose composed before the points exist arrives carrying justification and threaded clauses; points make elaboration visible.
 4. **Compose from the points.** Read `examples.md` next to this skill first and match its after-forms. Three or more points sharing a subject become a DO/DO NOT list as they stand. Prose is for the lede and for cost statements; everything else stays a point.
 5. **Edit against the file.** Apply changes to the file, not from composition memory. Re-deriving prose from memory reintroduces the register you are removing (see REGISTER RESET).
 6. **Condense.** Treat the draft as another author's text and rewrite it shorter without dropping an instruction. Apply three checks to every sentence:
