@@ -1,30 +1,31 @@
 ---
 id: pr-workflow
-description: Per-repo PR creation behavior — open draft early, auto-flip to ready, or ask first.
+description: Per-repo PR creation policy: ask first, create as draft, or create as draft and mark ready once complete.
 ---
 
 ## PR Workflow
 
-When you push a branch with the intent of getting it reviewed, the PR-creation behavior depends on the repo. Three modes:
+PR mode controls creation and, for `auto-ready`, one completion transition. It is not a persistent desired state for an existing PR.
 
-- `ask` — push the branch, then ask before opening a PR. The fallback for any repo not listed below.
-- `draft` — open a draft PR after the first commit on the branch, push subsequent commits as you make them, and leave the PR in draft when work is complete. The user (or a reviewer) flips it to ready.
-- `auto-ready` — same as `draft`, but mark the PR ready for review as soon as the work is complete and pushed.
+- `ask` — push the branch, then ask before creating a PR.
+- `draft` — create a draft PR after the first push.
+- `auto-ready` — create a draft PR after the first push, then mark it ready once the requested work is complete and pushed.
 
-**Default for unlisted repos is `ask`.** Never auto-create PRs in repos that aren't explicitly classified — opening a PR in an unfamiliar shared-org repo can be disruptive to other maintainers.
+Use `ask` for repositories not listed below. Opening a PR in an unfamiliar shared repository is externally visible and may affect other maintainers.
 
-**How to apply:**
+When creating a PR:
 
-1. Look up the repo (by `origin` remote URL or local path) in the list below.
-2. If found, follow the listed mode. If not found, use `ask`.
-3. Fold the PR mode into the intent declaration required by the *Committing and Pushing* chunk — e.g. "I'll work on `feature/foo`, commit and push, and open a draft PR with auto-ready-on-completion."
-4. For `draft` and `auto-ready`: open the PR as draft (`gh pr create --draft`) on the same turn as the first push. Don't wait for the work to be complete.
-5. For `auto-ready`: when the work is complete and the final commit is pushed, mark the PR ready (`gh pr ready`).
+1. Match the repository by `origin` URL or local path.
+2. Apply its listed mode, or `ask` when unlisted.
+3. For `draft` and `auto-ready`, create the PR with the draft flag after the first push.
+4. For `auto-ready`, mark it ready at completion only if it is still draft. An already-ready PR needs no action.
+
+After creation, treat the PR's current state as authoritative. Do not pass draft flags while editing, pushing, rebasing, or changing metadata on an existing PR. Do not move a ready PR back to draft unless the user explicitly asks. Do not repeatedly report that a PR remains draft. A later external readiness change is not drift to correct.
 
 <!-- include the next line only if the `writing-pr-bodies` skill is installed on this machine. The sync agent decides whether to include it; remove it (and this comment) otherwise. -->
-**PR body authoring.** Before running any command that opens or updates a PR body (`gh pr create`, `gh pr edit --body`, `gs branch submit`), invoke the `writing-pr-bodies` skill to draft the body. This applies to autonomous PR creation, not just when the user asks for a body.
+**PR body authoring.** Before creating a PR or updating its body, invoke the `writing-pr-bodies` skill.
 
-**Self-update.** When the user says something like "for this repo, always open auto-ready PRs" or "stop auto-creating PRs here," edit the list below to match. Only act on explicit directives — do not infer mode changes from indirect signals.
+Update the repository lists only when the user explicitly changes a repo's policy.
 
 <!-- customisable: edit the lists below per machine. Repos may be listed by `owner/name` (matched against the `origin` remote) or by absolute local path. -->
 
@@ -38,4 +39,4 @@ _(none yet)_
 
 ### `ask`
 
-All other repos default to `ask` — no need to list them here.
+All other repos default to `ask`.

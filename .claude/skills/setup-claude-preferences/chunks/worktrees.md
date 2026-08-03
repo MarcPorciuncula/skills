@@ -1,23 +1,19 @@
 ---
 id: worktrees
-description: Keep the repo root on `main` (no other-branch checkouts, even read-only); any work on another branch goes in a worktree under `.claude/worktrees/<branch>/`.
+description: Keep the shared repo root on `main`; use isolated worktrees for every other branch, including investigation.
 ---
 
 ## Worktrees
 
-The repo root is for `main` only — never check out another branch there, not even for read-only investigation. You may pull `main` there and read or investigate `main`'s code from it. Anything else — editing on any branch, or reading, diffing, or reproducing a bug on a non-main branch — goes in a dedicated worktree under `.claude/worktrees/<branch-name>/`.
+Keep the repository root on `main`. Never check out another branch there, including for read-only investigation.
 
-**Why:** The repo root is shared with other agents and with the user. Another session can check out a different branch at any time, and any uncommitted work left in the root is lost when that happens. Worktrees isolate your branch so nothing you've done gets dropped when someone else needs the root on a different branch.
+Before editing tracked files or inspecting, diffing, or reproducing behavior on a non-main branch, create a dedicated worktree under `.claude/worktrees/<branch-name>/` and work there. This includes exploratory edits, documentation, and configuration.
 
-**How to apply:** At the moment you decide to touch any file in the repo, or to look at a non-main branch — before the first action, including quick "I'm just tweaking a doc" changes or a one-off `git checkout` to read a diff — create the worktree:
-
-```
+```bash
 git -C <repo-root> worktree add <repo-root>/.claude/worktrees/<branch> <base-or-new>
 cd <repo-root>/.claude/worktrees/<branch>
 ```
 
-Before forking a new branch, pull the latest base branch (usually `main`) so the new branch starts from current upstream — unless the base branch was already updated or built on earlier in this session, in which case trust the session state and don't re-pull.
+Update the base branch before creating a new branch unless it was already updated in this session. Install dependencies separately in each worktree; dependency directories are not shared.
 
-Run any dependency install (`pnpm install`, `bundle install`, etc.) fresh in the worktree — `node_modules` and similar are not shared across worktrees.
-
-This rule applies even when the edit is exploratory and you do not yet intend to commit. It applies to documentation, configuration, and anything else tracked by git — not just code.
+The shared root may be read on `main` and updated with a fast-forward pull. All other branch activity stays isolated.

@@ -49,18 +49,25 @@ body
 4. For each chunk:
    - **Match** — no action.
    - **Drift** — show a concise diff. Make an educated guess about which version is newer (git log on the chunk file vs. file mtime on the live copy) and recommend a direction, but defer to the user. Options: keep live, overwrite with chunk, or hand-edit.
-   - **Missing** — offer to insert. Show the live file's existing H2 headings and ask where to place the new chunk (default: append at end).
+   - **Missing** — use the advisory note in `INDEX.md` and the machine's capabilities to recommend include or skip. Show the live file's existing H2 headings for chunks you recommend inserting and ask where to place them (default: append at end).
 5. Surface the ORPHAN H2 list so the user can decide whether to extract any into new chunks. Leave the content itself untouched.
 6. Apply the user's choices. Each inserted or replaced chunk is written wrapped in its sentinels, preserving the chunk-file body verbatim.
 7. Summarise what changed.
 
 ## Creating the file from scratch
 
-If `~/.claude/CLAUDE.md` doesn't exist, create it by concatenating every chunk (each wrapped in its sentinels) in the order they appear in `INDEX.md`, separated by blank lines. No preamble, no top-level H1 — the user can add framing afterwards.
+If `~/.claude/CLAUDE.md` doesn't exist:
+
+1. Evaluate every chunk against its advisory note and the machine's installed skills and tools.
+2. Show a concise proposed selection: chunks to include, chunks to skip, and the reason for each skip. The user may override any recommendation.
+3. Confirm the selection before writing the file.
+4. Render the selected chunks in `INDEX.md` order, each wrapped in its sentinels and separated by a blank line. Apply conditional-line and placeholder rules during rendering.
+
+Do not add a preamble or top-level H1. The user can add unmanaged framing afterwards.
 
 ## Notes
 
-- Advisory notes in `INDEX.md` are guidance, not rules. Surface them so the user knows which chunks may not apply, but don't skip chunks on their behalf.
+- Advisory notes in `INDEX.md` guide recommendations. The user decides which chunks are rendered.
 - Keep diffs concise — full content on request, not by default.
 - Never touch content outside sentinels, even if it looks like a drifted chunk.
 

@@ -1,24 +1,18 @@
 ---
 id: dev-servers
-description: Run dev servers in named tmux sessions (`<repo>-<slug>-<port>`) so they persist, are easy to find, and don't collide between agents.
+description: Run long-lived development processes in named tmux sessions whose names include owner and actual port.
 ---
 
 ## Dev Servers
 
-When starting a dev server (e.g., `npm run dev`, `pnpm dev`, `go run .`), run it in a **named tmux session** so it persists and is easy to find later.
+Run development servers and other long-lived processes in named tmux sessions so they persist and remain inspectable.
 
-Name the session `<repo>-<slug>-<port>` — the repo/service name, a short slug identifying *which worktree or agent* owns the session, and the port the server listens on. The slug doesn't need to mirror the branch name; just enough to recognise the owner at a glance (3–8 chars is plenty: e.g. `feat-3`, `fixcss`, `revw`, `main`). Examples:
+Name each session `<repo-or-service>-<worktree-or-agent-slug>-<port>`. Use a short ownership slug that distinguishes concurrent sessions. The port in the name must match the port actually in use.
 
 ```bash
-tmux new-session -d -s api-feat3-8080 'pnpm dev'
 tmux new-session -d -s web-fixcss-3000 'npm run dev'
-tmux new-session -d -s auth-service-main-9090 'go run ./cmd/server'
+tmux attach -t web-fixcss-3000
+tmux send-keys -t web-fixcss-3000 C-c
 ```
 
-To check on a running server: `tmux attach -t api-feat3-8080`
-To list all sessions: `tmux ls`
-To send a signal: `tmux send-keys -t api-feat3-8080 C-c`
-
-**Why named sessions:** Anonymous background processes (`&`, nohup) are invisible and hard to manage. Named tmux sessions make it trivial to reattach, inspect logs, restart, or kill a server — especially when multiple services run concurrently.
-
-**Why the worktree slug:** Multiple agents (or you + an agent) often share one host. Encoding the worktree into the session name means each agent can find *its* server, port collisions surface immediately (`web-fixcss-3000` already exists → pick another port or kill the other session deliberately), and `tmux ls` doubles as a who's-running-what board.
+If a server falls back to a different port, stop it and either free the intended port or restart it in a session named for the actual port. Do not leave anonymous background processes or misleading session names.
