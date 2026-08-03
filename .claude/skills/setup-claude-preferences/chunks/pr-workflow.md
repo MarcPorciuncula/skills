@@ -1,6 +1,6 @@
 ---
 id: pr-workflow
-description: Per-repo PR creation policy: ask first, create as draft, or create as draft and mark ready once complete.
+description: Repository-specific pull request creation modes.
 ---
 
 ## PR Workflow

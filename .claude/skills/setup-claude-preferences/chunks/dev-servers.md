@@ -1,6 +1,6 @@
 ---
 id: dev-servers
-description: Run long-lived development processes in named tmux sessions whose names include owner and actual port.
+description: Long-lived development process management.
 ---
 
 ## Dev Servers

@@ -1,6 +1,6 @@
 ---
 id: shell-commands
-description: Avoid directory-targeting flags and chained `cd`; establish context cleanly, then execute.
+description: Shell working-directory and command-structure conventions.
 ---
 
 ## Shell Commands

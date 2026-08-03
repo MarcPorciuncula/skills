@@ -1,6 +1,6 @@
 ---
 id: frontend-tests
-description: Prefer simple component structure and pure-function tests over component harnesses.
+description: Frontend component testing preferences.
 ---
 
 ## Frontend tests

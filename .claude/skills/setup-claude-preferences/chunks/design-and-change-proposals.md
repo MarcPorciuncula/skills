@@ -1,6 +1,6 @@
 ---
 id: design-and-change-proposals
-description: For architectural choices, name the responsible owner, boundary, and rejected alternative before implementation.
+description: Responsibility and boundary declarations for design changes.
 ---
 
 ## Design and Change Proposals

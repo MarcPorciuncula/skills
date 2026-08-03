@@ -1,6 +1,6 @@
 ---
 id: committing-and-pushing
-description: For direct repository change requests, declare the mutation plan and commit and push by default.
+description: Repository commit and push workflow.
 ---
 
 ## Committing and Pushing

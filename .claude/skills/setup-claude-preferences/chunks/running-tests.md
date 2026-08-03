@@ -1,6 +1,6 @@
 ---
 id: running-tests
-description: Match local verification to the change and use the narrowest scope that exercises it.
+description: Local test and verification scope.
 ---
 
 ## Running Tests

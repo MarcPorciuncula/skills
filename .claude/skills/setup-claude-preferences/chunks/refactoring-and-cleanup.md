@@ -1,6 +1,6 @@
 ---
 id: refactoring-and-cleanup
-description: Proceed with user-directed cleanup in the current work; keep unsolicited cleanup focused.
+description: Refactoring and cleanup scope preferences.
 ---
 
 ## Refactoring and Cleanup

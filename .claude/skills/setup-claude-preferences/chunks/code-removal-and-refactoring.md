@@ -1,6 +1,6 @@
 ---
 id: code-removal-and-refactoring
-description: Remove internal code atomically within one runtime boundary; preserve compatibility across independently deployed or persisted boundaries.
+description: Internal code removal and compatibility-boundary conventions.
 ---
 
 ## Code Removal and Refactoring

@@ -1,6 +1,6 @@
 ---
 id: attributing-content
-description: Label AI-authored GitHub and Linear comments by authorship; preserve human-authored overview sections.
+description: GitHub and Linear content attribution conventions.
 ---
 
 ## Attributing content on GitHub and Linear

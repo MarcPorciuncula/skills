@@ -1,6 +1,6 @@
 ---
 id: general-communication
-description: Communicate like a pragmatic colleague: direct, concise, plain-spoken, and proportionate to the task.
+description: User-facing communication style and progress updates.
 ---
 
 ## General Communication

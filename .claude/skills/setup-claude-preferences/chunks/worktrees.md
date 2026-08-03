@@ -1,6 +1,6 @@
 ---
 id: worktrees
-description: Keep the shared repo root on `main`; use isolated worktrees for every other branch, including investigation.
+description: Shared-repository worktree workflow.
 ---
 
 ## Worktrees

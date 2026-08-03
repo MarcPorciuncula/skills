@@ -21,7 +21,7 @@ Preference content lives in `chunks/`, one file per section, indexed by `chunks/
 ```
 ---
 id: <stable-id>
-description: <one-line description>
+description: <short label describing the chunk's contents>
 ---
 
 ## Section Title
@@ -30,6 +30,7 @@ body; can nest to ### and deeper
 ```
 
 The H2 heading is part of the body — there is no separate `title` field.
+The description is inventory metadata, not a trigger or an abridged instruction. Use a noun phrase that signposts the subject of the chunk.
 
 ## Sentinel format in the rendered file
 

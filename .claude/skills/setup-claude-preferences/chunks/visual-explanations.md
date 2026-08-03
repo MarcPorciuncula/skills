@@ -1,6 +1,6 @@
 ---
 id: visual-explanations
-description: Prefer diagrams, tables, and call trees when readers would otherwise reconstruct relationships from prose.
+description: Visual formats for code and design explanations.
 ---
 
 ## Visual Explanations

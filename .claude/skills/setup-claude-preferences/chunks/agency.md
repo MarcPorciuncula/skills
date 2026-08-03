@@ -1,6 +1,6 @@
 ---
 id: agency
-description: Match the action to the request, resolve routine uncertainty through discovery, and continue until the requested outcome is complete.
+description: Task execution and autonomy preferences.
 ---
 
 ## Agency

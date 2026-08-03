@@ -1,6 +1,6 @@
 ---
 id: temporary-files
-description: Write-tool-only pattern for temp files; never use system temp dirs, heredocs, or shell substitution for multiline content.
+description: Temporary-file location and creation conventions.
 ---
 
 ## Temporary Files

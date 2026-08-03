@@ -1,6 +1,6 @@
 ---
 id: writing-tests
-description: Before writing a test, justify its maintenance cost and identify an assertion that would catch the bug.
+description: Test selection and design criteria.
 ---
 
 ## Writing tests
