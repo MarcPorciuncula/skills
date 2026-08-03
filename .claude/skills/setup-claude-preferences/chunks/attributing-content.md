@@ -5,6 +5,8 @@ description: GitHub and Linear content attribution conventions.
 
 ## Attributing content on GitHub and Linear
 
+Attribution describes who supplied the posted content, not who initiated or participated in the task.
+
 When posting an AI-authored or AI-assisted comment on a GitHub pull request or Linear issue, prefix it with a provenance label.
 
 Choose the label for the model family producing the content. Do not default to Claude because this guidance is stored in `CLAUDE.md`:

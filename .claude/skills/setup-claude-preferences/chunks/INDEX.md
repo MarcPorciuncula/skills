@@ -2,7 +2,7 @@
 
 Each entry below names a chunk `id` and summarises what it contains. The note after the em-dash is an advisory on when the chunk is most relevant — it's guidance, not a rule. The skill always shows diffs and recommendations; the user decides what to apply.
 
-- **agency** — Match action to request type, resolve routine uncertainty through discovery, and continue to completion. Always applicable.
+- **agency** — Choose report, execute, or monitor mode; answer mixed-turn questions in chat before starting accompanying work. Always applicable.
 - **general-communication** — Direct, plain-spoken, proportionate communication and concise progress updates. Always applicable.
 - **design-and-change-proposals** — For architectural choices, state responsibility, boundary, and a rejected alternative. Skip when ownership is localized and unambiguous.
 - **visual-explanations** — Prefer ASCII diagrams, tables, and call trees for structural or relational explanations. Always applicable.

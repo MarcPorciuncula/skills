@@ -5,7 +5,7 @@ description: Internal code removal and compatibility-boundary conventions.
 
 ## Code Removal and Refactoring
 
-Treat a compatibility boundary as a runtime property, not a repository property.
+When refactoring or removing code in an internal codebase, first identify its compatibility boundary. Compatibility is a runtime property, not a repository property.
 
 When in-process code deploys atomically, update every consumer and delete the old code in the same change. Do not deprecate internal APIs or leave unused compatibility wrappers.
 

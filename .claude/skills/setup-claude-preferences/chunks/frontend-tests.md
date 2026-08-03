@@ -5,6 +5,8 @@ description: Frontend component testing preferences.
 
 ## Frontend tests
 
+Component tests are a fallback for behavior that cannot be made evident through simpler component structure or extracted pure logic.
+
 When the behavior is evident from reading the component, do not write a component test.
 
 When a component is difficult to verify, first decompose it into smaller components. Then extract and test genuinely non-trivial pure logic when the behavior can live outside hooks or context. Keep one-line mappings, prop forwarding, and simple conditionals inline.

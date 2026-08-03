@@ -5,7 +5,7 @@ description: Test selection and design criteria.
 
 ## Writing tests
 
-Before writing or modifying a test, justify it and design it.
+A test is a permanent maintenance commitment. Before writing or modifying one, justify its existence and design an assertion that would catch the bug.
 
 When considering a test, write it only if all of these hold:
 
