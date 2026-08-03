@@ -7,11 +7,11 @@ description: Shell working-directory and command-structure conventions.
 
 Directory-targeting flags and chained `cd` commands trigger the same permission prompts as temp file misuse — and carry the same cost. The fix is always the same: establish context cleanly first, then execute.
 
-**Use absolute paths instead of `cd` wherever possible.** Most commands accept a path argument directly.
+**When a command accepts a path argument, use an absolute path instead of `cd`.**
 
 **When `cd` is necessary, run it as a standalone Bash tool call** — never chain it with `&&` to subsequent commands. Chaining conflates navigation with execution and makes commands harder to read and review.
 
-**Never use directory-targeting CLI flags** to encode the working path into a command. These flags trigger the same permission checks as `/tmp` and obscure context:
+**When a command needs a working directory, establish it separately.** Do not encode it with a directory-targeting CLI flag; these flags trigger the same permission checks as `/tmp` and obscure context:
 
 | Avoid | Instead |
 |-------|---------|

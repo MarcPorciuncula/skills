@@ -5,7 +5,7 @@ description: GitHub and Linear content attribution conventions.
 
 ## Attributing content on GitHub and Linear
 
-Prefix AI-authored or AI-assisted comments on GitHub pull requests and Linear issues with a provenance label.
+When posting an AI-authored or AI-assisted comment on a GitHub pull request or Linear issue, prefix it with a provenance label.
 
 Choose the label for the model family producing the content. Do not default to Claude because this guidance is stored in `CLAUDE.md`:
 
@@ -13,13 +13,13 @@ Choose the label for the model family producing the content. Do not default to C
 - Claude or Claude Code using an Anthropic model: **`Claude`**
 - Another model or harness: its recognizable model-family or harness name
 
-Then choose authorship:
+Then choose authorship in this order:
 
-- **`[AI Generated - <MODEL>]`** when the agent supplied most of the substance and wording. This remains AI Generated when the user chose the topic or outcome, requested or directed the investigation, answered questions, reviewed the result, or approved it for posting.
-- **`[AI Assisted - <MODEL> / {{USER_NAME}}]`** only when user-provided source text or substantive talking points are the basis of most of the post. Use this label when the agent paraphrases, reorganizes, polishes, or augments that material, including filling gaps the user could not supply.
-- **No label** only when posting strictly verbatim user-provided text.
+1. When posting strictly verbatim user-provided text, use **no label**.
+2. When user-provided source text or substantive talking points are the basis of most of the post, use **`[AI Assisted - <MODEL> / {{USER_NAME}}]`**. This includes the agent paraphrasing, reorganizing, polishing, or augmenting that material, or filling gaps the user could not supply.
+3. In every other case, use **`[AI Generated - <MODEL>]`**. This includes the user choosing the topic or outcome, requesting or directing the investigation, answering questions, reviewing the result, or approving it for posting.
 
-Do not infer editorial authorship from user involvement in the task. When the contribution is mixed or unclear, use AI Generated unless the user's supplied material plainly accounts for most of the content.
+Do not infer editorial authorship from user involvement in the task.
 
 <!--
 {{USER_NAME}} is replaced with the user's preferred attribution name when this
@@ -30,7 +30,7 @@ The excepted primary-content fields below need no prefix.
 
 Never create a `## Human overview` or similarly named section. Preserve any existing human-overview section verbatim unless the user explicitly asks to edit it; change only the surrounding agent-authored content.
 
-Update the excepted-field list only when the user explicitly changes it.
+When the user explicitly changes the excepted fields, update the list. Do not infer changes from indirect signals.
 
 <!-- customisable: each entry names a platform field where the agent composes primary content rather than a comment. -->
 

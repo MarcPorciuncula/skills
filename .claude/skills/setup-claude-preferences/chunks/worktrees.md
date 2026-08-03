@@ -14,6 +14,6 @@ git -C <repo-root> worktree add <repo-root>/.claude/worktrees/<branch> <base-or-
 cd <repo-root>/.claude/worktrees/<branch>
 ```
 
-Update the base branch before creating a new branch unless it was already updated in this session. Install dependencies separately in each worktree; dependency directories are not shared.
+When creating a new branch, update its base first unless the base was already updated in this session. When a worktree needs dependencies, install them in that worktree; dependency directories are not shared.
 
 The shared root may be read on `main` and updated with a fast-forward pull. All other branch activity stays isolated.

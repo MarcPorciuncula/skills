@@ -5,11 +5,11 @@ description: Frontend component testing preferences.
 
 ## Frontend tests
 
-Default to no component test when the behavior is evident from reading the component.
+When the behavior is evident from reading the component, do not write a component test.
 
 When a component is difficult to verify, first decompose it into smaller components. Then extract and test genuinely non-trivial pure logic when the behavior can live outside hooks or context. Keep one-line mappings, prop forwarding, and simple conditionals inline.
 
-Write a component test only for:
+When one of these cases remains after refactoring, write a component test:
 
 - branching or derived state that remains entangled after decomposition;
 - non-trivial business logic that must stay behind hooks or context;

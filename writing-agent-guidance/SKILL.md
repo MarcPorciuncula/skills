@@ -38,7 +38,7 @@ gives false confidence that the case is covered, and it fails silently.
 Effective guidance:
 
 - DO state the behaviour as a direct instruction, not a description or a preference
-- DO lead with what to do; put caveats, exceptions, and rationale after, if they are needed at all
+- DO lead conditional rules with the trigger followed immediately by the action; lead unconditional rules with the action
 - DO make the trigger concrete enough to fire without a judgement call
 - DO intercept the rationalisation the agent will reach for, written at the point it reaches for it
 - DO ground each rule in the concrete cost of breaking it, in terms the agent can already observe
@@ -51,11 +51,14 @@ Effective guidance:
 
 The form and phrasing of your instructions have direct consequences for how closely an agent will follow them. The same rule, written as an instruction or as an argument, produces different agent behaviour. Write in a direct, accessible, authoritative register.
 
-**Lead with the desired behaviour**
+**Lead with the trigger, then the behaviour**
 
-- DO open every rule with the action to take
+- DO open a conditional rule with a concrete condition followed by the action: "When X, do Y"
+- DO open an unconditional rule with the action to take
+- DO preserve prerequisite semantics such as `only if`, `unless`, `before`, and `after`; moving a condition must not turn a necessary condition into a sufficient trigger
+- DO NOT manufacture a self-referential condition around an unconditional substep. Write "Name the session X," not "When naming the session, name it X"
 - DO put caveats, exceptions, and rationale after the directive, if at all
-- DO absorb scope into the directive instead of a sentence whose only job is to name the subject
+- DO absorb scope into the trigger or directive instead of a sentence whose only job is to name the subject
 - DO NOT open with the prohibition, the rationale, or the alternative being rejected
 - DO NOT write a directive that needs a paragraph of justification to land. Rewrite the directive instead
 
@@ -76,8 +79,8 @@ Use codes from `pkg/errcodes` in error responses.
 ```
 
 The bad forms make the agent read an argument or a scope-setup sentence before
-it learns what to do. Under load it may not reach the instruction. The good
-forms put the instruction first; everything else is optional context after it.
+it learns when the rule fires and what to do. The good forms put the trigger
+and instruction first; everything else is optional context after them.
 
 **Write for a fresh reader**
 
@@ -240,7 +243,7 @@ manipulation and the agent discounts all of them.
 
 | Situation | Use | Avoid |
 |---|---|---|
-| A single rule that just needs stating | Plain directive, caveats after | leading with the caveat or rationale |
+| A single rule that just needs stating | Trigger then action, or a plain directive when unconditional | leading with the caveat or rationale |
 | A set of parallel requirements | DO / DO NOT list | a prose paragraph |
 | The one non-negotiable core of a discipline | Iron Law | softening it with caveats |
 | A rule skipped under time pressure | Hard gate | "do this when you can" |
@@ -258,16 +261,16 @@ manipulation and the agent discounts all of them.
 
 ### Plain directive
 
-The default form. State the behaviour as a direct instruction; add caveats,
-exceptions, or a one-line cost after it, only if needed. Most rules need
-nothing more.
+The default form. When the rule is conditional, state the concrete trigger
+followed by the action. When it is unconditional, state the action directly.
+Add caveats, exceptions, or a one-line cost after it only if needed.
 
 ```
 Use codes from pkg/errcodes in error responses. New codes go in this
 package, not inline in other packages.
 ```
 
-- DO write it as in "Lead with the desired behaviour" under Writing style (the canonical home for this rule)
+- DO write it as in "Lead with the trigger, then the behaviour" under Writing style (the canonical home for this rule)
 
 ### DO / DO NOT list
 

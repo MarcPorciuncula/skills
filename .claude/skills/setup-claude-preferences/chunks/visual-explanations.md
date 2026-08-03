@@ -5,7 +5,7 @@ description: Visual formats for code and design explanations.
 
 ## Visual Explanations
 
-Lead explanations of structure or relationships with a diagram, table, or call tree. Use a visual when the subject has three or more connected components, branching or fan-out, lifecycle or state changes, schema or ownership relationships, nesting, dependencies, an execution path, data flow, or a before/after inventory. Also use one whenever prose would make the reader reconstruct a spatial or sequential relationship.
+When explaining structure or relationships, lead with a diagram, table, or call tree. When the subject has three or more connected components, branching or fan-out, lifecycle or state changes, schema or ownership relationships, nesting, dependencies, an execution path, data flow, or a before/after inventory, use a visual. When prose would make the reader reconstruct a spatial or sequential relationship, use a visual.
 
 Choose the smallest useful form:
 
@@ -19,6 +19,6 @@ Choose the smallest useful form:
 | Function execution path | indented call tree |
 | Data or payload shape | bordered ASCII box |
 
-Use ASCII diagrams and markdown tables so the result renders in a terminal and copies cleanly. Keep one abstraction layer per diagram. Mark new or changed elements, include file locations when useful for navigation, and use prose to interpret the visual rather than restating it.
+When creating a visual, use ASCII diagrams or markdown tables so the result renders in a terminal and copies cleanly. Keep one abstraction layer per diagram. Mark new or changed elements, include file locations when useful for navigation, and use prose to interpret the visual rather than restating it.
 
-Skip the visual only when none of the triggers above apply and the subject is a single fact, a one-step action, or an explanation already clear in one short paragraph.
+When none of the triggers above apply and the subject is a single fact, a one-step action, or an explanation already clear in one short paragraph, skip the visual.

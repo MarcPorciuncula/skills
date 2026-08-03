@@ -7,13 +7,15 @@ description: Test selection and design criteria.
 
 Before writing or modifying a test, justify it and design it.
 
-Write the test only when all of these hold:
+When considering a test, write it only if all of these hold:
 
 - The behavior is a correctness requirement or functional contract worth maintaining, not merely an optimization or cleanup preference.
 - The test exercises non-trivial product logic rather than restating a library contract.
 - The behavior can be tested deterministically without timing, scheduling, or ordering fragility, unless those semantics are the product being built.
 - The regression is not already obvious from reading the implementation.
 - The assertion carries more value than the mocks, providers, timers, or other harness needed to reach it.
+
+When any criterion fails, do not write the test.
 
 Before implementation, identify:
 

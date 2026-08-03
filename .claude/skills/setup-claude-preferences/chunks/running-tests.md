@@ -5,8 +5,8 @@ description: Local test and verification scope.
 
 ## Running Tests
 
-Run the narrowest local verification that can exercise the change: a test file, name filter, package, or affected directory. Match the check type to what could have changed; do not run tests, lint, type checks, or builds that cannot produce a different result.
+When verifying locally, run the narrowest check that can exercise the change: a test file, name filter, package, or affected directory. Match the check type to what could have changed; do not run tests, lint, type checks, or builds that cannot produce a different result.
 
-Expand only when a targeted result indicates wider impact or when the changed boundary is shared across packages. Use CI for the full repository suite when the PR workflow guarantees it.
+When considering broader verification, expand only if a targeted result indicates wider impact or the changed boundary is shared across packages. When the PR workflow guarantees a full CI suite, rely on CI for repository-wide coverage.
 
 Documentation, comments, and copy-only changes usually need review rather than automated verification. A clean rebase with no conflicts needs no local test run.

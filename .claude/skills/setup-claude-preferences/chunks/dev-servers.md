@@ -5,9 +5,9 @@ description: Long-lived development process management.
 
 ## Dev Servers
 
-Run development servers and other long-lived processes in named tmux sessions so they persist and remain inspectable.
+When starting a development server or other long-lived process, run it in a named tmux session so it persists and remains inspectable.
 
-Name each session `<repo-or-service>-<worktree-or-agent-slug>-<port>`. Use a short ownership slug that distinguishes concurrent sessions. The port in the name must match the port actually in use.
+Name the session `<repo-or-service>-<worktree-or-agent-slug>-<port>`. Use a short ownership slug that distinguishes concurrent sessions. The port in the name must match the port actually in use.
 
 ```bash
 tmux new-session -d -s web-fixcss-3000 'npm run dev'
