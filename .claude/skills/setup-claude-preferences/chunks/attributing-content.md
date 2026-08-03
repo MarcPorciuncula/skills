@@ -15,9 +15,11 @@ Choose the label for the model family producing the content. Do not default to C
 
 Then choose authorship:
 
-- **`[AI Generated - <MODEL>]`** when the agent composed the text without the user shaping the wording or investigation.
-- **`[AI Assisted - <MODEL> / {{USER_NAME}}]`** when the user supplied talking points, directed the investigation that became the post, edited or approved a draft, or otherwise shaped the content.
-- **No label** only when posting strictly verbatim user-provided text. Any rewording makes it AI Assisted.
+- **`[AI Generated - <MODEL>]`** when the agent supplied most of the substance and wording. This remains AI Generated when the user chose the topic or outcome, requested or directed the investigation, answered questions, reviewed the result, or approved it for posting.
+- **`[AI Assisted - <MODEL> / {{USER_NAME}}]`** only when user-provided source text or substantive talking points are the basis of most of the post. Use this label when the agent paraphrases, reorganizes, polishes, or augments that material, including filling gaps the user could not supply.
+- **No label** only when posting strictly verbatim user-provided text.
+
+Do not infer editorial authorship from user involvement in the task. When the contribution is mixed or unclear, use AI Generated unless the user's supplied material plainly accounts for most of the content.
 
 <!--
 {{USER_NAME}} is replaced with the user's preferred attribution name when this
