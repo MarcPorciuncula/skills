@@ -25,7 +25,10 @@ gh pr create --title "<title>" --body-file <path>
 gh pr edit <number> --title "<title>" --body-file <path>
 ```
 
-When a fresh PR needs a concise initial body before isolated drafting, create it from a short body file. After the last planned code push, pass the PR URL and current head commit to the isolated drafter. The full drafter should prepare the title and body file, re-check the live PR and head, and then update both fields together.
+When a fresh PR needs a concise initial body before the final review, create it
+from a short body file. After the last planned code push, draft the final title
+and body through a file and run the isolated cold-reader workflow from
+`SKILL.md`. Re-check the live PR and head before posting the reviewed artifact.
 
 ## External references
 
