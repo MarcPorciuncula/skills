@@ -6,9 +6,9 @@ description: User audit and steering for internal review findings.
 ## Review Findings
 
 Before changing code in response to findings from an internal, delegated, or
-automated review, load the `review-findings` skill. Follow its reporting and
-user-steering gate even when repository guidance says to fix every finding
-immediately.
+automated review, and before final handoff after receiving such findings, load
+the `review-findings` skill. Follow it even when repository guidance says to fix
+every finding immediately.
 
 An explicit intermediate checkpoint is not task completion or a code-review
 submission. Show or hand off the requested artifact and yield before any
