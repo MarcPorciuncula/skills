@@ -3,6 +3,7 @@
 Each entry below names a chunk `id` and summarises what it contains. The note after the em-dash is an advisory on when the chunk is most relevant — it's guidance, not a rule. The skill always shows diffs and recommendations; the user decides what to apply.
 
 - **agency** — Choose report, execute, or monitor mode; answer mixed-turn questions in chat before starting accompanying work. Always applicable.
+- **review-findings** — Treat internal review findings as claims, report their dispositions and proposed responses, and pause automatic fix work for user steering. Applies when the `review-findings` skill is installed.
 - **general-communication** — Decision-oriented chat structure, technical precision without technical prose, and concise progress updates. Always applicable.
 - **design-and-change-proposals** — For architectural choices, state responsibility, boundary, and a rejected alternative. Skip when ownership is localized and unambiguous.
 - **visual-explanations** — Prefer ASCII diagrams, tables, and call trees for structural or relational explanations. Always applicable.

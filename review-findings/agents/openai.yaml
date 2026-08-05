@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Findings"
+  short_description: "Audit review findings before changing code"
+  default_prompt: "Use $review-findings to evaluate these review findings before making changes."

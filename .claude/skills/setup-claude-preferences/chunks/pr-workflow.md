@@ -20,6 +20,8 @@ When creating a PR:
 3. For `draft` and `auto-ready`, create the PR with the draft flag after the first push.
 4. For `auto-ready`, mark it ready at completion only if it is still draft. An already-ready PR needs no action.
 
+A draft PR created or updated while planned implementation remains is a work-in-progress transport checkpoint, not a completed submission or request for human review. Do not run completion-oriented self-review solely for that action. Run it when the requested work is complete and the PR is handed off, before marking the PR ready or requesting human review, or when the user explicitly requests self-review. If repository guidance also triggers self-review before first PR creation, this preference overrides that timing only for a work-in-progress draft.
+
 When a PR already exists, treat its current state as authoritative. Do not pass draft flags while editing, pushing, rebasing, or changing metadata. Do not move a ready PR back to draft unless the user explicitly asks. Do not repeatedly report that a PR remains draft. A later external readiness change is not drift to correct.
 
 <!-- include the next line only if the `writing-pr-bodies` skill is installed on this machine. The sync agent decides whether to include it; remove it (and this comment) otherwise. -->

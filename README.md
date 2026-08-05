@@ -11,6 +11,7 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | **clean-workspaces** | Clean up worktrees for merged branches |
 | **red-green** | TDD red-green-refactor workflow |
 | **review-comment** | Draft focused, cold-read-accessible code review comments |
+| **review-findings** | Audit self-review findings before changing code |
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
 | **update-branch** | Rebase branches or restack git-spice stacks |

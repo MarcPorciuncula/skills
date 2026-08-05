@@ -41,6 +41,41 @@ On a large change the body has a second job: helping the reviewer *perform* the 
 - DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
 - DO NOT use a "summary" title. The PR body **IS** the summary of the changes in the PR
 
+## Work-in-progress draft bodies
+
+Use this fast path only when all of these are true:
+
+- The user or repository policy calls for an early draft PR.
+- Planned implementation remains after the current push.
+- The PR is not being handed to a human for review yet.
+
+A WIP body describes the current branch truth and the intended endpoint without
+presenting the checkpoint as finished. It is an explicit exception to the
+final-body rule that describes the PR as one atomic completed change.
+
+1. Read the current diff and the user's stated plan.
+2. Write the title and body to a file. Keep the body to a short WIP lede, one
+   `## Remaining work` list when needed, and external references.
+3. Read the file once for factual accuracy, scope, and digestibility. Do not run
+   the full procedure or announce its full self-review commitment.
+4. When creating, use `gh pr create --draft --body-file`. When updating an
+   existing draft, use `gh pr edit --body-file` and preserve its current state.
+
+Use this shape:
+
+```markdown
+Work in progress. Currently adds <implemented checkpoint>. <Planned capability> remains before review.
+
+## Remaining work
+
+- <next planned outcome>
+```
+
+Do not inventory commits or files. Keep the intended final title when its scope
+is stable; do not add a `WIP:` prefix because GitHub already exposes draft
+state. Before final handoff or readiness, replace the WIP body using the full
+procedure below.
+
 ## Functional vs non-functional changes
 
 Any change to a codebase is either functional or non-functional. You'll already understand this concept, it's the same as deciding between "feat" "fix" "improvement" vs "chore" "docs" "refactor" style commits.
@@ -646,7 +681,8 @@ If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
 
 ## Procedure
 
-Follow this procedure when drafting or revising a PR body.
+Follow this procedure when drafting or revising a final PR body. When the WIP
+fast path applies, use it instead.
 
 Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs, the Writing style rules, and the Red flags table, and re-read it once as a scanning reviewer to revise anything that isn't digestible." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
 
