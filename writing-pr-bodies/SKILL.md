@@ -1,802 +1,166 @@
 ---
 name: writing-pr-bodies
 description: >
-  Rules and guidelines for writing easily readable and accurate PR titles and 
-  descriptions. TRIGGER before any `gh pr create`, `gh pr edit --body`, 
-  `gs branch submit`, `git-spice branch submit`, or any other command that opens
-  or updates a pull request body, including autonomous PR creation where the
-  user didn't specifically give direction about the PR body or the PR itself.
-  SKIP for non-body PR operations (e.g. `gh pr ready`, `gh pr merge`, label
-  or reviewer changes) and for commit messages.
+  Write or revise a pull request title or body as a standalone review brief.
+  TRIGGER before any `gh pr create`, `gh pr edit --body`, `gs branch submit`,
+  `git-spice branch submit`, or other command that opens or updates a pull
+  request body. SKIP for non-body PR operations such as readying, merging,
+  labelling, or assigning reviewers, and for commit messages.
 ---
 
-# Writing PR Bodies
+# Writing PR titles and bodies
 
-These rules and guidelines are to be followed when writing PRs, titles, and bodies.
+Write for a senior engineer who knows the codebase but has not read the ticket, branch history, diff, or implementation discussion.
 
-## Audience
+A useful PR body is a standalone review brief. Its opening makes the net change and motivation legible. When the change introduces meaningful architecture, its remaining sections explain the implementation shape, responsibility boundaries, and relationship to the existing system. A reviewer should not need to reconstruct those relationships from a list of files, identifiers, or disconnected design bullets.
 
-The primary reader is a senior software engineer with a focus on productivity, accuracy, and precision. Software engineers working with coding agents today process hundreds of PRs built by themselves, their coworkers, and AI agents. They suffer from constant context switching and mental overload. They need clear oversight and need to grep changes in a glance so they can make a quick judgements. The engineer that reads your writing probably has 13 pull requests open in their browser right now, so poor writing and communication costs them time and money.
+## Reader contract
 
-## Core requirements
+Every body must let a cold reader answer:
 
-A reviewer landing on your PR needs to be able to read, scan, or skim to grep the changes in ten seconds. The title and the PR body are crucial. They can see the detail in the diff and commit log, but that could be dozens of commits and tens of thousands of lines. Your writing must be optimised for **cold-read scannability**, it should be *salient*, *didactic*, and *accessible* to read quickly.
+- What changes when this merges?
+- Why does the change exist?
 
-You must communicate *the net change* of the PR and its motivation or justification.
+When applicable, it must also answer:
 
-On a large change the body has a second job: helping the reviewer *perform* the review, not only grasp the net change. A diff spanning dozens of files is a wall of code. The body can map the change's structural shape so the reviewer can judge whether the new architecture is well-placed. Conditional on size; see *Shape*.
+- What are the major components, and how do control or data move between them?
+- Which component owns each important responsibility or invariant?
+- How does this path reuse, replace, or differ from the nearest existing path?
+- What rollout, compatibility, permission, safety, or operational constraint matters?
 
-- DO state the change and its motivation immediately in the first paragraph, sentence, or heading
-- DO explain the design and its trade-offs
-- DO explain how design decisions are justified
-- DO explain the before/after state for behavioural changes or fixes
-- DO point out flow-on effects
-- DO list out side-effects or incidental changes that made it into the branch
-- DO use headings, paragraphs, and lists to make the content easily scannable
-- DO NOT repeat the diff, the reader has access to the "files changed" tab
-- DO NOT list out files UNLESS they are the crucial subject of the change
-- DO NOT recap routine lockfile or generated-file changes (`pnpm-lock.yaml`, `package-lock.json`, `go.sum`, regenerated clients, snapshot updates). They follow mechanically from the real change and are visible in the diff
-- DO NOT narrate changes over the lifecycle of the branch. A PR is merged atomically and intermediate states never get deployed. (Exception: a *Background & Motivation* note may give a short causal arc, origin to insight to capability, explaining why the PR exists; that is the motivation for the change, not a narration of how the diff evolved.)
-- DO amend or correct the PR to ensure it matches the final net changes after a pivot or deviation from the original intent or design
-- DO NOT write out 'test checklists'. Tests MUST be done in the code, CI workflows, and manually before marking the PR ready so there is no use tracking them in the PR body.
-- DO NOT use a "summary" title. The PR body **IS** the summary of the changes in the PR
+Right-size the answer. A small, obvious change can satisfy the contract in one or two paragraphs without headings. A substantial change should orient the reader before discussing individual implementation choices.
 
-## Work-in-progress draft bodies
+## Establish the evidence
 
-Use this fast path only when all of these are true:
+Use each source for the question it can answer:
 
-- The user or repository policy calls for an early draft PR.
-- Planned implementation remains after the current push.
-- The PR is not being handed to a human for review yet.
-
-A WIP body describes the current branch truth and the intended endpoint without
-presenting the checkpoint as finished. It is an explicit exception to the
-final-body rule that describes the PR as one atomic completed change.
-
-1. Read the current diff and the user's stated plan.
-2. Write the title and body to a file. Keep the body to a short WIP lede, one
-   `## Remaining work` list when needed, and external references.
-3. Read the file once for factual accuracy, scope, and digestibility. Do not run
-   the full procedure or announce its full self-review commitment.
-4. When creating, use `gh pr create --draft --body-file`. When updating an
-   existing draft, use `gh pr edit --body-file` and preserve its current state.
-
-Use this shape:
-
-```markdown
-Work in progress. Currently adds <implemented checkpoint>. <Planned capability> remains before review.
-
-## Remaining work
-
-- <next planned outcome>
-```
-
-Do not inventory commits or files. Keep the intended final title when its scope
-is stable; do not add a `WIP:` prefix because GitHub already exposes draft
-state. Before final handoff or readiness, replace the WIP body using the full
-procedure below.
-
-## Functional vs non-functional changes
-
-Any change to a codebase is either functional or non-functional. You'll already understand this concept, it's the same as deciding between "feat" "fix" "improvement" vs "chore" "docs" "refactor" style commits.
-
-In a PR for a functional change, that functional change is the main subject.
-
-- DO use when the party impacted by the change is the end user
-- PRIORITISE the change in behaviour of the system over code level changes
-- DO frame the change in terms of user visible behaviour
-- DO contrast past and new behaviour when the change is subtle or occurs under specific conditions or edge cases
-- DEPRIORITISE changes and subtleties in the code or components
-
-A non-functional change usually changes code organisation, architecture, or tooling. In this case changes and subtleties in the code or components is the main subject.
-
-- DO use when the party impacted by the change is the system or the developers maintaining the system.
-- DO describe the transition and code level changes at an appropriate level of detail
-- DO use code-level language, identifier names, file paths, and structural terms
-- DO NOT characterise components as actors performing the change ("Code generation moves to the pre-build stage")
-- DO use a named subject when describing post-change behaviour ("Code generation now runs after dependency install")
-- DO call out flow-on effects that might affect functionality and end users
-
-Classify the PR as functional or non-functional. Stay in that register through the lede. A PR that touches both kinds of work still gets one classification; pick the one that names what the change *is*. Don't interleave registers in the lede.
-
-The same animation change in two registers:
-
-> **Non-functional register (wrong for a functional PR):** Renders the threads list as a single `AnimatePresence` with section headers and rows as direct siblings. Each row keyed by session id stays mounted across the Inbox / Recents partition, so when `unread` flips the same `motion.div` slides between sections instead of unmounting.
-
-> **Functional register (right for a functional PR):** When a thread flips between Inbox and Recent, the row slides between sections rather than disappearing and reappearing. Titles animate into their new position.
-
-The non-functional paragraph describes DOM lifecycle, library choice, keying. The functional paragraph describes the change as users experience it. In a functional PR, the second belongs in the lede.
-
-Before moving non-functional prose out of the lede into its own section, run two checks:
-
-1. Is this implementation detail, or a non-obvious design decision the reviewer needs? Implementation detail doesn't belong in the lede regardless.
-2. Would a reviewer be surprised to learn this is how it was implemented if it weren't flagged? If not, cut it entirely. A section earns its place only when the design choice it describes is non-obvious from the diff.
-
-## Writing style
-
-The writing style is crucial to how fast a reader greps the changes in the PR. The CORE GOAL of this text is to communicate the changes as EFFECTIVELY, CLEARLY, and QUICKLY as possible. The text must be written in a TECHNICAL + ACCESSIBLE register.
-
-**The subject matter is inherently technical**
-
-- DO use precise technical terms and concepts
-- DO use the same domain language and symbols that the code uses
-- DO NOT colloquialise technical terms
-- DO preserve accuracy and avoid or hedge unchecked or unsubstantiated claims
-
-**The change of a PR is atomic**
-
-- DO describe all changes in the PR as if they would land all at once
-- DO update the PR when a recent commit affects the *net-change* of the whole PR
-- DO NOT describe pivots in design or intermediate states of the branch's changes
-- DO NOT reference which commits contain which changes
-
-**It must be accurate, measured, and well scoped**
-
-- DO name what isn't done when related and relevant ("populating the list endpoint is a follow-up", "only xyz service was migrated, other services will need to be migrated going forward")
-- DO NOT name "out of scope" items that no one asked about.
-- DO scope claims to what the change actually covers
-- DO NOT make sweeping claims that overstate the plans
-- DO right-size detail to the diff. State what the reader needs to act on or be aware of; trust the code for the line-by-line detail.
-- DO NOT include verbatim code chunks in the description
-- DO include illustrative and abridged code chunks when the subject matter is code architecture, refactors, interfaces, or APIs
-
-**It's not an essay**.
-
-- DO NOT signpost upcoming content or structure
-- DO NOT describe the structure of the PRs body's own prose
-- DO NOT use formal, persuasive, or marketing-style language
-- DO NOT reach for marketing or corporate register ("comprehensive", "seamless")
-- DO NOT express unsolicited opinions
-- DO NOT "sell"
-
-**Only use bullets for genuine lists**
-
-- DO use bullets when items are parallel, when you are **listing out** items of a repeating structure or topic matter. 
-- DO NOT use bullet lists to mask unrelated content as "list items"
-- DO NOT add useless bullet list lead-ins. eg. "Two changes:" "The flow is two-legged"
-- DO NOT put large paragraphs in bullet lists.
-- DO NOT use bullet lists to "inventory" the changes or the diff
-
-**The PR is the implicit subject**
-
-Like standard commit messages, default to **subjectless present active** voice. eg. ~~This PR~~ "Factors out a shared helper".
-
-- DO lead with the action the PR performs on the codebase ("Adds X", "Moves Y", "Switches A to B")
-- DO NOT lead with the action the feature performs when invoked ("Pins a conversation to the top of the inbox"); recast that behaviour as the object of the PR's action ("Adds conversation pinning")
-- DO NOT default to "X is excluded", "Y was added", "Z has been moved" when the PR is the obvious actor
-- DO name a subject when it carries information ("Source files now key the build cache", "Each file shows its own progress bar")
-- DO use passive only when the actor is genuinely unimportant or awkward to name
-- DO NOT animate code constructs as actors performing the change
-
-The same feature lede with the wrong subject and with the PR as the subject:
-
-> **Wrong (the feature is the implicit subject):** Pins a conversation to the top of the inbox. A user marks a thread and it stays above unread items until they unpin it.
-
-> **Right (the PR is the implicit subject):** Adds conversation pinning. A user marks a thread and it stays above unread items until they unpin it.
-
-`Pins` is what the feature does when a user invokes it, not what the PR does. Subjectless present active makes the PR the subject, so the wrong lede is either false (the PR pins nothing) or silently swaps in the user and stops signalling a change. The right lede leads with the PR's action; the feature's behaviour follows as its object.
-
-**It must be accessible**
-
-Accessible writing is the key to fast, clear comprehension.
-
-- DO use plain sentence shapes and forms
-- DO use sentence fragments when they save words ("Follow-up to #1209" not "This is a follow-up to #1209")
-- DO use dot points to list legitimately parallel items
-- DO NOT use dot points to dump unrelated content quickly
-- DO NOT use em dashes or threaded clauses even if they are more "correct" sentence forms.
-- DO NOT use "technical prose". DO use technical terms for subject matter.
-- DO NOT use long, winding clauses
-- DO NOT use verbs to evoke literary animation
-- DO NOT waste words to bridge paragraphs
-- DO NOT hard-wrap prose lines mid-paragraph as you would in code comments or terminal output. Markdown wraps automatically; manual wraps can break list continuations and render awkwardly in the GitHub UI
-
-**It must be digestible**
-
-Digestible text is graspable in a single forward pass. The reviewer is scanning a dozen open PRs and cannot spend working memory reassembling your point. This is a property of the passage, not the sentence: clean grammar does not make it digestible.
-
-- DO make each sentence stand on its own, parseable without holding the previous one
-- DO lead each paragraph with its conclusion, then support it
-- DO split a sentence that chains three or more facts into separate sentences
-- DO break a long paragraph with a list, table, or before/after block so the reader can land and resync
-- DO NOT build a point across a chain of sentences where each one depends on the last
-- DO NOT defer the main clause behind stacked qualifiers
-- DO NOT mistake individually clean sentences for a digestible passage. A run of clean sentences can still force the reader to hold state across all of them
-
-### HARD RESTRICTION: DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE
-
-RECOGNISE these common literary signposting patterns.
-
-| Sentence | What it talks about |
+| Question | Authority |
 |---|---|
-| "Two changes together change that. First, … Second, …" | the upcoming paragraphs |
-| "Two changes that together let the binary stop carrying environment information at link time" | the upcoming paragraphs (lede form) |
-| "Three failure modes followed:" | the list shape |
-| "The flow is two-legged:" | the list shape (stripping the count doesn't rescue it) |
-| "The hook is the third writer to the threads cache (after X and Y)" | its position in a sequence |
-| "It's worth noting that X" | how much weight X carries |
-| "the load-bearing decision is X" / "the key decision here is X" | how much weight X carries |
-| "Notably, …" / "In particular, …" / "As mentioned, …" | the prose's weighting or backward-reference |
-| "At the same time, On the other hand, That said" (when nothing contrasts) | a relationship between sentences that doesn't exist |
-| "Let me explain how this works" / "Let's walk through" | the next sentence |
-| "## Summary" + bullets of changed files | the document's own inventory |
+| What changes atomically? | The base-to-head diff and final commits |
+| Why does it exist? | The task conversation, author brief, ticket, issue, or design discussion |
+| How does it fit the system? | The diff and the relevant surrounding or sibling implementation |
+| What external state affects it? | The live PR, dependencies, deployment state, and linked work |
+| What must survive a revision? | The current PR body, especially human-authored or tool-delimited content |
 
-These patterns waste words describing the text itself and not the PR.
+Read enough surrounding code to understand the boundary the change establishes or crosses. Do not infer motivation from implementation when the author context provides it. If material motivation is absent from every available source, ask the author instead of inventing it.
 
-- DO NOT write these problematic patterns
-- DO delete or rephrase them out of the text
-- DO NOT count prose
-- DO preserve counts when counting actual code shape. Example: "There are four affected CatalogService RPCs (list / create / update / delete)"
+Describe the final net change, not the branch's sequence of experiments. Intermediate commits may explain the code to you; they do not belong in the body unless they reveal a constraint that remains true after merge.
 
-### HARD RESTRICTION: DO NOT CHARACTERISE OR ANIMATE THE CHANGE
+## Publish in two stages
 
-RECOGNISE these literary characterisation and animation patterns.
+Once the repository's PR workflow authorises creation, open the PR promptly with a concise initial body. State what changed and why. Put any genuine merge or deploy blocker at the top. This workflow does not change the repository's rules for whether a PR may be created or marked ready.
 
-| REJECT | PREFER | WHY |
-|---|---|---|
-| "Go compilation moves into the Dockerfile" | "Moves Go compilation into the Dockerfile" | "Go compilation" is being characterised as the actor. Recast with the PR as the implicit subject and the construct as the object. |
-| "Two additional fixes fell out of this change" | "Includes two additional fixes" | "fell out" is used as literary animation, this is hard to grep. Be explicit. |
-| "The previous attempt at fixing this defeated keyed cache reuse" | "A previous attempt broke keyed cache reuse" | "defeated" is literary animation. Be explicit. |
+When planned implementation remains after that push, make the concise body an explicit WIP checkpoint. Begin with `Work in progress`, state both the current branch truth and intended endpoint, and add one `Remaining work` list only when it helps. Do not inventory files or commits, and keep the intended final title instead of adding a `WIP` prefix. Replace the WIP body after the last planned code push and before readiness.
 
-These patterns dilute the information and require readers to process through layers of indirection.
+The concise body is final when the change is small and introduces no new responsibility boundary, external system, persistence or permission model, rollout, migration, parallel implementation, or non-obvious mechanism.
 
-- DO NOT write these problematic patterns
-- DO delete or rephrase them out of the text
-- DO NOT describe the change as a narrative
-- DO downlevel to plain, accessible language
+For a substantial PR, use an isolated drafting agent when delegation is available. Isolation gives the draft a fresh reader's perspective and reduces fixation on the implementation sequence. Dispatch it after the last planned code push, when the base-to-head change is stable enough to describe as final. The primary agent supplies context the isolated agent cannot recover from the diff:
 
-### HARD RESTRICTION: DO NOT PAD WORDS THAT CARRY NO INFORMATION
+- the problem or capability;
+- the motivation and important rationale;
+- the intended responsibility boundary;
+- material rollout, compatibility, or release constraints;
+- the PR URL, base and head branches, the current head commit, and relevant ticket or spec.
 
-RECOGNISE these common padding patterns.
+If the harness supports persistent background agents, run the isolated drafter as a non-blocking background task and continue the primary workflow. Otherwise run it synchronously before final handoff. Do not mark the body complete or mark the PR ready until the full draft is posted. An isolated drafter created by this workflow writes the body directly; it does not delegate again.
 
-| Pattern | What it's doing |
-|---|---|
-| "just, simply, really, actually" | hedge or filler |
-| "basically, essentially, fundamentally" | hedge or vague emphasis |
-| "quite, rather, somewhat, fairly, particularly" | weak intensifier |
-| "clearly, obviously" (when not announcing emphasis) | empty intensifier |
-| "This change does X" / "This PR adds Y" | redundant self-reference. Drop the subject ("Adds Y"). |
+The isolated drafter must:
 
-These patterns consume the reader's processing budget without adding information.
+1. Read this skill, the author brief, the live PR, the base-to-head diff, and relevant surrounding code.
+2. Draft the body from the reader contract, not by expanding the concise body section by section.
+3. Re-read the live PR immediately before posting. If the head commit differs from the handoff, refresh the diff and repeat from step 2; if the body changed, stop and return the draft rather than overwrite concurrent work.
+4. Run the final cold read. If the title no longer matches the scope, return the body draft and a proposed title to the primary agent instead of posting.
+5. Preserve human-authored or tool-delimited content, post the body, and verify the live artifact.
 
-- DO NOT write these patterns
-- DO delete or rephrase them out of the text
-- DO trust the reader to weight content from the verb and noun
-- DO state the bare fact. "Adds X" beats "This change essentially adds X"
+The primary agent owns the title and concise initial body. It must not edit the body while the isolated drafter is active. A later code change that alters the PR's scope, architecture, or rationale requires another body update.
 
-## Body & common sections
+Use this compact handoff shape:
 
-Every PR has a lede. After the lede, compose additional sections the PR needs from this catalogue, or author your own when none of the patterns fit. No section is required, and a useless section is worse than no section.
+```text
+Draft and post the full body for <PR URL> at head <commit> using the
+writing-pr-bodies skill. Do not change the title.
 
-Add a section only if it carries information the reviewer needs that they couldn't get from the diff or commit messages.
+Author brief
+- Problem or capability: ...
+- Motivation and rationale: ...
+- Responsibility boundary: ...
+- Release, compatibility, or known constraints: ...
 
-DO INCLUDE:
-
-- A non-obvious design decision and why it was made
-- A subtlety the reader is likely to miss while reading the code
-- A behavioural difference (before vs after) that the diff doesn't make legible
-- A constraint, invariant, or assumption the change rests on
-- An unusual diff shape that would surprise a reviewer if not flagged (large mechanical churn, restructured tests, regenerated vendored files)
-- The structural shape of a change too large to review as a unit (see *Shape*)
-
-DON'T INCLUDE CONTENT THAT:
-
-- Lists files that changed
-- Restates trivialities of a refactor, rename or move
-- Says "Adds tests for X"
-- Restates the lede in different words
-
-NEVER write a `## SUMMARY` section. The PR body **is** the summary.
-
-### Lede
-
-The untitled opening of the body.
-
-Its **first sentence** is the headline change written as "Adds X", "Moves Y", "Switches A to B": what the PR does to the code, not what the feature does when someone uses it (see *The PR is the implicit subject*).
-
-Everything after it, up to the first heading, is **elaboration**: the consequence, the before/after, or a non-obvious effect of that change, phrased naturally (the feature, the user, or the affected code as the subject).
-
-Right-size to the PR. A small diff is one sentence with no elaboration. A complex change gets a few sentences or a short second paragraph.
-
-- DO put the change in the first sentence, as what the PR does
-- DO let the elaboration follow as a consequence of that sentence
-- DO use the prior state only as a comparison point, when it clarifies
-- DO right-size to the PR
-- DO NOT bury the change behind preamble or context
-- DO NOT open a second headline change in the elaboration, or inventory the diff there
-
-> Adds upload progress indicators to the attachment picker. Instead of a single spinner that hides everything in flight, each file shows its own progress bar and a cancel button. Failed uploads stay in the picker with a retry option rather than disappearing silently.
-
-First sentence: the change, with the PR as the subject. The rest: what the reader now sees, with the feature as the subject. One paragraph, right-sized.
-
-**Prior-state variant.** When the prior state is a stronger first-sentence headline than the change, lead with the prior state, then the change. A small adjacent fix can ride along.
-
-- DO use only when the prior state is a stronger first-sentence headline than the change. Test: would a reviewer scanning 50 PRs get more from the prior state or from the change as the first sentence? If from the change, use the standard lede with prior state in elaboration
-- DO state the prior state in concrete user-visible or behavioral terms
-- DO state the prior state and the change in two sentences total
-- DO put a small adjacent fix at the end of the same paragraph, when it earns its place in one sentence
-- DO NOT use when "Adds X" / "Moves Y" / "Switches A to B" carries the motivation. If the prior state is just "no X existed" or "X was less good", it adds nothing as a headline
-- DO NOT use when the prior state needs more than one sentence. For `fix:` work, promote to Problem/Change (see *Problem/Change*); for other work, use the standard lede with prior state in elaboration
-
-> **Fix example:** Previously, copying a snippet from the docs included the leading "$" prompt character. The copy action now strips the prompt. Also adds a tooltip on the copy button.
-
-> **Improvement example:** Previously the cache keyed on `(user, asset)`, so two users hitting the same asset missed each other's warmth. The key is now `(asset, user)`.
-
-First sentence in each: the prior state in concrete terms. Second: the change.
-
-### Problem / Change
-
-A heading-pair structure that supplements or replaces the lede when a bug fix benefits from framing the problem before the change. Two headings, `## Problem` and `## Change`, make the contrast between what was wrong and what the PR does legible at a glance.
-
-Heading pairs can be `## Problem` / `## Change`, `## Issue` / `## Fix`, or any pair that fits.
-
-- DO use for genuine bugs or faults closed by this PR
-- DO use when the problem requires at least a paragraph to explain
-- DO NOT use when the fault fits in one sentence; use the Lede or its Prior-state variant (see *Lede*)
-- DO NOT use for improvements, refactors, or feature additions. They aren't bug fixes even if the prior state was undesirable
-
-> ## Problem
->
-> The include resolver fetches each `asset://<id>/v<N>` reference at the *pinned* version on every render. When a user edits the source between renders, the page silently keeps showing stale content.
->
-> ## Change
->
-> A new pass in the same resolver walks the in-page references, asks the asset store what's current, and adds a short note listing the changed paths. The renderer decides whether to refetch; the note is informational, not a directive.
-
-### Before/After code blocks
-
-When a refactor's value is the API delta, two short Before/After code blocks at the call-site level are the most legible artifact a reviewer can have.
-
-```go
-// Before
-queue.RegisterHandler(TaskEmail, HandlerOptions(2)...)
-emailWorker := NewEmailWorker(queue)
+Read the base-to-head diff and the nearest existing implementation. Treat the
+brief as the authority for motivation. Confirm the live head and body before
+posting, and preserve human-authored or tool-delimited content.
 ```
 
-```go
-// After
-emailWorker := EmailTask.Bind(queue)
-```
-
-- DO show one or two representative call sites, not the full type-signature surface
-- DO cut boilerplate, unrelated setup, untouched members
-- DO use `// Before` and `// After` headers without further commentary
-- DO NOT exceed ~15 lines per side
-
-### How to test
-
-Concrete reproduction steps for the reviewer. Goes at the bottom of the body.
-
-- DO write PR-specific steps with specific commands, buttons, or user actions
-- DO NOT use checkboxes
-- DO NOT include if every step is a generic CI command (`task test`, `go vet`)
-- DO NOT list unit tests as a 'how to test' instruction
+## Compose the body
 
-```
-## How to test
-
-1. Start the API server locally with `task dev`.
-2. In another terminal, find the API process: `pgrep -f 'myapp server'`.
-3. Send `kill -TERM <pid>` and watch the logs. Expect "graceful shutdown: draining" followed by a clean exit within ~8s.
-4. Repeat with `kill -INT <pid>`. Expect "fast shutdown: dropping in-flight connections" and immediate exit.
-```
-
-### External references
-
-Linear tickets, related PR numbers, parent or stacked PRs. Write them as a Markdown list. GitHub unfurls an issue, PR, or discussion reference to its title and live state **only when the reference is a list item**; the same reference inline renders as a bare `#1235` with no title. The bulleted form is what makes these scannable at a glance.
+### Opening
 
-- DO always include when external references exist
-- DO write the references as a bulleted list, one reference per line
-- DO use a bare `#1235` or `owner/repo#1413` list item for GitHub PRs and issues (it unfurls to title + open/merged/closed state)
-- DO use full URLs for systems GitHub doesn't unfurl (Linear, Jira, Notion, Sentry, Google Docs, dashboards)
-- DO put the ticket title in the link text for non-GitHub references, since they never unfurl
-- DO use `@username` for a GitHub user
-- DO include the design spec or doc a reviewer would consult, if one exists
-- DO NOT link author-facing implementation plans or task-tracking docs
-- DO ask the user when you don't know the workspace slug, URL shape, or ticket title
-- DO NOT use inline references here (`Follow-up: #1235`). Inline never unfurls, so it stays a bare number with no title or state
-- DO NOT include bare unclickable IDs ("Linear: AI-1234")
+Lead with the change or, for a fault, the concrete prior-state problem. Explain why it matters or why this approach exists within the opening paragraph or two. The title and first paragraph should be enough for a reviewer scanning a queue to decide what context they need next.
 
-```
-- Closes [AI-1297 Add upload progress to the attachment picker](https://linear.app/<workspace>/issue/AI-1297)
-- #1235
-- owner/repo#1413
-- Design: [docs/specs/2026-04-17-dev-entrypoint-design.md](docs/specs/2026-04-17-dev-entrypoint-design.md)
-```
+For a user-visible change, lead with the externally observable behavior. For a refactor, tool, or architectural change, lead with the code or system boundary being changed. Implementation details belong in the opening only when that boundary is the subject of the PR.
 
-### Linear ticket trigger words
+Prefer subjectless present-active language when the PR is the implicit subject: `Adds`, `Moves`, `Switches`, `Removes`, `Prevents`. Use a named subject when it carries information: `Each upload now reports its own progress`.
 
-Linear's GitHub integration scans PR titles, descriptions, commit messages, and branch names for keywords paired with a ticket ID (e.g. `AI-1234`). The keyword you pick determines what Linear does to the ticket on merge.
+Do not use a `Summary` or `What changed` heading. The opening is the summary.
 
-**Closing keywords** move the ticket to "In Progress" on branch push and "Done" when the PR merges to the default branch:
+### Implementation shape
 
-- `close`, `closes`, `closed`, `closing`
-- `fix`, `fixes`, `fixed`, `fixing`
-- `resolve`, `resolves`, `resolved`, `resolving`
-- `complete`, `completes`, `completed`, `completing`
-- `implements`, `implemented`, `implementing`
+Add architecture only when the reader contract calls for it, regardless of diff size. Explain the system at the level of components and responsibilities:
 
-**Non-closing keywords** link the PR to the ticket without changing its state:
+1. where input enters;
+2. which components own orchestration, state, policy, or external integration;
+3. how control and data move between them;
+4. where output, errors, or durable state end up.
 
-- `ref`, `refs`, `references`
-- `part of`
-- `related to`
-- `contributes to`
-- `toward`, `towards`
+Use subject-specific headings such as `Runtime flow`, `Responsibility boundary`, `Permission model`, `Compatibility`, or `Release path`. Avoid a generic `Design` section that becomes a bucket for unrelated facts.
 
-Pick the keyword based on the PR's relationship to the ticket.
+When three or more components interact, prefer a small flow diagram, table, or numbered sequence over prose that makes the reader reconstruct the topology. Keep one abstraction level in each visual.
 
-- DO use a closing keyword when the PR fully addresses the ticket and the ticket should close on merge (`Closes AI-1234`, `Fixes AI-1234`, `Resolves AI-1234`)
-- DO use a non-closing keyword for a partial implementation, a follow-up, or an incidental relationship (`Part of AI-1234`, `Refs AI-1234`)
-- DO prefix the Linear list item in External references with the keyword so the trigger and the reference stay in one place (`- Closes [AI-1297 …](url)`)
-- DO list multiple tickets after one keyword with commas (`Fixes AI-123, AI-256`)
-- DO NOT use a closing keyword on a PR that only addresses part of a ticket. The ticket will close prematurely
-- DO NOT separate the keyword from the ID. Linear binds them only when adjacent. Write `Closes AI-1234`, not `Closes the ticket AI-1234`
-- DO NOT invent keywords (`addresses`, `tackles`, `handles`). Linear only recognises the keywords listed above
+Name packages, types, functions, or files only when they identify a boundary or help the reviewer find a load-bearing concept. Do not inventory implementation details that the diff already exposes.
 
-### Stack
+### Relationship and rationale
 
-When the PR's branch is stacked on another branch in the same repo: branched off that branch instead of the base, so its diff includes the parent's commits and git ancestry enforces the merge order. The git-spice / Graphite / ghstack case.
+When the PR adds a sibling, replacement, or parallel path, compare it with the nearest existing implementation. State what is shared, what differs, and why the difference exists. Put rationale beside the boundary or mechanism it explains instead of collecting choices as unrelated bullets.
 
-- DO name the parent PR this branch is stacked on
-- DO preserve the original `Stacked on #N` reference when revising the body after the parent PR merges. It records the branch's lineage and does not need to match the parent's current state.
-- DO update the reference only when the branch was actually rebased or reordered onto a different parent.
-- DO NOT use for an independent branch that merely depends on another PR landing. Cross-repo dependencies are always that case, never a stack. Use Dependency.
-- DO NOT add a Deployability `> [!WARNING]` for the stack's own order. The stack already enforces the sequence (see *Deployability*)
+Call out an alternative only when it clarifies a consequential decision. A decision is useful when another plausible design would establish a different ownership, runtime, compatibility, or operational boundary.
 
-```
-Stacked on #N.
-```
+### Release and review constraints
 
-### Stack pre-lede
+State rollout order, migration behavior, version skew, permissions, safety properties, known limitations, or unusual generated churn only when they change how the PR can be reviewed, merged, deployed, or operated.
 
-When the PR is one mechanical slice of a single unit of work (one ticket) split into a stack for shipping reasons. The split reflects how the work has to ship (e.g. one part must deploy before the next), not conceptually distinct steps. A one-sentence pre-lede above the lede carries the shared intent, so a reviewer landing on any PR in the stack grasps the whole before the detail.
+Use `How to test` only for PR-specific reproduction or review steps. Routine CI commands and test inventories do not belong in the body.
 
-- DO state the shared intent: what the whole unit does, plus the prior state it replaces when that is the point
-- DO size it like a lede, one or two sentences, above the lede (below a `> [!WARNING]` banner if one is present)
-- DO write the same pre-lede on every PR in the stack
-- DO let the per-PR lede follow and say what this PR does
-- DO NOT map or enumerate the stack's PRs, or mark "this PR is #N". Ordering and links live in the Stack line and External references (see *DO NOT WASTE WORDS DESCRIBING THE TEXT'S OWN STRUCTURE*)
-- DO NOT put links in the pre-lede, or explain the whole change's design or each PR's role
-- DO NOT use it for a stack of conceptually distinct steps (a large ordered ticket); one sentence cannot carry that. Use *Background & Motivation*, or just the per-PR ledes
+For stacks, external references, Linear triggers, dependencies, deploy blockers, human-authored content, and detailed posting mechanics, read [references/mechanics.md](references/mechanics.md). Load only the sections that apply.
 
-> **Accept:** Part of moving session storage from cookies to Redis, split across three PRs so each deploys while the app keeps serving.
->
-> **Reject:** a `## Why this stack` heading, a three-bullet map of the PRs, their links, and a "This PR is #2 of 3" marker.
+## Style
 
-The accept line carries the shared intent. The reject documents the stack's structure, which the Stack line, External references, and the stack tooling's own navigation already carry.
+- Use precise domain language after introducing the concept.
+- Prefer plain sentences, short paragraphs, and concrete subjects.
+- Use bullets only for genuinely parallel items.
+- Use before/after snippets when a small API delta is clearer than prose.
+- Mention secondary changes only when they have a behavioral, API, review, or release consequence.
+- Omit file inventories, identifier inventories, generated-file recaps, routine test lists, diff statistics, process narration, and branch history.
+- Avoid marketing language, generic reassurance, literary transitions, and padding.
+- Do not add AI attribution to the PR title or body.
 
-### Dependency
+Read [examples.md](examples.md) for positive examples of a small body, an architectural body, and a compatibility-focused body.
 
-When the PR's branch is independent (branched off the base, shares no git history with the other PR) but cannot merge or deploy until another PR lands. Common across repos: a regenerated client depends on a proto or schema a backend PR ships.
+## Titles
 
-- DO name the PR this one depends on and what the dependency is
-- DO state the merge-order or deploy-order constraint
-- DO use the cross-repo `owner/repo#N` form and carry the same link in External references
-- DO lead the body with a Deployability `> [!WARNING]` when merging before the dependency lands breaks production
-- DO NOT call this a stack or write "stacked on"
-- DO NOT use when this PR is the prerequisite the other depends on. The direction is reversed; a Dependency heading misleads scanners into checking for a merge gate that doesn't exist. Put the relationship in the lede elaboration or as a `- Refs owner/repo#N` item in External references
+Use a specific imperative verb and object: `Add X`, `Fix Y when Z`, `Move A out of B`, `Drop X`, `Switch X to Y`. Name the affected behavior or boundary, not only the area or an internal implementation detail.
 
-```
-Depends on owner/repo#N, which ships the proto the regenerated client here builds against. Merges after #N lands on the base branch.
-```
+The title must match the final one-sentence scope and remain useful in review lists, search, notifications, and the squash commit. Follow established repository conventions for prefixes, ticket IDs, and stack numbering.
 
-### Differences from previous PRs
+When revising a body, update the title in the same edit only if the PR's scope or headline changed. Otherwise leave it alone unless the user asked for a title rewrite.
 
-When re-baselining an earlier sibling PR that was closed or superseded.
+## Final cold read
 
-- DO summarise what's changed between the previous attempt and this one
-- DO NOT include for fresh PRs without precedent
+Before posting the full body, read the draft once as someone seeing the work for the first time. Confirm that:
 
-### Also in this PR
+1. the title and opening match the final base-to-head change;
+2. the opening explains both what and why;
+3. each substantial boundary, flow, or comparison is understandable without reading the ticket;
+4. material release or compatibility constraints are visible;
+5. every section adds orientation or review value beyond the diff.
 
-For secondary changes included in the PR such as dead code cleanup, a tooling fix or small refactor to unblock the main objective etc. Include it in an 'also in this PR' section.
-
-- DO use one bullet per item, naming the behavioural or API consequence
-- DO use this heading verbatim
-- DO NOT include docs updates or renames. These can be easily read from the diff.
-- DO NOT include lockfile bumps or regenerated/generated-file churn. They follow mechanically from the real change
-
-### Design / Key design decisions
-
-The non-obvious decisions a reviewer needs and the diff doesn't show. Title it `## Design`, `## Key design decisions`, or whatever fits the PR. The design spec itself goes in External references, not here.
-
-Prefer one sentence in the lede elaboration. Promote to this section only when several decisions each pass the gate.
-
-A bullet qualifies only if **another option existed** and the choice shapes the rest of the design. Same gate as moving prose out of the lede (see *Functional vs non-functional changes*): would a reviewer be surprised to learn it was done this way if it weren't flagged? If not, cut it; it's the diff.
-
-Shape each bullet as the decision, a colon, then why this option over the alternative. One line. No paragraphs. No weighting labels in the text ("the key decision is", "load-bearing"); the heading already says these are the key decisions.
-
-The same decisions as one prose paragraph, then as bullets:
-
-> **Wall (reject):** An upload is carried on the existing multipart envelope, the same one inline attachments use, with no re-encode; a resumable upload reuses the `tus` endpoint with a `?partial` marker so resumable and one-shot parts stay distinguishable through the shared parser, the part round-trips through the gateway's buffer-and-forward path, and a per-request middleware modelled on the auth rewrite replaces every upload part with one header block while the auth rewrite skips `?partial` parts so the two middlewares own disjoint slices of the request.
-
-> **Bullets (accept):**
-> - Uploads are included in the existing multipart envelope, not a new endpoint: the gateway already buffers and forwards it, so the hot path is unchanged
-> - Resumable vs one-shot split by a `?partial` marker on the existing endpoint, not a second one: one parser still handles both
-
-The wall mixes the two decisions with mechanism the diff already shows; the bullets keep only the decisions.
-
-### Shape
-
-A map of the architecture a large change introduces: each new component, where it sits in the codebase, and how it relates to existing structure. Title it `## Shape`, `## Structure`, or whatever fits. It primes a reviewer to judge whether the new architecture is well-placed, not to locate files.
-
-Gate it on diff size, the way Design gates on non-obvious decisions: include it only when the diff is too large to review as a unit. Below that, the diff is its own map and the section is padding.
-
-Each entry names a new architectural piece (a package, a module, a layer): what it is, where it lives, how it relates to what is already there. Name a type or function inside it only when it is load-bearing: a boundary, the risk, or what another piece depends on. Structure alone is a table of contents; what the code does internally is diff narration.
-
-Shape places a piece; it does not explain it. Design holds the decisions, each one where another option existed. When a Shape entry pulls toward how a piece works or why a choice was made, that content is not Shape: a decision goes to Design, pure behaviour to the diff. A large PR can warrant both; judge whether the decisions earn a Design section (see *Design / Key design decisions*).
-
-- DO include only when the diff is too large to review as a unit
-- DO name each new architectural piece: what it is, where it lives, its role
-- DO say how a new piece relates to existing structure: what it reuses, extends, or sits behind
-- DO name a type or function only when it is load-bearing: a boundary, the risk, a dependency
-- DO name the responsibility boundaries the change draws or crosses
-- DO weight entries by architectural significance, not code volume
-- DO NOT describe what a component does step by step; that is the diff
-- DO NOT enumerate every changed file or a package's members; name the new structure, not its contents
-- DO NOT let the section grow with the diff; it grows with new architecture, which stays small
-- DO NOT argue the change is good; give the reviewer what they need to judge it
-- DO NOT tell the reviewer what to scrutinise or check; present the architecture and let them judge it
-
-The same large change as a component inventory, then as a shape:
-
-> **Inventory (reject):**
-> - `pkg/domains/foo/`: new domain service. `Service.Create` looks up the parent folder, loads its state, makes a model call, normalises the result, then applies edits transactionally.
-> - `pkg/handlers/foo/`: new HTTP handler package. `Handler` serves the endpoint, `authMiddleware` verifies the token, `rateLimit` throttles per user, `serveMetadata` returns the discovery document.
-> - `foo-usage.md`: a Markdown doc; teaches path conventions, per-scope section rules, and the parallel-read rule.
-> - Filestore: adds `ModuleFoo`, an `org_subject_id` column, a trigger branch, two provisioning hooks, and a benchmark fixture update.
-
-> **Shape (accept):**
-> - `pkg/domains/foo/`: a new domain package, the home for `foo` write logic. Sits alongside the existing domain packages, behind a service interface.
-> - `pkg/handlers/foo/`: a new HTTP handler package. It binds the transport to the domain service behind an auth middleware that verifies tokens locally.
-> - `foo-usage.md`: a new schema doc, embedded in the agent's prompt stack.
-> - Filestore: a new `ModuleFoo` and an `org_subject_id` column, reusing the existing node and permission machinery rather than a parallel store.
-
-The inventory narrates what each piece does internally and enumerates its members. The shape says what each piece is, where it sits, and how it relates to existing structure, naming a type only where it is load-bearing, like the auth middleware here. A reviewer reads it to judge whether the new architecture is well-placed.
-
-### Background & Motivation
-
-Why the PR exists, when the diff alone doesn't make that legible. Two cases earn it: context the commits don't carry (a constraint, a prior incident, an external dependency the change responds to), and a PR whose connection to its ticket is non-obvious, such as a change a reviewer didn't expect or one that diverges from how the ticket implied the work would go. A reviewer who would ask "why is this here?" before "is this correct?" needs this first.
-
-This is the one place a short causal arc belongs. The body proper stays subjectless present active and never narrates the branch's evolution (see *Core requirements* and *The change of a PR is atomic*), but explaining why a PR exists is a different job from describing what changed, and the clearest shape for it is the reasoning that produced the change:
-
-1. **Origin**: the problem or ticket the work came from.
-2. **The fork**: the choice the author faced and the insight that resolved it (migrate the old behaviour, or eliminate the need for it).
-3. **The new model**: the capability the change leaves in place.
-
-- DO lead with the problem the ticket surfaced, then the insight, then the resulting capability. The arc makes a surprising change legible because the reader follows the reasoning that motivated it.
-- DO use concept vocabulary the reviewer can grasp cold (what the system did and now does), not internal identifiers (function names, predicates, field names) the reader hasn't met yet.
-- DO end on the new capability the design makes possible, not on what was removed or what work it saved.
-- DO place it first, before the lede, when the PR's relevance to its ticket is non-obvious; the reviewer should learn why the change belongs before reading what it is. Most PRs are self-evidently on-ticket and open with the lede instead.
-- DO keep it short, a few sentences. It frames the change; it does not re-explain it.
-- DO NOT lead with bookkeeping: the PR's position in a stack, or the work it saves a sibling PR. That is accounting the reviewer of this PR does not need.
-- DO NOT frame the payoff as a metric ("N fewer call sites", "shrinks the other PR"). State the idea, not the count.
-- DO NOT use as filler for "thoroughness". Omit it when the change is self-evidently on-ticket.
-
-The same motivation note as bookkeeping, then as an arc:
-
-> **Bookkeeping (reject):** Bottom of the AI-1234 cleanup stack. Keying the importer on the record id removes its type-tag reads outright, so the stacked removal (#NN) has two fewer migration sites.
-
-> **Motivation (accept):** AI-1234 set out to remove the type tag. The importer was one of its consumers; rather than migrate that read, this PR drops type-based matching altogether, so an importer can address a record directly or build a new one from raw input.
-
-The bookkeeping version leads with stack position and counts what it saves another PR; the arc version leads with the problem, names the fork (migrate vs. eliminate), and ends on the new capability, all in terms a reviewer follows without opening the diff.
-
-### Deployability
-
-For rollout dependencies, migration ordering, or merge gates.
-
-- DO use when the PR's safety depends on external state (a migration applied, a feature flag flipped)
-- DO NOT use for self-contained PRs
-
-When merging or deploying this PR before another change lands breaks production, lead the body with a GitHub alert, placed above the lede so the blocker is seen before a reviewer reaches the merge button:
-
-```
-> [!WARNING]
-> Do not merge before owner/repo#1413 deploys. The regenerated SDK here calls a proto that PR ships; merging first breaks request handling in production.
-```
-
-- DO use `> [!WARNING]` and place it at the very top of the body, above the lede
-- DO state both the blocking condition and the unblock condition (which PR must land or deploy, which migration must run)
-- DO carry the gating reference as an unfurling list item in External references
-- DO use only for a genuine merge or deploy gate. A reviewer who ignores it can break production
-- DO NOT use it for notes, context, caveats, or risk commentary. A banner that cries wolf gets ignored
-- DO NOT use it for a stacked PR's own merge or deploy order. The stack already enforces the sequence (git ancestry for merges, bottom-up for deploys), so the banner guards nothing. Reserve it for cross-repo gates nothing enforces (see *Stack*, *Dependency*)
-- DO remove the banner in the same PR once the blocker clears
-
-## Human overview sections
-
-You may be working on a PR alongside a human or on their behalf. They may add, or instruct you to add their own content to the PR.
-
-- DO preserve any 'human overview', 'human notes', or other similarly marked sections or content.
-- DO NOT write your own 'human overview'. Human overview means written by humans for humans.
-- DO preserve any uploaded screenshots or clips
-- DO preserve content inserted by other agents or tools, these will be specially marked with html comments or other delineations
-- DO write a human section ONLY WHEN a human directs you to, and preserve their input text verbatim.
-- DO NOT make any modification, fix, paraphrasing, or adjustment to human written content even if it appears to be wrong
-
-## PR titles
-
-The title is the PR's identity across review lists, search, squash-merge commits, notifications, and changelog scans.
-
-### Properties of a good title
-
-- **Specific verb + object**: `Add X`, `Fix Y when Z`, `Move A out of B`, `Drop X`, `Switch X to Y`. Not `Update`, `Improve`, `Refactor stuff`.
-- **Names the affected behaviour, not just the area**. "Stop unmounting markdown editor on save" beats "Markdown editor lifecycle".
-- **Matches the one-sentence scope**, not broader, not narrower.
-- **Stable across the PR's life**. Won't need rewriting if the implementation evolves.
-- **Conventional prefix when the team uses one**: `fix(scope): …`, `feat(scope): …` per recent merged PRs.
-- **Imperative-mood subject line.**
-
-### What doesn't belong in titles
-
-- **Phase numbers** outside an active stack (see below). Phase signal goes in the body.
-- **Exhaustive scope qualifiers**, long parenthetical lists.
-- **Implementation details**: type names, function names, file paths.
-- **Ticket IDs**. See *Ticket IDs* below; conditional.
-
-### Stack numbering: when it *does* belong
-
-In a stack where merge order is enforced:
-
-```
-Port off Temporal 2/6: update reconcile interfaces
-Port off Temporal 3/6: add River-backed dispatcher
-```
-
-A "this PR plus a future spec" pairing isn't a stack. Drop the numbering.
-
-### Ticket IDs in titles
-
-The body's external-references section always carries the ticket ID. The separate question is whether to also surface it as a title prefix.
-
-- **Direct response → include in title.** PR closes or canonically implements the ticket. Format: `AI-1234: …`.
-- **Incidental relationship → skip the prefix.** Follow-up fixing a side effect, refactor that touches mentioned code, change initiated independently in the same area.
-- **When in doubt → skip.** The body still carries the reference.
-- **Team convention overrides**. Match recent merged PRs.
-
-Decision test: *would a teammate landing on the ticket and looking for "the PR that did this" expect to find this one via title prefix?* Yes → prefix. No → body only.
-
-### Self-test
-
-Apply each before accepting a title:
-
-1. Specific verb + object (not `Update`, `Improve`, `Refactor`)?
-2. Names the affected behaviour, not just the component or area?
-3. Matches the one-sentence scope?
-4. Carries no info that belongs in the body?
-5. Could a reviewer skimming 50 PRs identify this one in five seconds?
-
-If 1, 2, 3, or 5 fail → strengthen. If 4 fails → trim.
-
-**Borderline case**. Weak verb (`Update`, `Improve`, `Refactor`) rescued by a specific object (`Refactor X around Y`, `Update X to handle Z`): borderline pass. Don't autonomously rewrite, but surface a tighter alternative when the user is open to feedback.
-
-### Protocol
-
-- **Drafting a fresh PR**: write a title that passes the self-test before opening.
-- **Editing a PR body that changes what the PR is about**: update the title to match in the same edit. Scope drift, a new headline, or fundamentally different framing all qualify.
-- **Editing a PR body that only refines presentation**: leave the title alone.
-- **The title fails the self-test on its own merits**: surface a recommended rewrite as `current → proposed`. Don't change autonomously.
-- **The user explicitly asked for a title rewrite**: proceed.
-
-## Procedure
-
-Follow this procedure when drafting or revising a final PR body. When the WIP
-fast path applies, use it instead.
-
-Before stage 1, announce the commitment: "Drafting the PR body. Before posting I will self-review it against the HARD RESTRICTIONs, the Writing style rules, and the Red flags table, and re-read it once as a scanning reviewer to revise anything that isn't digestible." Stage 5 is the step dropped under the urge to post; announcing it up front commits you, and the rest of the turn must honour the announcement.
-
-### 1. Read & orient
-
-There may be changes in the PR you don't know about. The absolute source of truth for the **net changes** of the PR is the branch's commits and diff, not your own session memory. Read the PR and orient yourself to the changes. You can only skip this if you were the exclusive creator and contributor of the branch.
-
-1. Read `git diff <base>...HEAD`.
-2. Read the commit subjects and bodies to understand the changes over time. Keep in mind this is for your understanding of the net change, but you MUST NOT include intermediate states and changes in the history in your final text.
-3. When revising, read the existing PR body.
-
-- DO NOT draft exclusively from session memory or partial recollection.
-
-### 2. Audit (revising only)
-
-The existing body is one input, not a baseline to preserve.
-
-1. State the PR's scope from the diff before reading the existing body.
-2. Note where the existing body fails this skill: shape, signposting, animation, padding, content that doesn't belong.
-3. Identify observations the existing body carries that the diff doesn't (constraints the author flagged, subtleties they identified). Carry them forward only if they pass the body-inclusion rules in Body & common sections.
-
-- DO NOT preserve prose from the existing body simply because it's there.
-- DO NOT restructure or polish in place; rewrite from the diff.
-- DO NOT modify a `## Human overview` section (see Human overview sections).
-
-### 3. Frame
-
-1. State the change in one sentence.
-2. Identify whether the change is functional or non-functional.
-3. Pick the body shape: use **Lede** as the default; use **Problem/Change** if the work is a bug fix that benefits from framing the problem before the change.
-
-- DO NOT draft until the one-sentence scope holds. If a changed file doesn't fit the sentence, the sentence is wrong or the PR has stray scope.
-
-### 4. Draft to a file
-
-Write the body to a file before posting. Self-review must read from the file, not from composition memory.
-
-1. Write the body and title together from the one-sentence scope.
-2. Compose sections from the Body & common sections catalogue, or author your own when none fit.
-3. Right-size to the diff.
-4. Save the body to a file (e.g. `.claude/pr-body.md`). When revising an existing PR, first pull the current body to the file: `gh pr view <n> --json body -q .body > .claude/pr-body.md`.
-
-- DO NOT pad content to fill a sense of "completeness".
-- DO NOT skip the file step. Self-review must operate on a concrete text artifact.
-
-### 5. Self-review
-
-This is the self-review you announced before stage 1. Read the draft file from top to bottom, as if seeing it for the first time. Composition memory is unreliable; the file is the source of truth for what the reviewer will see.
-
-1. Check the body against the HARD RESTRICTIONs (signposting, animation, padding) and the mechanical Writing style bans (em dashes, threaded clauses, hard-wrapped lines).
-2. Read the body once as a reviewer scanning a dozen PRs. Wherever a sentence only parses if you hold the previous one, or the point arrives at the end of a chain, revise it to be digestible (see *It must be digestible*).
-3. Check each section against the body-inclusion rules in Body & common sections. Cut sections that don't pass.
-4. Check the title against the PR titles self-test. Update or surface a rewrite if it fails.
-5. Verify a reviewer with no context grasps the change and motivation within 30 seconds.
-6. Check each section: would a reviewer skip it without losing the PR? If yes, cut it.
-7. Check the body against the Red flags table. Cut anything that hits.
-
-- DO edit the file in place. Do not redraft from session memory.
-- DO state what the HARD RESTRICTIONs and Writing style pass, the digestibility re-read, and the Red flags pass each caught, or that they caught nothing. A pass with no stated result was not run.
-
-### 6. Post
-
-1. Use `gh pr create --body-file <path>` for a fresh PR, or `gh pr edit --body-file <path>` for a revision.
-2. Apply the PR titles protocol.
-
-## Red flags: STOP
-
-| Thought | Reality |
-|---|---|
-| "Let me start with `## Summary`" + bullets of changed files | Diff inventory. Use a prose lede or `## Problem` / `## Change`. |
-| "There's a clear before/after, so this is Problem/Change" | Before/after isn't sufficient. Problem/Change is for `fix:` work. For `feat:` / `improve:` / `refactor:`, use a regular Lede. |
-| "The prior state had this undesirable property, so it was actually broken, so Problem/Change applies" | Almost any prior state has some undesirable property; that doesn't make it a bug. The criterion is the work's motivation, not retrospective judgement. |
-| "Let me describe how the animation / cache / upload / handshake is implemented alongside the user-visible effect" | Register mismatch. Implementation prose doesn't belong in a functional PR's lede. Cut it if the diff carries the detail; relocate to its own section only if the design choice is non-obvious. See Functional vs non-functional changes. |
-| "I'll write a Design paragraph covering the carrier, the marker, the round-trip and the middleware" / "I'll list every design choice I made" | Diff narration. A key decision is one where another option existed and the choice shapes the design. Cut the rest; the diff carries it. See Design / Key design decisions. |
-| "Three failure modes followed: …" / "A few issues remain: …" / "Three new endpoints: …" / "The migration steps: …" / "The flow is two-legged: …" | List preamble doing no work. Drop it; the bullets stand alone. |
-| "Two changes together change that. First, … Second, …" / "Three things follow from that. First, … Second, … Third, …" | List preamble in prose form. The count announces upcoming paragraphs. Cut the bridge sentence. |
-| "The hook is the third writer to the threads cache (after X and Y)" / "This is the second consumer of the registry" | Positional descriptor announcing a sequence position the reader didn't ask for. Drop the count. |
-| "Go compilation moves into the Dockerfile" / "The binary stops carrying environment information at link time" | Animation verb personifying a code construct. Recast the construct as the object of the change. |
-| "I'll write '.git is excluded' / 'X has been moved' / 'Y was added'" | Passive or past-tense default when the PR is the obvious actor. Subjectless present active: "Excludes .git", "Moves X", "Adds Y". |
-| "The user asked me to revise, so I'll keep most of the original and restructure / polish" | Don't preserve existing prose simply because it's there. Re-derive from the diff. See Procedure stage 2. |
-| "The lede is fine, it's only four sentences" | Count beats, not sentences. Multiple beats → heading split. |
-| "I've said this once, but let me reframe it from the deletion angle / call-site angle / historical angle" | One beat, three times, is still one beat. Pick the most informative angle. |
-| "Let me narrate which files changed and what changed in each" | The diff has it. Name a file path only when the reviewer needs to find something the diff doesn't surface. |
-| "It's a 24-line PR but the lede is a 100-word sentence threading five things" | Right-size to the diff. |
-| "Each sentence is clean on its own, so the body reads fine" | Clean sentences still chain into a wall that forces the reader to hold state. Re-read as a scanning reviewer and revise for digestibility. See *It must be digestible*. |
-| "Just / really / basically / essentially / clearly / it's worth noting that …" | Padding. Cut. |
-| "## What's no longer public" / "## What was removed" + identifier list | Diff inventory dressed as a section. Promote any non-obvious removal into a sentence under `## Change`. |
-| "I'll add `## Areas touched` / `## Files changed` / `## Paths affected` listing the paths and identifiers this PR covers" | Diff TOC dressed as a section. The reviewer has the files-changed tab. If collision risk is actually actionable, name it in one prose sentence in the lede ("touches all four composition roots; merge order with #N matters"). |
-| "Listing a package's exported types is describing its structure, so it belongs in Shape" | A flat list of types, one label each, is the inventory at a finer grain. Name a type only where it is load-bearing: a boundary, the risk, a dependency. See Shape. |
-| "This piece is sensitive, so the reviewer needs to see how it works" | Name it and place it; how it works is the diff. A choice it embodies, where another option existed, is a Design bullet. See Shape. |
-| "Net diff: 53 files, 1081 insertions, 1021 deletions" | Recoverable from the PR header. Cut. |
-| "I'll add `## Also in this PR` with 'Docs: new CLAUDE.md walks through …'" | Docs and renames are present in the diff. Reserve Also in this PR for behavioural or API consequences. |
-| "Linking the implementation plan / task-tracking doc the author worked from" | Implementation plans are author-facing. Link the spec, not the to-do list. |
-| "I'll add a Test plan checkbox list" | Use How to test instead. No checkboxes. Drop entirely if every step is a generic CI command. |
-| "I should add a Background section to be thorough" | Only if it carries info the commits don't. |
-| "I'll frame why this PR exists by where it sits in the stack, or what it saves the sibling PR" | That's bookkeeping. Lead with the problem the ticket surfaced and the insight that resolved it; end on the new capability, in concept terms not internal identifiers. See *Background & Motivation*. |
-| "I'll restate the title in the first sentence" | Cut. The reader has the title. |
-| "Let me name the types and packages I touched" | Plain language for functional PRs; identifiers and file paths belong in non-functional PRs where they're the subject. |
-| "I'll add the 🤖 attribution" | Don't. |
-| "Linear: AI-1234" / "Sentry: ABC-42" / "Doc: Architecture overview" (bare ID or label without a URL) | Unclickable reference is dead weight. Use full URLs for systems GitHub doesn't auto-link. |
-| "I'll write `Follow-up: #1235` inline, the title will show" | Inline references never unfurl. Put references in a Markdown list so GitHub expands them to title + state. |
-| "`[AI-1234](url)` with the bare ID as the link text is enough" | Linear never unfurls. Put the ticket title in the link text so the reference is useful at a glance. |
-| "I'll add a `> [!NOTE]` / `> [!TIP]` banner to highlight context or a caveat" | Alerts are only for merge or deploy blockers (`> [!WARNING]` in Deployability). A decorative banner trains reviewers to ignore the real ones. |
-| "PR B depends on PR A landing, so B is stacked on A" / "## Stack — Stacked on cross-repo#N" | Stack means shared git ancestry in one repo (B branched off A). An independent or cross-repo ordering dependency is not a stack. Use the Dependency section and carry the link in External references. |
-| "Another PR depends on this one landing first, so I'll add a `## Dependency` section to flag the relationship" | Wrong direction. Dependency is for when this PR is blocked. Putting it on the prerequisite makes scanners assume a merge gate that doesn't exist. Mention the consumer in the lede elaboration or as a `- Refs owner/repo#N` item in External references. |
-| "This is a stack with a strict order, so a `## Why this stack` overview mapping the PRs helps reviewers follow it" | The Stack line, External references, and the stack tooling already carry the map. State the shared intent in a one-sentence Stack pre-lede; drop the enumeration. See *Stack pre-lede*. |
-| "The parent PR merged, so I'll remove or replace the `Stacked on #N` line" | Preserve the line as historical branch lineage. Update it only when the branch was actually rebased or reordered onto a different parent. |
-| "These PRs are ordered, so a `> [!WARNING]` keeps anyone from merging them out of sequence" | A stacked child cannot merge before its parent; git ancestry enforces it. The banner is for cross-repo gates nothing enforces. See *Deployability*. |
-| "I'll add a `## Human overview` section to frame the change" | That heading is a provenance claim about the human. Put framing in the lede. |
-| "The existing human overview reads a bit rough, let me tighten it" | Leave it byte-for-byte. |
-| "This needs more structure to feel complete" | A short prose body is complete for a small PR. |
-| "Plain prose only, no headings" | Overcorrection. Use structure that anchors the reader (Problem/Change, parallel bullets). |
-| "Let me describe how the approach evolved" | Net diff, not session. |
-| "I'll start writing once I've read the recent commits" | Read the full diff against base first. |
-| "The title's a bit off but I'll just rewrite it while I'm here" | If the body edit changes what the PR is about, update the title in the same edit. Otherwise surface a `current → proposed` proposal. See PR titles Protocol. |
-
-**Violating the letter of these rules is violating the spirit of them.**
+Remove a section that only restates the title, opening, or diff. Post the revised draft, then verify that the live body matches it. Do not narrate this check or report each edit it caught.
