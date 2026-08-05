@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pressure Test Skills"
+  short_description: "Run blind behavior checks after skill changes"
+  default_prompt: "Use $pressure-test-skills to compare this skill change without leaking evaluator context."
