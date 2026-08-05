@@ -62,23 +62,23 @@ For a substantial PR, use an isolated drafting agent when delegation is availabl
 - material rollout, compatibility, or release constraints;
 - the PR URL, base and head branches, the current head commit, and relevant ticket or spec.
 
-If the harness supports persistent background agents, run the isolated drafter as a non-blocking background task and continue the primary workflow. Otherwise run it synchronously before final handoff. Do not mark the body complete or mark the PR ready until the full draft is posted. An isolated drafter created by this workflow writes the body directly; it does not delegate again.
+If the harness supports persistent background agents, run the isolated drafter as a non-blocking background task and continue the primary workflow. Otherwise run it synchronously before final handoff. Do not mark the PR ready until the final title and body are posted. An isolated drafter created by this workflow writes both fields directly; it does not delegate again.
 
 The isolated drafter must:
 
 1. Read this skill, the author brief, the live PR, the base-to-head diff, and relevant surrounding code.
-2. Draft the body from the reader contract, not by expanding the concise body section by section.
-3. Re-read the live PR immediately before posting. If the head commit differs from the handoff, refresh the diff and repeat from step 2; if the body changed, stop and return the draft rather than overwrite concurrent work.
-4. Run the final cold read. If the title no longer matches the scope, return the body draft and a proposed title to the primary agent instead of posting.
-5. Preserve human-authored or tool-delimited content, post the body, and verify the live artifact.
+2. Draft the title and body together from the reader contract, not by expanding the concise body section by section. Keep the current title when it fits. Revise it when another title communicates the final scope more accurately or scans better.
+3. Re-read the live PR immediately before posting. If the head commit differs from the handoff, refresh the diff and repeat from step 2; if the title or body changed, stop and return the draft rather than overwrite concurrent work.
+4. Run the final cold read against the title and body together.
+5. Preserve human-authored or tool-delimited body content, post the title and body, and verify the live artifact.
 
-The primary agent owns the title and concise initial body. It must not edit the body while the isolated drafter is active. A later code change that alters the PR's scope, architecture, or rationale requires another body update.
+The primary agent owns the initial title and concise initial body. The isolated drafter owns both fields while active; the primary agent must not edit either one until it finishes. A later code change that alters the PR's scope, architecture, or rationale requires another title and body check.
 
 Use this compact handoff shape:
 
 ```text
-Draft and post the full body for <PR URL> at head <commit> using the
-writing-pr-bodies skill. Do not change the title.
+Draft and post the final title and full body for <PR URL> at head <commit>
+using the writing-pr-bodies skill.
 
 Author brief
 - Problem or capability: ...
@@ -87,8 +87,8 @@ Author brief
 - Release, compatibility, or known constraints: ...
 
 Read the base-to-head diff and the nearest existing implementation. Treat the
-brief as the authority for motivation. Confirm the live head and body before
-posting, and preserve human-authored or tool-delimited content.
+brief as the authority for motivation. Confirm the live head, title, and body
+before posting. Preserve human-authored or tool-delimited content.
 ```
 
 ## Compose the body
@@ -151,7 +151,7 @@ Use a specific imperative verb and object: `Add X`, `Fix Y when Z`, `Move A out 
 
 The title must match the final one-sentence scope and remain useful in review lists, search, notifications, and the squash commit. Follow established repository conventions for prefixes, ticket IDs, and stack numbering.
 
-When revising a body, update the title in the same edit only if the PR's scope or headline changed. Otherwise leave it alone unless the user asked for a title rewrite.
+During isolated full drafting, evaluate the title with the body and revise it when another title better meets these rules. For other body-only revisions, change the title only when the PR's scope or headline changed or the user requested a title rewrite.
 
 ## Final cold read
 

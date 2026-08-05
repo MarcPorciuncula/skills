@@ -14,7 +14,7 @@ Never create a human-labelled section for your own writing.
 
 Retain verified motivation, constraints, and consequential decisions from the existing body when they still describe the final change. Re-home each one beside the flow or boundary it explains; do not preserve the old section shape or discard the rationale only because a generic `Design` section is removed.
 
-Re-read the live body immediately before posting an asynchronous draft. If it changed after drafting began, stop and return the draft to the primary agent. Do not overwrite concurrent work with the stale snapshot.
+Re-read the live title and body immediately before posting an asynchronous draft. If either changed after drafting began, stop and return the draft to the primary agent. Do not overwrite concurrent work with the stale snapshot.
 
 ## Posting
 
@@ -22,10 +22,10 @@ Draft through a file so the exact artifact can be reviewed and posted without sh
 
 ```bash
 gh pr create --title "<title>" --body-file <path>
-gh pr edit <number> --body-file <path>
+gh pr edit <number> --title "<title>" --body-file <path>
 ```
 
-When a fresh PR needs a concise initial body before isolated drafting, create it from a short body file. After the last planned code push, pass the PR URL and current head commit to the isolated drafter. The full drafter should prepare its own body file, re-check the live PR and head, and then use `gh pr edit --body-file`.
+When a fresh PR needs a concise initial body before isolated drafting, create it from a short body file. After the last planned code push, pass the PR URL and current head commit to the isolated drafter. The full drafter should prepare the title and body file, re-check the live PR and head, and then update both fields together.
 
 ## External references
 
