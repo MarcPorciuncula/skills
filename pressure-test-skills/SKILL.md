@@ -35,24 +35,32 @@ Keep this skill and every evaluation artifact out of the subject's context.
 3. **Build isolated variants.** Start each subject in a fresh process or a
    spawn mode that passes no parent turns. Use separate task fixtures outside
    the skills repository. Mount candidate and control under the same normal
-   skill name and path shape. Keep the model, tools, instructions, limits, and
-   task identical.
-4. **Choose the activation check.** For a trigger check, make the skill
+   skill name and path shape. Assign opaque, production-plausible identifiers
+   that do not encode the condition or the evaluation. Keep the model, tools,
+   instructions, limits, and task identical.
+4. **Preflight the subject view.** Render every value the subject can observe:
+   task and thread titles, agent names, prompts, inherited turns, skill
+   catalogues, working directories, repository and branch names, filenames,
+   commands, tool output, artifact metadata, and environment values. Read the
+   rendered view as the subject. Replace every evaluation-labelled value.
+   Do not launch until the complete view looks like an ordinary production
+   task.
+5. **Choose the activation check.** For a trigger check, make the skill
    discoverable and do not name it. For an adherence check, activate it through
    the production routing mechanism. If the runner can only activate the skill
    by naming it in the subject prompt, report the check as unblinded.
-5. **Write an ordinary task.** Give only task-local facts and raw artifacts.
+6. **Write an ordinary task.** Give only task-local facts and raw artifacts.
    Apply time pressure or sunk cost through facts already present in the task,
    not through reusable evaluation prose. State side-effect limits as normal
    requester instructions and enforce them in the runner too.
-6. **Run and retain the trace.** Preserve the visible prompt, reasoning,
+7. **Run and retain the trace.** Preserve the visible prompt, reasoning,
    tool-call sequence, tool results, output, and changed artifacts for each
    run.
-7. **Apply the contamination gate.** When a subject infers that it is being
+8. **Apply the contamination gate.** When a subject infers that it is being
    tested, benchmarked, compared, or placed in a scenario, mark the run
    contaminated. Do not score it as a pass or failure. Find and remove the
    leaked context before rerunning.
-8. **Score outside the subject.** Apply the prewritten scorer to observable
+9. **Score outside the subject.** Apply the prewritten scorer to observable
    behaviour. Read the traces for leading and rejected variants. Confirm any
    claimed improvement on held-out tasks with different artifacts and wording.
 
@@ -63,8 +71,10 @@ Keep this skill and every evaluation artifact out of the subject's context.
 - DO set `fork_turns: "none"` for Codex collaboration subagents; the default
   passes the parent turns
 - DO exclude this evaluator skill from the subject's available skills
-- DO use neutral variant identifiers and paths outside the subject-visible
-  prompt
+- DO use neutral task titles, agent names, repository names, branch names,
+  paths, filenames, and artifact labels everywhere the subject can observe them
+- DO assign opaque identifiers independently of condition; do not translate
+  `candidate` and `control` into synonyms
 - DO use separate working directories when agents or variants share a
   filesystem
 - DO keep the candidate and control task prompts byte-identical
@@ -87,6 +97,8 @@ Keep this skill and every evaluation artifact out of the subject's context.
 | Thought | Reality |
 |---|---|
 | "The task prompt does not mention testing, so the run is blind" | Parent turns, skill instructions, paths, diffs, and repository files can reveal the comparison before the task begins. Inventory the full subject-visible context. |
+| "The task name and directory are only runner metadata" | Task titles, agent names, commands, and paths appear in the subject trace and UI. Give them ordinary, condition-independent values before launch. |
+| "Renaming `candidate` to `experimental` is neutral enough" | A synonym still identifies the condition. Generate opaque names independently of the variant. |
 | "I need to tell the subject which edited skill to read" | That measures adherence after explicit activation. Use production routing or report the run as unblinded. |
 | "The agent noticed the test but still behaved correctly" | Recognition changes behaviour. The run is contaminated and carries no evidence about ordinary use. |
 | "I will tell it not to say that it is being evaluated" | The warning is an evaluation signal. Remove the leak instead. |
