@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Findings"
+  short_description: "Assess and track review findings without blocking"
+  default_prompt: "Use $review-findings to assess, report, and track these findings while continuing authorized work."
