@@ -95,10 +95,11 @@ email after the product write succeeds.
         │
         └── retry state and terminal failure
 
-The outbox owns the atomic boundary between the product write and delivery
-intent. The dispatcher owns retry policy and provider-independent status.
-Provider adapters translate requests and receipts but do not decide whether to
-retry.
+- **Outbox:** Owns the atomic boundary between the product write and delivery
+  intent.
+- **Dispatcher:** Owns retry policy and provider-independent status.
+- **Provider adapters:** Translate requests and receipts without deciding
+  whether to retry.
 
 ## Relationship to existing notifications
 
@@ -109,9 +110,9 @@ boundary. This keeps channel policy shared without putting external I/O back in
 the API request.
 ```
 
-The flow establishes the topology first. The following paragraphs explain
-ownership and the nearest existing path instead of listing job types, handler
-names, or changed files.
+The flow and responsibility bullets carry the runtime model at scan depth. The
+relationship paragraph answers a separate review question instead of listing
+job types, handler names, or changed files.
 
 ## Compatibility and release path
 

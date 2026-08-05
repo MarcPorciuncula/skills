@@ -17,6 +17,10 @@ A useful PR body is a standalone review brief. It gives the reader one coherent
 model of the change at the level that matters for review. Select that model
 before choosing sections or explaining implementation.
 
+Optimize for a human reviewer's scan, not for preserving every fact as future
+context. Put the load-bearing model in the opening, headings, diagrams, and
+bullet leads. Leave supporting detail in the diff or linked specification.
+
 ## Classify the primary change
 
 Classify the PR before drafting. Diff size and implementation complexity do not
@@ -152,11 +156,14 @@ Cold-read the proposed PR title and body below. Do not inspect the repository,
 PR, ticket, or diff yet.
 
 Return:
-- one-sentence interpretation of the net change and motivation;
+- scan-only takeaway after reading the title, opening, headings, diagrams, and
+  bullet leads without reading prose paragraphs in full;
+- full-read interpretation of the net change and motivation;
 - the three to five facts or relationships you retained;
 - the apparent functional or non-functional register;
-- sections to keep, cut, combine, rewrite, or visualize;
+- sections to keep, cut, combine, rewrite, or express as a plain-text diagram;
 - duplicated ideas and details that belong in the diff;
+- terms that require ticket, specification, or branch-history context;
 - PASS or FAIL against the cold-read checks in the writing-pr-bodies skill.
 ```
 
@@ -213,7 +220,8 @@ nearest existing implementation. State what is shared, what differs, and why.
 | Parallel screens, surfaces, or affordances | Bullets or a compact table |
 | Component topology, branching flow, or state movement | Plain-text diagram |
 | Temporal procedure | Numbered sequence |
-| Responsibility ownership | Table |
+| Responsibility ownership | Labels in a plain-text diagram or parallel bullets |
+| Parallel guarantees, modes, conditions, or exceptions | Bullets |
 | Small API delta | Before/after snippet |
 
 Use one primary representation for one model. Do not repeat the same model as a
@@ -225,6 +233,11 @@ When prose asks the reader to connect three or more components or branching
 states, replace it with a plain-text diagram. Use subject-specific
 headings such as `Changed surfaces`, `Runtime flow`, `Permission model`,
 `Compatibility`, or `Release path`. Avoid a generic `Design` section.
+
+After a diagram, use at most one short prose paragraph in the same section. Put
+additional responsibilities, guarantees, or constraints into parallel bullets
+or a section that answers a different reviewer question. Do not follow a visual
+with a prose walkthrough of the same model.
 
 ### Include only consequential detail
 
@@ -245,6 +258,11 @@ Put rationale beside the boundary or behaviour it explains. Mention an
 alternative only when another plausible design would establish a different
 ownership, runtime, compatibility, product, or operational boundary.
 
+Replace plan-only phase, checkpoint, workstream, or initiative labels with the
+concrete capability or boundary they denote. Keep a label only when it is an
+established code or product term, and define it on first use. A linked
+specification does not make its private vocabulary available to a cold reader.
+
 ### Release and review constraints
 
 State rollout order, migration behaviour, version skew, permissions, safety
@@ -264,6 +282,9 @@ apply.
 
 - Use precise domain language after introducing the concept.
 - Prefer plain sentences, short paragraphs, and concrete subjects.
+- Keep one idea in each paragraph.
+- Do not place three consecutive prose paragraphs under one heading. Cut them, convert parallel facts to bullets, or add a heading only for a distinct reviewer question.
+- When a paragraph contains three or more parallel responsibilities, guarantees, modes, conditions, or exceptions, use bullets or a diagram.
 - Use bullets only for genuinely parallel items.
 - Mention secondary changes only when they have a behavioural, API, review, or release consequence.
 - Omit file inventories, identifier inventories, generated-file recaps, routine test lists, diff statistics, process narration, and branch history.
@@ -292,20 +313,22 @@ a rewrite.
 Apply these checks to the title and body together. A substantial body cannot be
 posted with a failed check.
 
-1. Read only the title, opening, and headings. State the net change and why it exists.
-2. Reconstruct the three to five facts or relationships the body teaches. They must form one model and match the intended reader model.
+1. Scan only the title, opening, headings, diagrams, and bullet leads. State the net change, motivation, and core model without reading prose paragraphs in full. Recast the body when load-bearing facts are invisible at scan depth.
+2. Reconstruct the three to five facts or relationships the full body teaches. They must form one model and match the intended reader model.
 3. Confirm that the body keeps the primary functional or non-functional register after the opening.
 4. For a functional PR, enumerate the changed surfaces and their principal affordances from the body alone.
 5. Name the distinct reviewer question answered by each section. Cut or combine a section with no distinct answer.
-6. Remove implementation details that the diff exposes without changing reviewer understanding or review strategy.
-7. Consolidate any capability, flow, or boundary explained in more than one place.
-8. Replace prose reconstruction of topology or branching state with a plain-text diagram.
-9. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
-10. Remove `How to test` when it only restates the body or routine CI.
+6. Replace terminology that depends on the ticket, specification, branch history, or implementation discussion.
+7. Remove implementation details that the diff exposes without changing reviewer understanding or review strategy.
+8. Consolidate any capability, flow, or boundary explained in more than one place.
+9. Replace prose reconstruction of topology or branching state with a plain-text diagram.
+10. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
+11. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
+12. Remove `How to test` when it only restates the body or routine CI.
 
-When a functional body exceeds 400 words before references, do not post until
-the cold-read report confirms that every section answers a distinct reviewer
-question and cannot be communicated more directly.
+When a body exceeds 300 words before references, do not post until the
+cold-read report confirms that every section answers a distinct reviewer
+question and the same model cannot be communicated more directly.
 
 | Failure pattern | Required response |
 |---|---|
@@ -313,8 +336,22 @@ question and cannot be communicated more directly.
 | Many accurate details but no retained model | Recast the body around the reader-model facts |
 | The same capability appears in several sections | Keep one representation and remove the repeats |
 | Prose makes the reader reconstruct connected components or branching states | Replace it with a plain-text diagram |
+| A diagram is followed by several paragraphs of responsibilities or guarantees | Move parallel facts into diagram labels or bullets and keep one implication paragraph |
+| Several independent guarantees share one prose paragraph | Convert them to bullets, even when the paragraph is short |
+| A phase or checkpoint name only makes sense after reading a linked document | Name the concrete capability or boundary instead |
 | A mechanism is named only because it appears in the diff | Remove it |
 | Test steps repeat the feature inventory | Remove the section or keep only PR-specific reproduction needs |
+
+## Red flags
+
+| Thought | Reality |
+|---|---|
+| "This detail may help a later agent understand the branch" | The diff and specification preserve detail. The PR body must first work for a human reviewer. |
+| "Each component deserves a paragraph because the architecture is substantial" | Encode connected responsibilities in a diagram or parallel bullets. Paragraph volume does not make the model clearer. |
+| "These guarantees fit in one short paragraph" | Length is not scanability. If the reader can enumerate the facts, use bullets. |
+| "The phase name is defined in the linked specification" | The body is standalone. Use the concrete scope unless the term is already established outside the specification. |
+
+**Violating the letter of these rules is violating the spirit of them.**
 
 Post the revised draft only after the blind report and evidence check pass. Then
 verify that the live title and body match the reviewed artifact. Do not narrate
