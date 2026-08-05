@@ -27,6 +27,8 @@ inspect the customer context, reply, and leave internal notes from one area.
 
 ## Changed surfaces
 
+The feature changes three reviewable surfaces:
+
 - **Inbox:** Filters conversations by assignment and status, supports bulk
   assignment, and keeps the current selection while filters change.
 - **Conversation:** Shows the message history beside customer and account
@@ -54,6 +56,8 @@ version without changing the versions already assigned to past decisions.
 
 ## Changed surfaces
 
+The feature changes three administrator-facing surfaces:
+
 - **Policy list:** Creates policies and opens either the current published
   version or a new draft when no version exists.
 - **Policy editor:** Adds, removes, and reorders rules; validates incomplete or
@@ -62,6 +66,8 @@ version without changing the versions already assigned to past decisions.
   editable draft.
 
 ## Publishing boundary
+
+Publishing follows one immutable-version path:
 
     Policy list ──► Local draft ── validate ──► New published version
                          ▲                              │
@@ -85,6 +91,8 @@ email after the product write succeeds.
 
 ## Runtime flow
 
+The request and delivery paths separate at the transaction boundary:
+
     API handler
         │ commits state + email intent
         ▼
@@ -94,6 +102,8 @@ email after the product write succeeds.
     email dispatcher ──► provider adapter ──► delivery receipt
         │
         └── retry state and terminal failure
+
+Responsibility stays divided along that flow:
 
 - **Outbox:** Owns the atomic boundary between the product write and delivery
   intent.
@@ -110,9 +120,10 @@ boundary. This keeps channel policy shared without putting external I/O back in
 the API request.
 ```
 
-The flow and responsibility bullets carry the runtime model at scan depth. The
-relationship paragraph answers a separate review question instead of listing
-job types, handler names, or changed files.
+The lead-ins make the diagram and responsibility bullets part of one readable
+account. The flow remains visible at scan depth, while the relationship
+paragraph answers a separate review question instead of listing job types,
+handler names, or changed files.
 
 ## Compatibility and release path
 
