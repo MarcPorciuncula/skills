@@ -69,10 +69,14 @@ Classify the primary change before writing:
 
 When the PR changes an interface, request or response, data schema, event,
 state model, protocol, or developer contract, show the relevant before-and-after
-shape. Name the central changed contracts and make their fields, methods,
-types, ownership, and invariants visible. Use a compact snippet, field map,
-table, or diagram. Select the smallest set of contracts that exposes the net
-change and omit unchanged members when that keeps the comparison clear.
+shape. When a changed contract is the PR's primary change or the user's
+question, make its declaration a primary part of the explanation. Show its
+relevant before-and-after members even when this closely mirrors the diff.
+
+Name the central changed contracts and make their fields, methods, types,
+ownership, and invariants visible. Use a compact snippet, field map, table, or
+diagram. Select the smallest set of contracts that exposes the net change and
+omit unchanged members when that keeps the comparison clear.
 
 A table of conceptual areas and prose summaries does not show a contract. Do
 not make the reviewer reconstruct member-level changes from prose or the diff.
@@ -112,6 +116,8 @@ Reinvestigate before answering when any applicable check fails:
   behaviour or boundary differs.
 - Every consequential claim is supported by the diff, surrounding code, or
   explicit author context.
+- When a contract is the primary change or question, the explanation includes
+  its relevant before-and-after declaration, not only a conceptual summary.
 - For every central changed contract, the reviewer can identify the relevant
   signature, members, types, ownership, or invariants without reopening the
   diff; naming the contract alone does not satisfy this check.
