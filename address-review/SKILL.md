@@ -89,7 +89,7 @@ Read the current state of the code at each commented location. For each comment,
 - **Outdated / already fixed:** The comment is on code that has already changed or the concern has been addressed in a subsequent commit. Recommend dismissing.
 - **Question or discussion:** The reviewer is asking why something was done a certain way, or making a suggestion that shouldn't be adopted. Draft a clear explanation the user can post as a reply — explain the decision and the reasoning behind it.
 - **Valid concern — simple fix:** A straightforward change like a naming improvement, missing error check, unused import, formatting. These can be batched together in one commit.
-- **Valid concern — behavioural change or test gap:** The comment reveals a real issue that requires a change in behaviour or a gap in test coverage. Flag that this will follow the red-green testing workflow during execution. **Before categorizing a comment as a test gap, run it through "Test-gap claims as a source of false positives" below — not every request for a test is a valid gap.**
+- **Valid concern — behavioural change or test gap:** The comment reveals a real issue that requires a change in behaviour or a gap in test coverage. Before categorising a test gap, read `../testing/SKILL.md` and apply its test-admission criteria.
 - **Pedantic:** Technically accurate but adds coupling, complexity, or churn for negligible benefit. Common shapes:
   - Comments about intentional design trade-offs (colocation, inlined patterns)
   - Micro-optimizations outside hot paths
@@ -120,31 +120,10 @@ Common shapes:
 
 ### Test-gap claims as a source of false positives
 
-Reviewers — especially automated ones — frequently ask for tests around recent changes. A test is a permanent maintenance commitment, so not every test-gap claim earns one — run the gates below before categorizing as **Valid concern — test gap**.
-
-The claim is valid only if all gates pass. Any single fail → categorize as Pedantic instead.
-
-1. **Severity gate — does the underlying fix earn a permanent test?**
-   - **Pass:** The fix addresses a correctness bug with user-visible blast radius (crash, data loss, wrong result, auth bypass), or fills a functional gap that other code will depend on.
-   - **Fail → Pedantic:** The fix is an optimization, a performance improvement, or a "more-correct" cleanup.
-
-2. **Subject gate — would the test exercise our logic, or a library's?**
-   - **Pass:** The behaviour involves non-trivial transformation, branching, state, or data shape that we wrote.
-   - **Fail → Pedantic:** The behaviour is the trivial composition of a well-tested library primitive (e.g. an rxjs operator, a TanStack Query option, a hook from a vetted library). The test would re-assert the library's contract, not ours.
-
-3. **Category gate — is the behaviour in a class that's brittle and expensive to test in product code?**
-   - **Pass:** The behaviour is deterministic and doesn't depend on timing, scheduling, or concurrent ordering primitives.
-   - **Fail → Pedantic:** The behaviour depends on fine timing (debounce/throttle windows, animation frames), concurrency (race conditions, async ordering, scheduling), or lifecycle ordering (process signals, teardown sequencing). Tests in this class tend to be CI-flaky for low return. **Exception:** systems code where this category *is* the deliverable (databases, schedulers, distributed locks, kernels).
-
-4. **Visibility gate — could a code reviewer spot the regression by reading the change?**
-   - **Pass:** The regression is non-obvious from the diff alone — hidden behind layers of state, indirection, or interaction.
-   - **Fail → Pedantic:** The change is small and its behaviour is visible at a glance. A test would mirror the source without catching anything review wouldn't.
-
-5. **Harness gate — is the test setup proportionate to the assertion?**
-   - **Pass:** The assertion does the heavy lifting; setup is incidental.
-   - **Fail → Pedantic:** The harness (mocks, providers, fake timers, scaffolding) dwarfs the assertion. The test mostly verifies that the harness was set up correctly.
-
-Common shape that fails this filter: a bot asks for a test of a debounce/throttle window or other coalescing behaviour added as an optimization. Severity gate fails (it's an optimization, not a bug fix), subject gate fails (the behaviour is a library operator), category gate fails (fine timing in product code). Single comment, three failures — solidly Pedantic.
+Read `../testing/SKILL.md` before classifying a request for missing coverage.
+Categorise the comment as **Valid concern — test gap** only when the proposed
+test passes admission. Categorise a failed admission claim as **Pedantic** and
+name the failed criterion in the recommendation.
 
 ### Present the table
 
@@ -184,7 +163,7 @@ This is advisory only. The user decides whether to proceed.
 Work through the approved items:
 
 1. **Batch simple fixes** (naming, formatting, missing checks, etc.) into a single commit. Commit and push.
-2. **Behavioural changes and test gaps:** write a failing test first to confirm the gap, then implement the fix. Since review comment fixes are typically small in scope, commit the test and implementation together rather than in separate commits. Push after committing.
+2. **Behavioural changes and test gaps:** load `../testing/SKILL.md` before editing tests or production code. Follow its admission and red-green decision. Since review comment fixes are typically small in scope, commit the passing test and implementation together unless the user explicitly requested committed red-green history. Push after committing.
 3. **Questions/discussion items and out-of-scope items** are skipped during execution — the user handles replies and follow-ups.
 4. **Outdated/already-fixed items** need no action.
 

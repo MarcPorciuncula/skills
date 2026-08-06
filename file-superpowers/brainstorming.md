@@ -124,7 +124,7 @@ Surface choices that are genuinely open and not already determined by codebase p
 - A decision with meaningful trade-offs between valid implementations.
 
 **What does NOT belong here:**
-- Process defaults: TDD approach, commit strategy, task tracking. State these as declarations ("I'll follow red-green per the TDD skill"), not questions.
+- Process defaults: test admission, commit strategy, task tracking. State these as declarations ("I'll load the testing skill before behavioural implementation"), not questions.
 - Codebase patterns: if existing code establishes the convention, follow it.
 - Confirmations of recommendations already made: proceed; the user will push back if they disagree.
 
@@ -171,7 +171,7 @@ How to implement it. Key decisions, design rationale.
 - path/to/file/b.ts (modify)
 
 ### Done criteria
-- Unit tests pass
+- Test decision recorded; selected verification passes
 - <observable behavior>
 
 ## Task 2: <title>
@@ -191,7 +191,7 @@ Per-task elements:
 Each task description must include:
 - **Scope:** What this task does and doesn't cover
 - **Approach:** How to implement it (files to create/modify, key decisions)
-- **Files:** Exact paths to create, modify, and test
+- **Files:** Exact paths to create or modify, including admitted tests
 - **Done criteria:** What "complete" looks like, observable / verifiable
 
 Quality requirements:

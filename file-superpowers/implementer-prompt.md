@@ -14,7 +14,7 @@ The task spec(s) below are the authoritative scope for your work. Implement exac
 
 Read these files before doing anything else. Do not proceed from memory or summary — read the current contents.
 
-- `<skill-dir>/tdd.md`
+- `<skill-dir>/../testing/SKILL.md`
 - `<skill-dir>/verification.md`
 - `<skill-dir>/condition-based-waiting.md` (if applicable)
 
@@ -51,10 +51,10 @@ Read the spec only if your task spec references something whose design context y
 
 When done, report exactly one status: DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED.
 
-Include: summary of work completed, test results, self-review notes, commit SHA(s).
+Include: summary of work completed, test decision and verification results, self-review notes, commit SHA(s).
 
 For DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED: what's blocking or unclear.
 
 ## Process
 
-Follow TDD per `tdd.md`. Verify per `verification.md` before reporting DONE. State the scope you verified at when reporting status (e.g. "tests pass for `pkg/widget` (8/8)").
+Follow the test decision from `../testing/SKILL.md`. Verify per `verification.md` before reporting DONE. State the scope you verified at when reporting status (e.g. "tests pass for `pkg/widget` (8/8)").

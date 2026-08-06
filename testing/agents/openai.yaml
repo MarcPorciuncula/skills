@@ -1,0 +1,4 @@
+interface:
+  display_name: "Testing"
+  short_description: "Choose valuable tests and run red-green"
+  default_prompt: "Use $testing to decide what tests this change warrants and implement them with the appropriate workflow."

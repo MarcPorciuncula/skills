@@ -8,8 +8,8 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 - **design-and-change-proposals** — For architectural choices, state responsibility, boundary, and a rejected alternative. Skip when ownership is localized and unambiguous.
 - **visual-explanations** — Prefer ASCII diagrams, tables, and call trees for structural or relational explanations. Always applicable.
 - **attributing-content** — Label AI-authored GitHub/Linear comments, except primary-content fields, and preserve human-overview sections. Contains a `{{USER_NAME}}` placeholder. Skip for users who do not collaborate on shared issue trackers.
-- **writing-tests** — Justify a test's maintenance cost and identify an assertion that would catch the bug. Applies when the agent writes tests.
-- **frontend-tests** — Prefer decomposition and pure-function tests over component harnesses. Skip for backend-only work.
+- **writing-tests** — Load the canonical testing skill before behavioural implementation or test edits. Applies when the `testing` skill is installed.
+- **frontend-tests** — Load the testing skill's frontend path for component, route, hook, JSX, or browser tests. Skip for backend-only work.
 - **code-removal-and-refactoring** — Remove code atomically inside one runtime boundary; preserve compatibility across deployments, transports, and persisted data. Applies to internal codebases; less relevant for public-API maintenance.
 - **refactoring-and-cleanup** — Proceed with user-directed cleanup while keeping unsolicited cleanup focused. Always applicable.
 - **worktrees** — Keep the repo root on `main` (no other-branch checkouts, even read-only); do all work on other branches in `.claude/worktrees/<branch>/`. Most relevant when multiple agents or sessions share a single clone; skip for users who work from a single checkout.

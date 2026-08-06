@@ -13,13 +13,13 @@ Agent tool:
     ## Before You Do Anything Else
 
     Read these files now, before reading the rest of this prompt:
-    - `<skill-dir>/tdd.md` — Required TDD process. Follow it exactly.
+    - `<skill-dir>/../testing/SKILL.md` — Required test-admission and implementation workflow.
     - `<skill-dir>/verification.md` — Verification discipline and scope of verification.
 
     [Replace <skill-dir> with the absolute path to the dex-superpowers skill directory.]
 
     Do not proceed from a summary or memory of what these files contain.
-    Read them. The process described in tdd.md is non-negotiable.
+    Read them. Record the testing skill's decision before editing tests or production code.
 
     ## Task Description
 
@@ -65,7 +65,7 @@ Agent tool:
 
     Once you're clear on requirements:
     1. Implement exactly what the task specifies
-    2. Write tests following TDD (see tdd.md for the full process: understand the change, examine existing tests, plan verification strategy, then red-green-refactor)
+    2. Follow the decision from `../testing/SKILL.md`, including `No test` when admission fails
     3. Verify implementation works (see `verification.md` "Scope of verification"). State the scope you verified at when reporting status (e.g. "tests pass for `pkg/widget` (8/8)").
     4. Commit your work
     5. Self-review (see below)
@@ -128,9 +128,9 @@ Agent tool:
     - If the spec required changing consumers, did I update ALL of them?
 
     **Testing:**
-    - Do tests actually verify behavior (not just mock behavior)?
-    - Did I follow TDD?
-    - Are tests comprehensive?
+    - Did I record and follow the test-admission decision?
+    - Does each retained test distinguish a plausible product bug?
+    - Did I remove or consolidate redundant related coverage?
 
     If you find issues during self-review, fix them now before reporting.
 
@@ -139,7 +139,7 @@ Agent tool:
     When done, report:
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - What you implemented (or what you attempted, if blocked)
-    - What you tested and test results
+    - Test decision and verification results
     - Files changed
     - Self-review findings (if any)
     - Any issues or concerns

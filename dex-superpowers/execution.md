@@ -4,7 +4,7 @@ Execute dex tasks by dispatching subagents, with a unified review after each bat
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-**Subagent preparation:** Subagents do not inherit your skills or session context. Every subagent prompt you construct MUST include an instruction to read the relevant skill files from this directory before starting work. At minimum, implementer subagents must read `tdd.md`. Include the absolute path to this skill directory in the prompt so the subagent can find the files. See `implementer-prompt.md` for the required prep section.
+**Subagent preparation:** Subagents do not inherit your skills or session context. Every implementer prompt must include `../testing/SKILL.md` and the relevant phase files. Include the absolute path to this skill directory so the subagent can resolve them. See `implementer-prompt.md` for the required prep section.
 
 **Core principle:** Batch related tasks → single implementer → unified review (spec + quality in one pass) = high quality, less overhead
 
@@ -97,7 +97,7 @@ For each batch:
    - The implementer's status report
    - Base SHA (from step 2) and head SHA (current HEAD after implementer committed)
    - The reviewer runs `git diff` itself — do NOT read the diff into your own context
-6. **If reviewer finds issues:** implementer fixes, reviewer re-reviews
+6. **If reviewer finds issues:** read `../review-findings/SKILL.md`, publish the dispositions, then have the implementer fix `Fix now` findings and the reviewer re-review
 7. **Mark complete:** `dex complete <id> --result "What was implemented, key decisions, test results" --commit <sha>` for each task in the batch
 
 ## Context Pre-Curation
@@ -155,7 +155,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 ## After All Tasks
 
 1. **Dispatch final cross-cutting reviewer** with the full branch diff range. Use `reviewer-prompt.md`.
-2. **Address any issues** from the cross-cutting review.
+2. **Assess review findings.** Read `../review-findings/SKILL.md`, publish the dispositions, and address `Fix now` items.
 3. **Dispatch adversarial verifier** with the same base/head SHAs and a brief summary of the work. Use `adversarial-prompt.md`.
 4. **Address any breakage** the adversarial pass found. Re-dispatch implementer to fix; re-run the adversarial pass against the new HEAD.
 5. **Load `finishing.md`** to complete the branch.
@@ -235,12 +235,12 @@ Adversarial verifier:
 **Never:**
 - Start implementation on main/master branch without explicit user consent
 - Skip review for any batch
-- Proceed with unfixed issues
+- Proceed with unresolved `Fix now` findings
 - Give subagents more dex IDs than they need (they'll wander — scope to exactly the relevant tasks)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found spec issues = not done)
-- Skip review loops (reviewer found issues = implementer fixes = review again)
+- Skip review loops (`Fix now` findings = implementer fixes = review again)
 - Let implementer self-review replace actual review (both are needed)
 - Move to next batch while review has open issues
 - Read diffs or file contents into your own context to relay to subagents (point, don't read)
@@ -251,7 +251,8 @@ Adversarial verifier:
 - Don't rush them into implementation
 
 **If reviewer finds issues:**
-- Implementer (same subagent) fixes them
+- Read `../review-findings/SKILL.md` and publish the dispositions
+- Implementer (same subagent) fixes `Fix now` findings
 - Reviewer reviews again
 - Repeat until approved
 - Don't skip the re-review
@@ -263,7 +264,7 @@ Adversarial verifier:
 ## Advantages
 
 **vs. Manual execution:**
-- Subagents follow TDD naturally
+- Subagents load test admission at the implementation boundary
 - Fresh context per batch (no confusion)
 - Parallel-safe (subagents don't interfere)
 - Subagent can ask questions (before AND during work)

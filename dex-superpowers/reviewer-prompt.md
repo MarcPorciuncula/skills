@@ -61,6 +61,9 @@ Agent tool:
 
     Don't re-execute the implementer's verification. If the diff suggests it was wrong or insufficient, flag it as a finding.
 
+    Before making any testing or coverage finding, read
+    `<skill-dir>/../testing/SKILL.md` and apply its admission criteria.
+
     ## Step 2: Spec Compliance
 
     Compare the diff against the task spec, requirement by requirement:
@@ -103,10 +106,10 @@ Agent tool:
     - Performance or security concerns?
 
     **Testing:**
-    - Tests actually test logic (not mocks)?
-    - Edge cases covered?
-    - Integration tests where needed?
-    - All tests passing?
+    - Does every retained test distinguish a plausible product defect?
+    - Does the recorded test decision remove or consolidate related redundancy?
+    - Does any proposed test gap pass test admission?
+    - Did the selected targeted verification pass?
 
     **Production readiness:**
     - Migration strategy (if schema changes)?
@@ -129,7 +132,7 @@ Agent tool:
 
     **Issues:**
     - **Critical** (must fix): [Bugs, security, data loss, broken functionality]
-    - **Important** (should fix): [Architecture, missing error handling, test gaps]
+    - **Important** (should fix): [Architecture, missing error handling, admitted test gaps]
     - **Minor** (nice to have): [Style, optimization, documentation]
 
     For each issue: file:line, what's wrong, why it matters, how to fix.

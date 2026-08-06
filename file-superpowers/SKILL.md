@@ -37,7 +37,7 @@ Read the sub-document for your current phase before taking action. Do not procee
 |---------------------|-----------------|
 | Start new feature work, explore requirements, design something | `brainstorming.md` |
 | Execute tasks with subagents | `execution.md` |
-| Write or run tests (TDD red-green-refactor) | `tdd.md` |
+| Change behaviour or create or modify tests | `../testing/SKILL.md` |
 | Debug a bug, test failure, or unexpected behavior | `debugging.md` |
 | Claim work is done, commit, create a PR | `verification.md` |
 | Request or receive code review | `code-review.md` |
@@ -65,7 +65,7 @@ How to implement it. Key decisions, design rationale.
 - path/to/file/b.ts (modify)
 
 ### Done criteria
-- Unit tests pass
+- Test decision recorded; selected verification passes
 - <observable behavior>
 
 ## Task 2: <title>

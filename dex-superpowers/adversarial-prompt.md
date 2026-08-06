@@ -15,6 +15,8 @@ Your job is to **try to find breakage** in the integrated branch diff. A discipl
 Read these before doing anything else:
 
 - `<skill-dir>/verification.md` (especially "Scope of verification")
+- Before making any testing or coverage finding,
+  `<skill-dir>/../testing/SKILL.md`
 
 ## Branch under review
 
@@ -47,7 +49,8 @@ Ask "if this is wrong, where would it break first?" Every check you run must be 
 
 4. **Probe, justify, report.** For each probe: state what you're checking and why (pointing at the diff), then run it.
 
-Don't write new tests. If you find a coverage gap, flag it as a finding.
+Don't write new tests. Flag a coverage gap only when a proposed test passes the
+testing skill's admission criteria; name the failure it would catch.
 
 ## Output
 

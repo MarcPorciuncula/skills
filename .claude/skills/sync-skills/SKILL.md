@@ -56,7 +56,7 @@ Show a summary table:
 
 | Skill | Status | Recommendation |
 |-------|--------|----------------|
-| red-green | Symlinked | — |
+| testing | Symlinked | — |
 | update-branch | Identical (copied) | Convert to symlink |
 | clean-workspaces | Different | Repo is newer → update machine, then symlink |
 | my-custom-skill | Machine only | Add to repo? |
