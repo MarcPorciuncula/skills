@@ -2,8 +2,8 @@
 
 Use a throughput implementer only when the work is already an exact
 transformation with deterministic verification. Use a balanced implementer when
-the worker must choose behavior, interpret an incomplete mapping, or design the
-local implementation.
+the implementer must choose behavior, interpret an incomplete mapping, or
+design the local implementation.
 
 Add these facts to the normal handoff:
 
@@ -13,11 +13,11 @@ Add these facts to the normal handoff:
 - The completeness search, compile, generation, or targeted test evidence
 - Cases known to be outside the transformation
 
-When a signature or API migration may not apply uniformly, ask the implementer
-to enumerate consumers before editing and confirm that the prescribed mapping
-fits each one.
+Before dispatching a signature or API migration that may not apply uniformly,
+tell the implementer to enumerate consumers and confirm that the prescribed
+mapping fits each one.
 
-Stop the transformation when:
+Tell the implementer to stop and report when:
 
 - A required value is unavailable from the prescribed source
 - Existing behavior has no defined representation in the new contract
@@ -27,12 +27,12 @@ Stop the transformation when:
 - Verification exposes a different failure class rather than another instance
   of expected mechanical fallout
 
-Do not invent a default, make a required value optional, add an adapter, or
-redesign the contract. Preserve useful work and report the exact location,
-observed facts, evident options, verification state, and worktree state to the
-coordinator.
+Tell the implementer not to invent a default, make a required value optional,
+add an adapter, or redesign the contract. Require it to preserve useful work
+and report the exact location, observed facts, evident options, verification
+state, and worktree state.
 
-Routine imports, formatting, caller updates, and compile fallout remain with the
+Leave routine imports, formatting, caller updates, and compile fallout with the
 implementer when they follow directly from the prescribed transformation.
 
 ## Handle an exception

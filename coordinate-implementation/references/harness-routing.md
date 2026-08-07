@@ -1,8 +1,8 @@
 # Harness routing
 
-Resolve the role to a concrete model from the live harness surface. The names
-below are family examples, not permission to request a model the harness does
-not expose.
+Resolve the role to a concrete model from the live harness surface. Treat the
+names below as family examples. Do not request a model the harness does not
+expose.
 
 ## Model roles
 
@@ -31,21 +31,20 @@ creation tool, currently exposed as `create_thread` in the Codex app. Do not use
 4. Title it `MANAGED IMPLEMENTER — <scope> — use coordinator`.
 5. Use the thread messaging tool for decisions and corrections, the thread
    wait tool for progress, and targeted thread reads for evidence or questions.
-6. Keep the user in the coordinator task. If a direct human message reaches the
-   managed task, the implementer redirects the user to the coordinator and
-   waits.
+6. Keep the user in the coordinator task. In the initial handoff, instruct the
+   implementer to redirect any direct human message to the coordinator and
+   wait.
 7. When follow-up calls support a model override, change models only for the
    work unit that needs it. Keep the same task and worktree.
 
 If top-level thread creation, explicit model selection, follow-up, or waiting is
-unavailable, stop and report the missing capability. A scoped Codex subagent is
-not a fallback.
+unavailable, stop and report the missing capability. Do not substitute a scoped
+Codex subagent.
 
 ## Claude Code
 
-Use a scoped subagent with independent context and explicit model control. A
-custom implementer definition is optional; the invocation still names the
-model explicitly.
+Use a scoped subagent with independent context and explicit model control.
+Create a custom implementer definition only when useful.
 
 1. Inspect the available agent definitions, model aliases, permissions, and
    effective model overrides.
