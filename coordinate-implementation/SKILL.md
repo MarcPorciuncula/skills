@@ -17,15 +17,6 @@ code changes to a separate implementer agent.
 At the start, tell the user that implementation is delegated and interaction
 remains in the coordinator.
 
-## Iron law
-
-**DO NOT SEND IMPLEMENTATION WORK UNTIL YOU HAVE CHOSEN HOW TO CREATE AND
-CONTROL THE IMPLEMENTER, SELECTED THE CONCRETE MODEL, AND INCLUDED STOPPING
-CONDITIONS IN THE INITIAL MESSAGE.**
-
-Set the model explicitly. Do not use a tool that prevents model selection,
-follow-up messages, or progress checks.
-
 ## Responsibility boundary
 
 Use this boundary to decide what to retain and what to delegate:
