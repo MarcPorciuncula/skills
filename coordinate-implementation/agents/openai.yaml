@@ -1,6 +1,6 @@
 interface:
   display_name: "Coordinate Implementation"
-  short_description: "Route implementation through a managed worker"
-  default_prompt: "Use $coordinate-implementation to stay as coordinator and drive this change through a managed Codex task, using Luna for mechanical work or Terra for routine implementation unless I specify otherwise."
+  short_description: "Coordinate through a managed implementer"
+  default_prompt: "Use $coordinate-implementation to retain requirements, design, and acceptance while Terra handles routine implementation or Luna handles an already-exact mechanical change."
 policy:
   allow_implicit_invocation: false
