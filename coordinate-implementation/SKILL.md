@@ -10,33 +10,34 @@ description: >-
 
 # Coordinate Implementation
 
-Retain user intent, consequential decisions, and acceptance in the coordinator.
-Delegate repository investigation and local code realization to a managed
-implementer.
+Retain user intent, domain and architecture decisions, and acceptance in the
+coordinator. Delegate repository investigation, implementation details, and
+code changes to a separate implementer agent.
 
 At the start, tell the user that implementation is delegated and interaction
 remains in the coordinator.
 
 ## Iron law
 
-**DO NOT DISPATCH AN IMPLEMENTER UNTIL YOU HAVE SELECTED THE CONTROL SURFACE
-AND CONCRETE MODEL AND INCLUDED STOPPING CONDITIONS IN THE HANDOFF.**
+**DO NOT SEND IMPLEMENTATION WORK UNTIL YOU HAVE CHOSEN HOW TO CREATE AND
+CONTROL THE IMPLEMENTER, SELECTED THE CONCRETE MODEL, AND INCLUDED STOPPING
+CONDITIONS IN THE INITIAL MESSAGE.**
 
-Set the model explicitly. Do not substitute a surface that lacks model control,
-follow-up, or observable status.
+Set the model explicitly. Do not use a tool that prevents model selection,
+follow-up messages, or progress checks.
 
 ## Responsibility boundary
 
 Use this boundary to decide what to retain and what to delegate:
 
-| Coordinator | Managed implementer |
+| Coordinator | Implementer agent |
 |---|---|
 | User communication, priorities, and scope | Repository and dependency investigation |
 | Domain semantics and observable behavior | Implementation approach within those decisions |
 | Architecture, ownership, and compatibility | Naming, imports, function boundaries, and local patterns |
-| Rollout and cross-system tradeoffs | Debugging and routine implementation fallout |
-| Product and domain acceptance | Proportional tests, validation, and self-review |
-| Worktree, branch, PR, and external collaboration | Commits only when the handoff authorizes them |
+| Rollout and cross-system tradeoffs | Debugging and routine fixes caused by the change |
+| Product and domain acceptance | Tests and checks appropriate to the change, plus self-review |
+| Worktree, branch, pushes, PRs, review replies, and issues | Commits only when the coordinator allows them in the initial message |
 
 Read code only to answer the user, make a domain or architectural decision, or
 assess the delivered behavior. Do not inspect code solely to prepare an
@@ -47,29 +48,30 @@ about it in the coordinator. Treat identity, ordering, graph structure,
 persistence, and concurrency semantics as coordinator concerns when they define
 the system's behavior.
 
-Keep edits, routine fixes, tests, and code-quality cleanup in the implementer.
-Send a focused correction when a change looks small instead of taking over the
-edit.
+Keep edits, routine fixes, tests, and code-quality cleanup in the implementer
+agent. Send a focused correction when a change looks small instead of taking
+over the edit.
 
-## Create the managed implementer
+## Create the implementer agent
 
-Use a delegation surface only when it provides:
+Before choosing how to create the implementer, verify that the available tool
+provides:
 
 - Explicit concrete model selection
-- Explicit reasoning effort when the harness supports it
+- Explicit reasoning effort when the available tools support it
 - The tools and permissions required for implementation
-- Isolated implementation context
+- A context separate from the coordinator
 - Access to the assigned checkout or worktree
-- Follow-up or resume support
+- Follow-up messages or resuming the same agent
 - Observable progress and completion status
-- Coordinator control without direct user steering
+- Coordinator control without requiring the user to message the implementer
 
-Read [references/harness-routing.md](references/harness-routing.md) before the
-first dispatch.
+Read [Choose the implementer tool and model](references/harness-routing.md)
+before creating the implementer agent.
 
-Run one managed implementer at a time against a worktree. Reuse it while the
-worktree and implementation outcome remain coherent. Do not run competing
-workers against the same files.
+Run one implementer agent at a time against a worktree. Reuse the same agent
+while it works toward the same requested outcome in that worktree. Do not run
+competing agents against the same files.
 
 Use the model the user requests. Otherwise, choose the lowest-cost role suited
 to the judgment the implementer must exercise:
@@ -78,18 +80,20 @@ to the judgment the implementer must exercise:
 |---|---|
 | Already-exact transformation with deterministic verification | Throughput |
 | Specified behavior with routine engineering judgment | Balanced |
-| Intentionally delegated diagnosis or consequential design | Reasoning |
+| Intentionally delegated diagnosis or decisions about behavior or architecture | Reasoning |
 
 When the role is not evident from known context, use balanced. Do not inspect
 code merely to justify throughput. Broaden verification for a large or
 high-impact change. Select a stronger role only for additional judgment, not
-for file count, diff size, importance, or blast radius alone.
+for file count, diff size, importance, or the number of affected systems or
+users alone.
 
-Read [references/throughput-handoff.md](references/throughput-handoff.md) before
-a throughput dispatch.
+Read [Throughput handoff](references/throughput-handoff.md) before assigning
+work to a throughput implementer.
 
-Before dispatch, tell the user the selected surface, concrete model, model role,
-and reasoning effort when the harness supports it.
+Before assigning the work, tell the user how the implementer agent will be
+created, the concrete model, the model role, and the reasoning effort when the
+available tools support it.
 
 ## Send a concise handoff
 
@@ -100,18 +104,19 @@ Send a concise, self-contained handoff. Include only the parts that apply:
 - Decisions and constraints already established
 - Genuine scope boundaries
 - A known starting point when one is useful
-- Commit authority
+- Whether the implementer may create a commit
 
 Tell the implementer to:
 
 - Read the applicable repository guidance and inspect the repository
 - Choose the local implementation
-- Make the changes and repair routine implementation fallout
-- Run proportional verification
+- Make the changes and repair routine failures caused by them
+- Run tests and checks appropriate to the change
 - Self-review and report the result
 
-Present known files, symbols, commands, and implementation ideas as leads.
-Mark them as requirements only when they are genuine constraints.
+Present known files, symbols, commands, and implementation ideas as useful
+starting points. Mark them as requirements only when they are genuine
+constraints.
 
 Leave naming, imports, use of existing dependencies, function decomposition,
 and routine refactoring to the implementer. Specify a local code choice only
@@ -127,23 +132,23 @@ Require the implementer to report:
 - Remaining concerns
 - Commit and worktree state
 
-Do not require structured status vocabulary.
+Do not require fixed status labels such as `DONE` or `BLOCKED`.
 
-## Set the escalation boundary
+## Tell the implementer when to stop
 
-In every handoff, authorize the implementer to make reversible code-local
-choices directly.
+In every handoff, authorize the implementer to make reversible choices that
+affect only local implementation details.
 
 Also instruct the implementer to stop before choosing an option that changes:
 
 - Observable behavior or domain meaning
 - Architecture or ownership boundaries
-- Public compatibility or rollout behavior
+- Compatibility for public APIs or stored data, or rollout behavior
 - Agreed scope or user priorities
 - A safety or security property not already decided
 
 Require the implementer to preserve useful work and report the exact location,
-observed facts, and evident options when it stops.
+observed facts, and available options when it stops.
 
 When the implementer stops, decide the issue in the coordinator, involve the
 user, or deliberately delegate the decision to a stronger model. When more code
@@ -153,28 +158,29 @@ deciding.
 ## Collaborate through the work
 
 1. Resolve only the coordinator-owned decisions needed to state the outcome.
-2. Create or resume the managed implementer and send the concise handoff.
-3. Wait through the harness event mechanism. Continue waiting while the state
-   is unchanged; do not treat unchanged state as a blocker or completion.
-4. When the implementer stops, apply Set the escalation boundary.
+2. Create or resume the implementer agent and send the concise handoff.
+3. Wait through the task or agent wait tool. Continue waiting while the status
+   is unchanged; do not treat unchanged status as a blocker or completion.
+4. When the implementer stops, follow
+   [Tell the implementer when to stop](#tell-the-implementer-when-to-stop).
 5. When the result misses the intent, explain the mismatch and send a focused
    correction to the same implementer.
 6. Use the implementer's report, focused diff inspection, CI, and user-facing
    evidence to assess acceptance. Do not repeat routine investigation or tests
    without a concrete reason.
-7. Complete coordinator-owned commits, pushes, PR changes, review replies, and
-   other external collaboration after the implementation is accepted.
+7. Complete coordinator-owned commits, pushes, PR changes, review replies,
+   issues, and other external messages after the implementation is accepted.
 
 ## Red flags
 
 | Thought | Required response |
 |---|---|
-| "There are too many call sites for the cheapest model." | More identical call sites increase consumption, not reasoning. Use throughput. |
+| "There are too many call sites for the cheapest model." | More identical call sites increase cost and time, not reasoning. Use throughput. |
 | "The API is important, so a balanced model is safer." | Resolve compatibility in the coordinator and strengthen verification. |
-| "A large diff needs a smarter implementer." | Name the unresolved semantic decision or use throughput. |
-| "The worker must run tests and repair fallout." | Leave prescribed fallout with the throughput implementer until a new decision appears. |
-| "The throughput worker stopped, so it needs a stronger model." | Read Throughput handoff and classify the cause before changing models. |
-| "Using a scoped Codex subagent is close enough." | Use the controlled top-level Codex task required by Harness routing. |
-| "This fix is small enough for the coordinator to do directly." | Send a focused correction to the managed implementer. |
+| "A large diff needs a smarter implementer." | Name the unresolved behavior, architecture, or compatibility decision, or use throughput. |
+| "The implementer must run tests and fix the resulting failures." | Leave expected fixes with the throughput implementer until a new decision appears. |
+| "The throughput implementer stopped, so it needs a stronger model." | Read [Throughput handoff](references/throughput-handoff.md) and classify the cause before changing models. |
+| "Using a scoped Codex subagent is close enough." | Use a separate top-level Codex task; do not use a scoped subagent. |
+| "This fix is small enough for the coordinator to do directly." | Send a focused correction to the implementer agent. |
 
 **Violating the letter of these rules is violating the spirit of them.**

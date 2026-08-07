@@ -1,6 +1,6 @@
 interface:
   display_name: "Coordinate Implementation"
-  short_description: "Coordinate through a managed implementer"
-  default_prompt: "Use $coordinate-implementation to retain requirements, design, and acceptance while Terra handles routine implementation or Luna handles an already-exact mechanical change."
+  short_description: "Coordinate through an implementer agent"
+  default_prompt: "Use $coordinate-implementation to retain requirements, design, and acceptance while Terra handles routine implementation or Luna handles an exact repetitive code change."
 policy:
   allow_implicit_invocation: false
