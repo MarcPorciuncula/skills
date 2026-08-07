@@ -4,7 +4,7 @@ Execute the tasks in a plan file by dispatching subagents, with a unified review
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-**Subagent preparation:** Subagents do not inherit your skills or session context. Every subagent prompt you construct MUST include an instruction to read the relevant skill files from this directory before starting work. At minimum, implementer subagents must read `tdd.md`. Include the absolute path to this skill directory in the prompt so the subagent can find the files. See `implementer-prompt.md` for the required prep section.
+**Subagent preparation:** Subagents do not inherit your skills or session context. Every implementer prompt must include `../testing/SKILL.md` and the relevant phase files. Include the absolute path to this skill directory so the subagent can resolve them. See `implementer-prompt.md` for the required prep section.
 
 **Core principle:** Batch related tasks → single implementer → unified review (spec + quality in one pass) = high quality, less overhead
 
@@ -39,7 +39,7 @@ For each batch, in order:
    - The implementer's status report (verbatim)
    - Base SHA (from step 2) and head SHA (current HEAD after the implementer committed)
    - The reviewer runs `git diff <base>..<head>` itself — do NOT read the diff into your own context
-7. **Loop and verify.** If the reviewer finds issues: re-dispatch the implementer to fix, then re-dispatch the reviewer. Once approved, verify the plan file: each task in the batch has its checkbox flipped to `- [x]` and a `### Result` sub-section appended. The implementer was instructed to do this — this step is a sanity check. If something is missing or a sibling task was touched, revert and re-dispatch with a stronger reminder.
+7. **Loop and verify.** If the reviewer finds issues, read `../review-findings/SKILL.md`, publish the dispositions, re-dispatch the implementer for `Fix now` items, then re-dispatch the reviewer. Once approved, verify the plan file: each task in the batch has its checkbox flipped to `- [x]` and a `### Result` sub-section appended. The implementer was instructed to do this — this step is a sanity check. If something is missing or a sibling task was touched, revert and re-dispatch with a stronger reminder.
 
 ## Context Pre-Curation
 
@@ -138,7 +138,7 @@ Handle all of them in the final pass (see "After All Tasks"). The per-batch revi
 ## After All Tasks
 
 1. **Dispatch final cross-cutting reviewer** with the full branch diff range. Use `reviewer-prompt.md` in review mode `final`. For the `<task-spec>` block, paste a brief summary of the tasks completed (or the plan file's headers list). `final` mode tells the reviewer to flag deferred concerns.
-2. **Address any issues** from the cross-cutting review. Fix the deferred concerns in a single cleanup commit. It changes no behavior, so verify it proportionally — build or a re-read of the touched lines, not a full test re-run (see `verification.md` "Scope of verification").
+2. **Assess review findings.** Read `../review-findings/SKILL.md`, publish the dispositions, and address `Fix now` items. Fix deferred cross-task cleanup in a single cleanup commit only when its recorded disposition requires it. Verify proportionally per `verification.md`.
 3. **Load `finishing.md`** to complete the branch.
 
 The final cross-cutting review is the last in-session gate; the full test suite runs on CI when the PR opens.
@@ -226,12 +226,12 @@ Final reviewer: ✅ Approved — integration is clean
 **Never:**
 - Start implementation on main/master branch without explicit user consent
 - Skip review for any batch
-- Proceed with unfixed issues
+- Proceed with unresolved `Fix now` findings
 - Hand subagents more of the plan file than the task(s) in the current batch (they'll wander — siblings are intentionally hidden)
 - Skip scene-setting context (subagent needs to understand where the task fits)
 - Ignore subagent questions (answer before letting them proceed)
 - Accept "close enough" on spec compliance (reviewer found spec issues = not done)
-- Skip review loops (reviewer found issues = implementer fixes = review again)
+- Skip review loops (`Fix now` findings = implementer fixes = review again)
 - Let implementer self-review replace actual review (both are needed)
 - Move to next batch while review has open issues
 - Read diffs or file contents into your own context to relay to subagents (point, don't read)
@@ -243,7 +243,8 @@ Final reviewer: ✅ Approved — integration is clean
 - Don't rush them into implementation
 
 **If reviewer finds issues:**
-- Implementer (re-dispatched) fixes them
+- Read `../review-findings/SKILL.md` and publish the dispositions
+- Implementer (re-dispatched) fixes `Fix now` findings
 - Reviewer reviews again
 - Repeat until approved
 - Don't skip the re-review
@@ -256,7 +257,7 @@ Final reviewer: ✅ Approved — integration is clean
 ## Advantages
 
 **vs. Manual execution:**
-- Subagents follow TDD naturally
+- Subagents load test admission at the implementation boundary
 - Fresh context per batch (no confusion)
 - Parallel-safe (subagents don't interfere)
 - Subagent can ask questions (before AND during work)

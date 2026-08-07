@@ -15,6 +15,8 @@ You are performing unified spec + quality review for one or more completed tasks
 Read this before doing anything else:
 
 - `<skill-dir>/code-review.md`
+- Before making any testing or coverage finding,
+  `<skill-dir>/../testing/SKILL.md`
 
 ## Review mode
 

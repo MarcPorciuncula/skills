@@ -1,11 +1,11 @@
 ---
 name: dex-superpowers
 description: >
-  Use before any creative work, feature implementation, bug fixing, or behavior change.
-  Covers brainstorming, design, TDD, debugging, verification, code review, parallel dispatch,
-  and branch completion. Replaces superpowers workflow skills with dex-integrated equivalents.
-  Use when: starting a new feature, implementing a design, writing tests, fixing bugs,
-  claiming work is done, reviewing code, finishing a branch, or dispatching parallel agents.
+  TRIGGER when the user invokes `dex-superpowers` or asks to plan or execute a
+  dex task tree. SKIP routine implementation, bug fixing, testing, review, and
+  branch completion outside a dex workflow. Coordinates dex-backed design,
+  execution, review, and completion while routing local concerns to their
+  owning skills.
 ---
 
 # dex-superpowers
@@ -24,7 +24,7 @@ Read the sub-document for your current phase before taking action. Do not procee
 |---------------------|-----------------|
 | Start new feature work, explore requirements, design something | `brainstorming.md` |
 | Execute dex tasks with subagents | `execution.md` |
-| Write or run tests (TDD red-green-refactor) | `tdd.md` |
+| Change behaviour or create or modify tests | `../testing/SKILL.md` |
 | Debug a bug, test failure, or unexpected behavior | `debugging.md` |
 | Claim work is done, commit, create a PR | `verification.md` |
 | Request or receive code review | `code-review.md` |

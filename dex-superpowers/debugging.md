@@ -166,12 +166,11 @@ You MUST complete each phase before proceeding to the next.
 
 **Fix the root cause, not the symptom:**
 
-1. **Create Failing Test Case**
-   - Simplest possible reproduction
-   - Automated test if possible
-   - One-off test script if no framework
-   - MUST have before fixing
-   - Use the TDD process described in `tdd.md` for writing proper failing tests
+1. **Decide the Regression Check**
+   - Read `../testing/SKILL.md`
+   - Record whether the root cause earns a permanent test
+   - Use the admitted red-green path before fixing
+   - Use a one-off reproduction when permanent test admission fails
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -180,8 +179,8 @@ You MUST complete each phase before proceeding to the next.
    - No bundled refactoring
 
 3. **Verify Fix**
-   - Test passes now?
-   - No other tests broken?
+   - Regression check passes now?
+   - Selected neighbouring tests still pass?
    - Issue actually resolved?
 
 4. **If Fix Doesn't Work**
@@ -213,7 +212,7 @@ If you catch yourself thinking:
 - "Quick fix for now, investigate later"
 - "Just try changing X and see if it works"
 - "Add multiple changes, run tests"
-- "Skip the test, I'll manually verify"
+- "Skip the regression check, I'll manually verify"
 - "It's probably X, let me fix that"
 - "I don't fully understand but this might work"
 - "Pattern says X but I'll adapt it differently"
@@ -233,7 +232,7 @@ If you catch yourself thinking:
 | "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
 | "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
 | "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
-| "I'll write test after confirming fix works" | Untested fixes don't stick. Test first proves it. |
+| "I'll decide the test after confirming the fix works" | Run test admission first. An admitted test must fail before the fix; a rejected test still needs a one-off reproduction. |
 | "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
 | "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
 | "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
@@ -246,7 +245,7 @@ If you catch yourself thinking:
 | **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| **4. Implementation** | Decide check, fix, verify | Bug resolved, selected checks pass |
 
 ## When Process Reveals "No Root Cause"
 
@@ -268,7 +267,7 @@ These techniques are available in this directory:
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
 
 **Related phases:**
-- **`tdd.md`** - For creating failing test case (Phase 4, Step 1)
+- **`../testing/SKILL.md`** - For test admission and the regression workflow in Phase 4
 - **`verification.md`** - Verify fix worked before claiming success
 
 ## Real-World Impact
