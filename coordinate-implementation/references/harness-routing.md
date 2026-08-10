@@ -24,18 +24,28 @@ creation tool, currently exposed as `create_thread` in the Codex app. Do not use
 
 1. Inspect the project, host, model, and reasoning options exposed by the
    available tools.
-2. For repository work, create the implementer task in an isolated worktree
-   unless the user explicitly requests the saved checkout.
-3. Set the concrete model and reasoning effort in the creation call. Do not
+2. Choose the checkout mode before creating the task:
+   - When the implementer must use a manually prepared or existing worktree,
+     ensure it is ready before creating the task. For a project task, pass
+     `target: { type: "project", projectId, environment: { type: "local" } }`;
+     do not pass a target whose nested environment is `{ type: "worktree" }`.
+     Put the prepared worktree's absolute path in the handoff and require every
+     repository command and edit to use that working directory.
+   - Otherwise, create repository implementers in a task-managed isolated
+     worktree unless the user explicitly requests the saved checkout.
+3. Create a fresh top-level task from a self-contained handoff. Do not fork the
+   coordinator conversation or inherit its turn history. Fresh context still
+   receives the complete initial handoff; it is not an empty prompt.
+4. Set the concrete model and reasoning effort in the creation call. Do not
    omit them or inherit the coordinator model.
-4. Title it `IMPLEMENTER: <scope> (use coordinator)`.
-5. Use the thread messaging tool for decisions and corrections. Use the thread
+5. Title it `IMPLEMENTER: <scope> (use coordinator)`.
+6. Use the thread messaging tool for decisions and corrections. Use the thread
    wait tool for progress. Read the thread when you need evidence or need to
    answer a question.
-6. Keep the user in the coordinator task. In the initial handoff, instruct the
+7. Keep the user in the coordinator task. In the initial handoff, instruct the
    implementer to redirect any direct human message to the coordinator and
    wait.
-7. When follow-up calls allow the model to change, use a stronger model only for
+8. When follow-up calls allow the model to change, use a stronger model only for
    the part that needs it. Keep the same task and worktree.
 
 If top-level thread creation, explicit model selection, follow-up, or waiting is
