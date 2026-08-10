@@ -108,7 +108,10 @@ For intentional divergences, the recommendation depends on the doc type:
 
 - **Single-use plan or execution doc** (e.g. `plans/*.md`, pre-execution specs, one-off design notes consumed during implementation) — **no action**. The plan is a historical artifact; syncing it to final code adds churn without improving the codebase. Asking for a plan to be rewritten to match the code does not improve code quality.
 - **Living design or architecture doc** (e.g. `README.md`, `ARCHITECTURE.md`, docs kept as ongoing reference) — update the doc to match current behaviour.
-- **PR description** — update the description to reflect the change. Only when commit history makes the intent unambiguous; if commits and description conflict about what the PR is supposed to do, stop and surface it to the user rather than rewriting either.
+- **PR description** — update the description through the `writing-pr-bodies`
+  maintenance path. Only when commit history makes the intent unambiguous; if
+  commits and description conflict about what the PR is supposed to do, stop
+  and surface it to the user rather than rewriting either.
 
 If the doc type is unclear, default to treating it as a single-use plan. Ask the user if uncertain.
 
@@ -117,6 +120,10 @@ Common shapes:
 - PR description references an old approach — update the description.
 - Plan doc describes a step done differently — leave the plan alone.
 - Comment flags a doc that "doesn't belong" (e.g. a spec from another feature bundled in an early commit) — no action.
+
+Routine review fixes do not trigger a PR-body rewrite. Update the body only when
+a claim became false or the change alters its intended takeaway, retained facts,
+primary register, or consequential constraints.
 
 ### Test-gap claims as a source of false positives
 
@@ -166,6 +173,11 @@ Work through the approved items:
 2. **Behavioural changes and test gaps:** load `../testing/SKILL.md` before editing tests or production code. Follow its admission and red-green decision. Since review comment fixes are typically small in scope, commit the passing test and implementation together unless the user explicitly requested committed red-green history. Push after committing.
 3. **Questions/discussion items and out-of-scope items** are skipped during execution — the user handles replies and follow-ups.
 4. **Outdated/already-fixed items** need no action.
+
+Verify and self-review the fixes against the last reviewed head and their
+affected paths. Do not restart a whole-PR review for small fixes. Repeat it only
+when the fixes expand scope or cross a new responsibility, runtime,
+compatibility, or safety boundary.
 
 In evaluate mode: do not post reply comments on GitHub — the user will handle the review conversation. Focus on code changes only.
 
