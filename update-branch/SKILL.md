@@ -73,6 +73,15 @@ gh pr view --json baseRefName,state
 
 After rebasing:
 - If rebase conflicts look non-trivial, abort and `git merge` instead.
+- If the rebase or restack is clean, do not run tests or self-review. The code
+  delta is unchanged.
+- For trivial conflict resolutions, inspect the resolved hunks and resulting
+  diff. Do not review the whole PR or run checks that the resolution cannot
+  affect.
+- For non-trivial conflict resolutions, test and self-review only the resolved
+  hunks, affected paths, and changed behaviour. Repeat a whole-PR review only
+  when the resolution expands scope or crosses a new responsibility, runtime,
+  compatibility, or safety boundary.
 - Push with `git push --force-with-lease`.
 
 ## Pushing
@@ -86,6 +95,7 @@ Do not ask for confirmation — the user has already authorized pushing by reque
 | "The rebase reported 'already up to date' — done" | The tracking ref may be stale. Verify the base branch hasn't been merged and moved underneath this one. |
 | "The base branch hasn't changed, I can skip the PR check" | A branch that hasn't changed in diff can still have been merged into main. Check PR state, not just the diff. |
 | "`git-spice ls` doesn't list this branch, so it's a normal branch — rebase it manually" | git-spice's local state is empty on a fresh clone. Check the PR for the stack-navigation comment before deciding the stack is unmanaged. |
+| "The commit hashes changed, so the entire PR needs another review" | A clean rebase or restack changes ancestry, not the code delta. Run no review; when conflicts were resolved, review only their effects. |
 
 ## Conflict resolution
 

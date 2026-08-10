@@ -116,6 +116,10 @@ when the user requested it or it carries domain or architectural meaning.
 Keep pushes, PR changes, review replies, issues, and other external messages in
 the coordinator unless the user explicitly delegates them.
 
+When the PR workflow requires a draft transport checkpoint, complete the
+coordinator-owned push and draft PR at that checkpoint. Do not wait for product
+acceptance. Acceptance gates readiness and final handoff.
+
 Require the implementer to report:
 
 - What changed
@@ -159,8 +163,9 @@ deciding.
 6. Use the implementer's report, focused diff inspection, CI, and user-facing
    evidence to assess acceptance. Do not repeat routine investigation or tests
    without a concrete reason.
-7. Complete coordinator-owned commits, pushes, PR changes, review replies,
-   issues, and other external messages after the implementation is accepted.
+7. After the implementation is accepted, complete the remaining
+   coordinator-owned commits, pushes, PR changes, review replies, issues, and
+   other external messages.
 
 ## Red flags
 
@@ -173,5 +178,6 @@ deciding.
 | "The throughput implementer stopped, so it needs a stronger model." | Read [Throughput handoff](references/throughput-handoff.md) and classify the cause before changing models. |
 | "Using a scoped Codex subagent is close enough." | Use a separate top-level Codex task; do not use a scoped subagent. |
 | "This fix is small enough for the coordinator to do directly." | Send a focused correction to the implementer agent. |
+| "The implementation is not accepted, so opening a draft PR is premature." | Follow the PR workflow. A draft transport checkpoint does not claim acceptance. |
 
 **Violating the letter of these rules is violating the spirit of them.**

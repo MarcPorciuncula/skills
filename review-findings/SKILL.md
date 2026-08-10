@@ -99,8 +99,12 @@ no finding survives verification.
   finding-specific user instruction.
 - Continue independent authorized work while a `Decision` remains open. Request
   user input only when it blocks the remaining work.
-- Re-run the applicable review after fixes. Update the findings file with the
-  result and each affected status.
+- Do not let review-driven edits delay a draft transport checkpoint authorised
+  by the PR workflow.
+- After fixes, recheck the recorded findings and affected paths. Restart a
+  whole-artifact review only when the fixes expand scope or cross a new
+  responsibility, runtime, compatibility, or safety boundary. Update the
+  findings file with the result and each affected status.
 
 An explicit user disposition wins over a reviewer or repository default. A
 general request to fix or address findings does not pre-approve `Decision` or
@@ -122,3 +126,4 @@ Do not delete the file before the handoff.
 | "I fixed it quickly, so the user does not need to see it." | Record and publish every finding before the edit, then preserve its `Fixed` status. |
 | "The user is not watching, so a chat update has no value." | Publish it anyway and preserve it in the findings file for final handoff. |
 | "The proposed remedy is small, so no decision is needed." | Scope and behavior changes require a `Decision` even when the diff is small. |
+| "The review found defects, so the draft PR must wait until the review is clean." | Follow the PR workflow. Finding resolution gates final handoff, not a draft transport checkpoint. |

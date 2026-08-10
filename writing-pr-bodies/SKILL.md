@@ -93,6 +93,10 @@ with a concise initial body. State what changed and why. Put any genuine merge
 or deploy blocker at the top. This workflow does not change the repository's
 rules for whether a PR may be created or marked ready.
 
+Do not invoke the cold-reader critic or wait for completion review before
+posting the concise initial body. The repository's PR workflow owns the
+transport checkpoint; this skill owns the body placed on it.
+
 When planned implementation remains after that push, make the concise body an
 explicit WIP checkpoint. Begin with `Work in progress`, state both the current
 branch truth and intended endpoint, and add one `Remaining work` list only when
@@ -104,12 +108,25 @@ The concise body is final when the change is small and introduces no new
 responsibility boundary, external system, persistence or permission model,
 rollout, migration, parallel implementation, or non-obvious mechanism.
 
+## Maintain an existing body
+
+Use the maintenance path when the title, intended takeaway, retained facts,
+primary register, and consequential constraints remain unchanged:
+
+1. Re-read the live title, body, and head.
+2. Patch only claims made stale by the code or review discussion.
+3. Verify the changed claims against the diff and author context.
+4. Preserve protected content, post through a file, and verify the live body.
+
+Do not create a new reader model or invoke a critic for maintenance. Use the
+final-body workflow when the revision changes the body model named above.
+
 ## Build the final body
 
 For a substantial PR, use an isolated cold-reader critic when delegation is
-available. The critic tests the body before learning the implementation. Do not
-use the critic to draft the initial body or give it the PR URL, diff, ticket,
-author brief, intended model, or task history before its blind read.
+available. Keep the critic blind to the implementation for its entire task. Do
+not use the critic to draft the initial body or give it the PR URL, diff,
+ticket, author brief, intended model, task history, repository access, or tools.
 Start the critic without inherited parent turns or conversation history.
 
 1. **Write the reader model.** Record the primary impact, one-sentence intended
@@ -119,15 +136,15 @@ Start the critic without inherited parent turns or conversation history.
    shape for the primary classification. Draft through a file so the exact
    artifact can be reviewed and posted.
 3. **Run the blind read.** Give an isolated critic only the proposed title and
-   body. Require the cold-read report below before exposing any implementation
-   evidence. When delegation is unavailable, produce the same report yourself
-   as a mechanical review artifact.
-4. **Check the evidence.** After the blind report, give the critic the reader
-   model, author brief, live PR, base-to-head diff, and relevant surrounding
-   code. Check accuracy and consequential omissions without restoring detail
-   merely because it exists in the diff.
+   body plus the complete request below. When delegation is unavailable,
+   produce the same report yourself as a mechanical review artifact.
+4. **Check the evidence.** The primary agent checks the reader model and body
+   against the author brief, live PR, base-to-head diff, and relevant
+   surrounding code. Correct unsupported claims and consequential omissions
+   without restoring detail merely because it exists in the diff.
 5. **Revise and recheck.** Address every failed cold-read check. Return the
-   revision to the critic for a final verdict. Do not post while it still fails.
+   revision to the still-blind critic for a final verdict. Do not post the final
+   body while it still fails.
 6. **Protect concurrent work.** Re-read the live head, title, and body before
    posting. Refresh and repeat from drafting when the head changed. Stop and
    return the draft instead of overwriting a concurrently changed title or
@@ -150,11 +167,12 @@ Consequential constraints:
 - <only when applicable>
 ```
 
-Use this blind cold-read request without adding implementation context:
+Use this complete cold-read request without adding implementation context:
 
 ```text
-Cold-read the proposed PR title and body below. Do not inspect the repository,
-PR, ticket, or diff yet.
+Cold-read the proposed PR title and body using only the artifact and rubric in
+this message. Do not inspect a repository, PR, ticket, diff, file, or skill. Do
+not use tools.
 
 Return:
 - scan-only takeaway after reading the title, opening, headings, diagrams, and
@@ -162,15 +180,34 @@ Return:
 - full-read interpretation of the net change and motivation;
 - the three to five facts or relationships you retained;
 - the apparent functional or non-functional register;
-- sections to keep, cut, combine, rewrite, or express as a plain-text diagram;
-- duplicated ideas and details that belong in the diff;
-- terms that require ticket, specification, or branch-history context;
-- PASS or FAIL against the cold-read checks in the writing-pr-bodies skill.
+- blocking issues as: location, reader effect, and failed rubric check;
+- duplicated ideas, diff-level details, and context-dependent terms;
+- PASS or FAIL.
+
+Rubric:
+1. A scan reveals the net change, motivation, and core model.
+2. A full read teaches one coherent model in one primary register.
+3. Functional bodies identify changed surfaces and principal affordances;
+   non-functional bodies identify flow, ownership, and consequential constraints.
+4. Every section answers a distinct reviewer question without duplication.
+5. Terms and claims are understandable without ticket or branch history.
+6. Details visible in the diff are omitted unless they change review strategy.
+
+Identify what is unclear, redundant, unsupported by the body, or dependent on
+missing context and explain its reader effect. Do not propose a title, replacement
+wording, a revised section structure, or exact edits. The author owns all
+editorial decisions.
 ```
 
 The primary agent owns the title and body. The critic reports and verifies; it
-does not post. A later code change that alters scope, architecture, behaviour,
-or rationale requires another title and body check.
+does not post or inspect implementation evidence. Check code against the user
+requirements and accepted behaviour, not against the PR body as an acceptance
+specification. When body and code differ, correct the body unless an independent
+requirement shows the code is wrong.
+
+A later code change requires another title and body check only when it
+invalidates a body claim or changes the reader model. Use the maintenance path
+for a factual correction that leaves the model unchanged.
 
 ## Compose the body
 
@@ -365,6 +402,7 @@ remove material that communicates the same model less directly.
 
 **Violating the letter of these rules is violating the spirit of them.**
 
-Post the revised draft only after the blind report and evidence check pass. Then
-verify that the live title and body match the reviewed artifact. Do not narrate
-the check or report each edit it caught in the PR body.
+Post the final body only after the blind report and evidence check pass. This
+gate does not delay the concise initial body or draft PR. Verify that the live
+title and body match the reviewed artifact. Do not narrate the check or report
+each edit it caught in the PR body.
