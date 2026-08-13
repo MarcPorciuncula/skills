@@ -9,6 +9,7 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | **address-review** | Analyze and address PR review comments |
 | **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
+| **map-ui-affordances** | Design and review UI structure with affordance trees |
 | **pressure-test-skills** | Run blind behavior checks after skill changes |
 | **testing** | Admit valuable tests, choose their level, and run red-green |
 | **red-green** | Compatibility entry point for explicit TDD requests |
