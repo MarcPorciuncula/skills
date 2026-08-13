@@ -46,45 +46,68 @@ grammar.
 
 ## Example
 
-Settled requirements: a workspace owner can enable or disable activity-summary
-emails, choose daily or weekly delivery when enabled, understand that delivery
-uses their account email, and save the settings.
+Settled requirements: a workspace member can connect their organisation to
+Claude or ChatGPT with one MCP URL, copy the URL, understand that the connected
+client uses their existing workspace permissions, follow client-specific setup
+steps, and open a detailed guide.
 
-Primary task: configure activity-summary email delivery.
+Primary task: connect the organisation to one supported client.
 
 Observed tree:
 
 ```text
-Activity summaries
-├─ Intro: understand that summaries help monitor the workspace
-├─ Summary frequency
-│  ├─ Daily: select daily delivery
-│  └─ Weekly: select weekly delivery
-├─ Email delivery: understand that summaries use the account email
-├─ Get more from summaries: read generic educational content
-└─ Save changes: persist the settings
+Integrations & MCP
+├─ Intro: read generic connection benefits
+├─ Claude
+│  ├─ Why use Claude: read benefits
+│  ├─ Copy MCP URL: copy the shared connection value
+│  ├─ Quick setup: follow Claude steps
+│  └─ View Claude guide: open detailed help
+├─ Explore AI workflows: read educational content
+├─ More integrations
+│  └─ ChatGPT
+│     ├─ Why use ChatGPT: read benefits
+│     └─ View ChatGPT guide: open detailed help
+└─ Advanced connection details
+   └─ MCP URL: view the shared connection value
 ```
 
 Affordance coverage:
 
-- Present: choose a frequency, understand the destination, and save.
-- Missing: enable or disable summary emails.
-- Unmatched: the generic intro and educational content.
+- Present: choose either client, view and copy the MCP URL, follow Claude
+  steps, and open either guide.
+- Missing: understand the permission impact and follow ChatGPT steps.
+- Unmatched: provider-benefit and educational content.
+
+Structural findings:
+
+- The shared URL is split between Claude and advanced details, so copying it
+  appears Claude-specific and viewing it appears secondary.
+- Claude and ChatGPT are alternatives but occupy different levels. The
+  "More integrations" parent makes ChatGPT secondary.
+- Educational content interrupts the path between the alternatives.
 
 Recommended intended tree:
 
 ```text
-Activity summaries
-├─ Activity-summary emails: enable or disable summary emails
-├─ Frequency [when enabled]
-│  ├─ Daily: receive a summary each day
-│  └─ Weekly: receive a summary each week
-├─ Delivery address [when enabled]: understand that summaries use the account email
-└─ Save changes: persist the settings
+Integrations & MCP
+└─ Connect to MCP
+   ├─ MCP URL
+   │  ├─ Endpoint: use the same URL with either client
+   │  └─ Copy: copy the URL
+   ├─ Access notice: understand that the client uses existing permissions
+   └─ Client setup
+      ├─ Claude: choose Claude setup
+      │  ├─ Setup steps [when selected]: connect Claude
+      │  └─ Detailed guide [when selected]: open further help
+      └─ ChatGPT: choose ChatGPT setup
+         ├─ Setup steps [when selected]: connect ChatGPT
+         └─ Detailed guide [when selected]: open further help
 ```
 
-Open decisions: initial enabled state, default frequency, and whether to display
-the address itself. Keep these outside the intended tree until settled.
+Open decisions: whether an organisation owner must pre-authorise a client,
+whether to show connection status, and whether either client can be unavailable.
+Keep these outside the intended tree until settled.
 
 ## Design or revise a surface
 
