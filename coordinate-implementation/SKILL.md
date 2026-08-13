@@ -93,6 +93,8 @@ Send a concise, self-contained handoff. Include only the parts that apply:
 - The required outcome
 - User, product, or domain context it cannot recover from the repository
 - Decisions and constraints already established
+- For user-facing UI, the primary task, required affordances, explicit
+  exclusions, and approved terminology
 - Genuine scope boundaries
 - A known starting point when one is useful
 - Whether the implementer may create a commit
@@ -108,6 +110,12 @@ Tell the implementer to:
 Present known files, symbols, commands, and implementation ideas as useful
 starting points. Mark them as requirements only when they are genuine
 constraints.
+
+For user-facing UI, map each required affordance to a settled requirement or
+user need before delegating. Treat proposed copy, layout, optional fields, and
+analogous screens as suggestions unless the user selected them or they carry
+settled behaviour. A detailed or complete-looking proposal is not itself a list
+of requirements.
 
 Leave naming, imports, use of existing dependencies, function decomposition,
 and routine refactoring to the implementer. Specify a local code choice only
@@ -179,5 +187,6 @@ deciding.
 | "Using a scoped Codex subagent is close enough." | Use a separate top-level Codex task; do not use a scoped subagent. |
 | "This fix is small enough for the coordinator to do directly." | Send a focused correction to the implementer agent. |
 | "The implementation is not accepted, so opening a draft PR is premature." | Follow the PR workflow. A draft transport checkpoint does not claim acceptance. |
+| "The proposal is detailed enough to copy into the handoff as requirements." | Classify each item as settled behaviour, required affordance, suggestion, or open decision. Require only the first two. |
 
 **Violating the letter of these rules is violating the spirit of them.**
