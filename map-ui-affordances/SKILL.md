@@ -29,17 +29,6 @@ intended structure. Do not duplicate or override settled product decisions.
 
 Model the interface the user perceives, not its DOM or component wrappers.
 
-```text
-Document details
-├─ Header
-│  ├─ Document title: identify the current document
-│  └─ More menu [opened on demand]
-│     ├─ Rename: change the document title
-│     ├─ Archive: remove it from active work [when active]
-│     └─ Restore: return it to active work [when archived]
-└─ Document body: read and edit the document
-```
-
 - Include meaningful regions, groups, controls, disclosed surfaces, status,
   feedback, instructions, and necessary content.
 - Nest menu items, dialog actions, and disclosed content beneath the control
@@ -54,6 +43,48 @@ Document details
 An interactive parent such as a tab or menu may contain other affordances. Do
 not distort the perceived hierarchy to force every action into a leaf-only
 grammar.
+
+## Example
+
+Settled requirements: a workspace owner can enable or disable activity-summary
+emails, choose daily or weekly delivery when enabled, understand that delivery
+uses their account email, and save the settings.
+
+Primary task: configure activity-summary email delivery.
+
+Observed tree:
+
+```text
+Activity summaries
+├─ Intro: understand that summaries help monitor the workspace
+├─ Summary frequency
+│  ├─ Daily: select daily delivery
+│  └─ Weekly: select weekly delivery
+├─ Email delivery: understand that summaries use the account email
+├─ Get more from summaries: read generic educational content
+└─ Save changes: persist the settings
+```
+
+Affordance coverage:
+
+- Present: choose a frequency, understand the destination, and save.
+- Missing: enable or disable summary emails.
+- Unmatched: the generic intro and educational content.
+
+Recommended intended tree:
+
+```text
+Activity summaries
+├─ Activity-summary emails: enable or disable summary emails
+├─ Frequency [when enabled]
+│  ├─ Daily: receive a summary each day
+│  └─ Weekly: receive a summary each week
+├─ Delivery address [when enabled]: understand that summaries use the account email
+└─ Save changes: persist the settings
+```
+
+Open decisions: initial enabled state, default frequency, and whether to display
+the address itself. Keep these outside the intended tree until settled.
 
 ## Design or revise a surface
 
