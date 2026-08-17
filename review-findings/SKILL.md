@@ -49,8 +49,9 @@ choice.
 
 For lifecycle findings, assess the operation and its initiating surface
 separately. Closing a surface does not require an accepted operation to be
-cancellable. Add cancellation only when users or the domain need to stop the
-operation and the underlying contract supports it.
+cancellable. Add cancellation only when a current user, domain, or runtime
+requirement needs to stop the operation and the underlying contract supports
+it.
 
 ### 3. Assign a disposition
 
