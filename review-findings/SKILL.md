@@ -37,10 +37,21 @@ Inspect the cited code and enough surrounding context to decide whether the
 finding is true. Verify that it was introduced by the reviewed change or is
 required for the changed behavior to work.
 
+Before assigning `Fix now`, name the current requirement or observable user or
+domain outcome that the artifact violates. A possible state transition,
+different component lifetime, or missing defensive behavior is not evidence of
+a defect by itself.
+
 Do not inherit the reviewer's severity, confidence, or suggested remedy. Find
 the smallest response that satisfies the actual requirement. Do not guess when
 the answer depends on a product, UX, architecture, compatibility, or scope
 choice.
+
+For lifecycle findings, assess the operation and its initiating surface
+separately. Closing a surface does not require an accepted operation to be
+cancellable. Add cancellation only when a current user, domain, or runtime
+requirement needs to stop the operation and the underlying contract supports
+it.
 
 ### 3. Assign a disposition
 
@@ -55,7 +66,9 @@ Use exactly one disposition per finding:
 
 A theoretical hardening opportunity is not `Fix now` unless the current scope
 requires it. A repository instruction to fix every finding does not change the
-disposition.
+disposition. Classify the finding before comparing implementation costs. Low
+code churn can make a chosen response proportionate; it cannot promote a
+`Decision`, `Deferred`, or `Reject` concern to `Fix now`.
 
 ### 4. Record the findings
 
@@ -125,5 +138,5 @@ Do not delete the file before the handoff.
 | "Handling this possible future case is safer." | Classify it as `Deferred` unless the current contract supports the case. |
 | "I fixed it quickly, so the user does not need to see it." | Record and publish every finding before the edit, then preserve its `Fixed` status. |
 | "The user is not watching, so a chat update has no value." | Publish it anyway and preserve it in the findings file for final handoff. |
-| "The proposed remedy is small, so no decision is needed." | Scope and behavior changes require a `Decision` even when the diff is small. |
+| "The proposed remedy is small, so accepting it costs less than deciding." | Classify first. Low code churn can make the chosen response proportionate; it cannot make the concern a defect. |
 | "The review found defects, so the draft PR must wait until the review is clean." | Follow the PR workflow. Finding resolution gates final handoff, not a draft transport checkpoint. |
