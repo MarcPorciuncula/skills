@@ -18,39 +18,25 @@ version-pinned identifiers when the available tools document those names.
 
 ## Codex
 
-Create a separate user-visible task or thread through the top-level thread
-creation tool, currently exposed as `create_thread` in the Codex app. Do not use
-`spawn_agent` or another scoped-agent tool as the implementer agent.
+Use a scoped subagent as the implementer agent. Do not create a separate
+user-visible task or thread for the implementer.
 
 1. Inspect the project, host, model, and reasoning options exposed by the
-   available tools.
-2. Choose the checkout mode before creating the task:
-   - When the implementer must use a manually prepared or existing worktree,
-     ensure it is ready before creating the task. For a project task, pass
-     `target: { type: "project", projectId, environment: { type: "local" } }`;
-     do not pass a target whose nested environment is `{ type: "worktree" }`.
-     Put the prepared worktree's absolute path in the handoff and require every
-     repository command and edit to use that working directory.
-   - Otherwise, create repository implementers in a task-managed isolated
-     worktree unless the user explicitly requests the saved checkout.
-3. Create a fresh top-level task from a self-contained handoff. Do not fork the
-   coordinator conversation or inherit its turn history. Fresh context still
-   receives the complete initial handoff; it is not an empty prompt.
-4. Set the concrete model and reasoning effort in the creation call. Do not
-   omit them or inherit the coordinator model.
-5. Title it `IMPLEMENTER: <scope> (use coordinator)`.
-6. Use the thread messaging tool for decisions and corrections. Use the thread
-   wait tool for progress. Read the thread when you need evidence or need to
-   answer a question.
-7. Keep the user in the coordinator task. In the initial handoff, instruct the
-   implementer to redirect any direct human message to the coordinator and
-   wait.
-8. When follow-up calls allow the model to change, use a stronger model only for
-   the part that needs it. Keep the same task and worktree.
+   scoped-agent tool.
+2. Prepare the worktree before creating the subagent. Put its absolute path in
+   the handoff and require every repository command and edit to use that
+   working directory.
+3. Create the subagent with fresh context. Set `fork_turns: "none"`, the
+   concrete model, and reasoning effort explicitly.
+4. Select Luna for throughput work when the scoped-agent tool exposes it.
+   Otherwise use Terra. Use Sol only for intentionally delegated reasoning.
+5. Use the subagent follow-up tool for decisions and corrections. Use the agent
+   wait tool for progress and completion.
+6. Keep the user in the coordinator task.
 
-If top-level thread creation, explicit model selection, follow-up, or waiting is
-unavailable, stop and report the missing capability. Do not substitute a scoped
-Codex subagent.
+If the scoped-agent tool cannot provide explicit model selection, the required
+reasoning effort, follow-up, waiting, or worktree access, stop and report the
+missing capability. Do not create a top-level task as a substitute.
 
 ## Claude Code
 
