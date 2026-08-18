@@ -1,0 +1,37 @@
+# Merge this fragment into ~/.codex/config.toml. Root keys must appear before
+# TOML tables. Do not combine permission profiles with sandbox_mode or
+# sandbox_workspace_write.
+# Permission profiles require Codex 0.138.0 or later. Validate the merged file
+# with `codex exec --strict-config --help`.
+
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+default_permissions = "agent-dev"
+
+[features]
+network_proxy = true
+
+[permissions.agent-dev]
+description = "Agent development with writable caches and rotating credentials."
+extends = ":workspace"
+
+# Sandboxed commands may update these paths without Auto-review. Remove any
+# cache or credential store that the container workflow does not require.
+[permissions.agent-dev.filesystem]
+"~/.cache" = "write"
+"~/go/pkg/mod" = "write"
+"~/.local/share/pnpm" = "write"
+"~/.config/gcloud" = "write"
+"~/.config/gh" = "write"
+"~/.pulumi" = "write"
+
+# Keep public network access outside the sandbox. Exact loopback destinations
+# remain available to local development services.
+[permissions.agent-dev.network]
+enabled = true
+allow_local_binding = false
+
+[permissions.agent-dev.network.domains]
+"localhost" = "allow"
+"127.0.0.1" = "allow"
+"::1" = "allow"
