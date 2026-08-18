@@ -1,8 +1,9 @@
-# Skills Repository
+# Agent Skills Repository
 
-This repo is a store for reusable Claude Code skills to be shared across machines via GitHub.
+This repo stores reusable agent skills and user-level guidance shared across machines via GitHub.
 
 ## Structure
 
-- **Root-level directories** (e.g. `address-review/`, `testing/`, `update-branch/`) are the portable skills meant to be synced to `~/.claude/skills/` on each machine.
-- **`.claude/skills/`** contains meta skills for managing this repo itself (e.g. `sync-skills`, `setup-claude-preferences`). These are not meant to be synced elsewhere.
+- **Root-level skill directories** (e.g. `address-review/`, `testing/`, `update-branch/`) are portable skills linked into each supported harness's user-level skills directory.
+- **`user-agent-guidance/`** contains canonical chunks and examples for user-level agent guidance files.
+- **`.claude/skills/`** contains repo-local utilities (e.g. `sync-skills`, `manage-user-agent-guidance`). Do not install these as user-level skills.

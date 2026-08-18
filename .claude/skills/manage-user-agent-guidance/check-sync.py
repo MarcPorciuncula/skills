@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
-"""Preliminary sync check between chunks/ and a rendered CLAUDE.md.
+"""Preliminary sync check between canonical chunks and rendered agent guidance.
 
 Output is advisory ("maybe needs sync"), not authoritative. The agent should
 re-read individual chunks for anything flagged DRIFT, and resolve conditional
 include markers itself.
 
 Usage:
-    check-sync.py [path-to-live-claude-md]
-
-Defaults to ~/.claude/CLAUDE.md.
+    check-sync.py <path-to-user-guidance>
 """
 
 from __future__ import annotations
 
-import os
 import re
 import sys
 from pathlib import Path
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-CHUNKS_DIR = SCRIPT_DIR / "chunks"
+REPO_ROOT = SCRIPT_DIR.parents[2]
+CHUNKS_DIR = REPO_ROOT / "user-agent-guidance" / "chunks"
 
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.DOTALL)
 ID_RE = re.compile(r"^id:\s*(\S+)\s*$", re.MULTILINE)
@@ -58,9 +56,11 @@ def find_orphan_h2s(live: str) -> list[str]:
 
 
 def main() -> int:
-    live_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
-        os.path.expanduser("~/.claude/CLAUDE.md")
-    )
+    if len(sys.argv) != 2:
+        print("usage: check-sync.py <path-to-user-guidance>", file=sys.stderr)
+        return 2
+
+    live_path = Path(sys.argv[1]).expanduser()
 
     chunk_files = sorted(p for p in CHUNKS_DIR.glob("*.md") if p.name != "INDEX.md")
     chunks = [parse_chunk(p) for p in chunk_files]
