@@ -12,3 +12,6 @@ When verifying locally, run the narrowest check that can exercise the change: a 
 When considering broader verification, expand only if a targeted result indicates wider impact or the changed boundary is shared across packages. When the PR workflow guarantees a full CI suite, rely on CI for repository-wide coverage.
 
 Documentation, comments, and copy-only changes usually need review rather than automated verification. A clean rebase with no conflicts needs no local test run.
+
+<!-- include the next paragraph only if the `inspect-depot-ci` skill is installed -->
+Before diagnosing or reproducing a failed check whose details link to `depot.dev`, or whose provider is unclear in a repository containing `.depot/workflows/`, load the `inspect-depot-ci` skill.

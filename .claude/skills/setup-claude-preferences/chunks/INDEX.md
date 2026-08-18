@@ -20,4 +20,4 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 - **pr-workflow** — Per-repo PR creation modes (`ask`, `draft`, `auto-ready`) without enforcing state after creation. Applies when the user opens PRs from the agent.
 - **dev-servers** — Run long-lived processes in named tmux sessions with ownership and actual port in the name. Applies to workflows that start development processes.
 - **task-tracking-dex** — `dex` CLI conventions. **Opt-in** — only apply for users who have said they use dex; skip otherwise.
-- **running-tests** — Match verification type and scope to the change; rely on CI for full coverage when guaranteed. Skip if local full-suite validation is required.
+- **running-tests** — Match verification type and scope to the change; rely on CI for full coverage when guaranteed; load `inspect-depot-ci` before investigating Depot failures. Skip if local full-suite validation is required.
