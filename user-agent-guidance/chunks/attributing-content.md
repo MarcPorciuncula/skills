@@ -9,7 +9,7 @@ Attribution describes who supplied the posted content, not who initiated or part
 
 When posting an AI-authored or AI-assisted comment on a GitHub pull request or Linear issue, prefix it with a provenance label.
 
-Choose the label for the model family producing the content. Do not default to Claude because this guidance is stored in `CLAUDE.md`:
+Choose the label for the model family producing the content. Do not infer it from the guidance filename or active harness:
 
 - ChatGPT or Codex using an OpenAI model: **`ChatGPT`**
 - Claude or Claude Code using an Anthropic model: **`Claude`**

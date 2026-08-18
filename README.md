@@ -1,6 +1,6 @@
-# Claude Code Skills
+# Agent Skills
 
-Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/claude-code/skills) for portable workflow automation.
+Personal collection of reusable agent skills and user-level guidance for portable workflow automation across harnesses.
 
 ## Skills
 
@@ -25,5 +25,11 @@ These live in `.claude/skills/` and are available when working in this repo, not
 
 | Skill | Description |
 |-------|-------------|
-| **setup-claude-preferences** | Set up user-level CLAUDE.md with personal workflow preferences |
+| **manage-user-agent-guidance** | Manage chunked user-level guidance across supported agent harnesses |
 | **sync-skills** | Compare machine vs repo skills, reconcile differences, install new ones |
+
+## User-level agent guidance
+
+Canonical guidance content lives in `user-agent-guidance/`. Its `chunks/` directory contains independently maintainable sections, while `examples/` contains harness-specific configuration fragments referenced by those sections.
+
+Run the `manage-user-agent-guidance` repo utility to compare or render these chunks into a supported harness's user-level guidance file.
