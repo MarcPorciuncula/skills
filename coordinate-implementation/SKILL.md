@@ -184,7 +184,7 @@ deciding.
 | "A large diff needs a smarter implementer." | Name the unresolved behavior, architecture, or compatibility decision, or use throughput. |
 | "The implementer must run tests and fix the resulting failures." | Leave expected fixes with the throughput implementer until a new decision appears. |
 | "The throughput implementer stopped, so it needs a stronger model." | Read [Throughput handoff](references/throughput-handoff.md) and classify the cause before changing models. |
-| "Using a scoped Codex subagent is close enough." | Use a separate top-level Codex task; do not use a scoped subagent. |
+| "Luna is available only in a top-level Codex task." | Use a scoped implementer. Select Luna when the scoped-agent tool exposes it; otherwise use Terra. |
 | "This fix is small enough for the coordinator to do directly." | Send a focused correction to the implementer agent. |
 | "The implementation is not accepted, so opening a draft PR is premature." | Follow the PR workflow. A draft transport checkpoint does not claim acceptance. |
 | "The proposal is detailed enough to copy into the handoff as requirements." | Classify each item as settled behaviour, required affordance, suggestion, or open decision. Require only the first two. |
