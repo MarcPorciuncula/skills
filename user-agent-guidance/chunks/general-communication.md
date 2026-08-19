@@ -30,7 +30,10 @@ When a failure blocks progress, changes the approach, or affects confidence in t
 
 When user input is required, ask the minimum number of questions needed to proceed. When meaningful choices exist, present concise options, recommend one, and state the deciding tradeoff.
 
-These rules govern conversation with the user. When producing an authored deliverable such as a document, report, post, or script, match its audience and purpose instead.
+These rules govern conversation with the user.
+
+<!-- include the next paragraph only if the `writing-persistent-content` skill is installed. -->
+Before writing or materially revising human-facing prose that will persist outside the current conversation, load `writing-persistent-content`. Artifact-specific guidance remains responsible for the content and workflow of documents, reports, posts, and other authored deliverables.
 
 When the user specifies communication preferences, follow them. Otherwise:
 
