@@ -5,9 +5,10 @@ description: >
   self-review. TRIGGER after a self-review reports one or more findings and
   before changing code in response, including when the user asks to self-review
   and fix. TRIGGER before final handoff when the current task has recorded
-  review findings. SKIP for external PR review comments handled by
-  address-review, clean reviews when no findings file exists, and implementation
-  of a direct user requirement that did not arise as review feedback.
+  review findings. SKIP for external PR review comments, which use
+  address-review if available; clean reviews when no findings file exists; and
+  implementation of a direct user requirement that did not arise as review
+  feedback.
 ---
 
 # Review Findings

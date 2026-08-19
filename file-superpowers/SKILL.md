@@ -13,6 +13,11 @@ description: >
 
 Unified development workflow skill. Each phase has its own document — read the right one before acting.
 
+Treat sibling skills referenced by this workflow as optional. Use them if
+available; otherwise follow repository and user guidance for that step. The
+documents inside this skill directory are bundled requirements, not sibling
+skill references.
+
 ## Entry gate
 
 Start the workflow only when the user invokes `file-superpowers`, asks to write a
@@ -37,7 +42,7 @@ Read the sub-document for your current phase before taking action. Do not procee
 |---------------------|-----------------|
 | Start new feature work, explore requirements, design something | `brainstorming.md` |
 | Execute tasks with subagents | `execution.md` |
-| Change behaviour or create or modify tests | `../testing/SKILL.md` |
+| Change behaviour or create or modify tests | `../testing/SKILL.md`, if available; otherwise repository and user test guidance |
 | Debug a bug, test failure, or unexpected behavior | `debugging.md` |
 | Claim work is done, commit, create a PR | `verification.md` |
 | Request or receive code review | `code-review.md` |

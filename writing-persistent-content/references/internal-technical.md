@@ -50,6 +50,6 @@ domain but did not participate in the drafting conversation.
 
 ## Review artifacts
 
-Use the artifact-specific skill for pull request bodies, review comments,
-tickets, and similar collaboration records. Apply this profile to their prose
-without replacing the artifact's evidence or structure rules.
+If an artifact-specific skill is available for a pull request body, review
+comment, ticket, or similar collaboration record, use it with this profile.
+Keep the artifact's evidence and structure rules.

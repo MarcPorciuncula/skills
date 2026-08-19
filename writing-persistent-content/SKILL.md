@@ -20,8 +20,8 @@ API documentation is external writing.
 
 This skill owns audience assumptions, register, context independence, and the
 publication standard. Artifact-specific guidance owns required content,
-evidence, structure, and workflow. Use both when an artifact-specific skill
-applies.
+evidence, structure, and workflow. If applicable artifact-specific guidance is
+available, use it with this skill.
 
 Follow explicit user direction and project, product, language, or platform
 style before this general guidance.
@@ -76,7 +76,7 @@ and cannot be split.
 
 | Artifact | Audience profile | Additional owner |
 |---|---|---|
-| Pull request body | Internal technical | `writing-pr-bodies` |
+| Pull request body | Internal technical | `writing-pr-bodies`, if available |
 | Specification or design document | Internal technical unless intended for publication | The active specification workflow |
 | Code comment | Internal technical unless rendered or exported publicly | Repository and language conventions |
 | Proto or schema comment | The audience of the generated description | Proto, schema, and API conventions |
