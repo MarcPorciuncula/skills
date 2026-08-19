@@ -11,6 +11,10 @@ description: >
 
 Analyze review comments on the current branch's PR, categorize each one, and present recommendations. Depending on the user's phrasing, either proceed to fix immediately or wait for input.
 
+Use referenced sibling skills only if they are available. When one is absent,
+follow repository and user guidance for that step without weakening this
+skill's analysis, reply, or resolution gates.
+
 ## Each run targets not-dealt-with threads
 
 This skill is invoked iteratively. A PR may have been through prior cycles — possibly in a different session this agent has no memory of. Determine state from the PR itself, not from session continuity.
@@ -89,7 +93,7 @@ Read the current state of the code at each commented location. For each comment,
 - **Outdated / already fixed:** The comment is on code that has already changed or the concern has been addressed in a subsequent commit. Recommend dismissing.
 - **Question or discussion:** The reviewer is asking why something was done a certain way, or making a suggestion that shouldn't be adopted. Draft a clear explanation the user can post as a reply — explain the decision and the reasoning behind it.
 - **Valid concern — simple fix:** A straightforward change like a naming improvement, missing error check, unused import, formatting. These can be batched together in one commit.
-- **Valid concern — behavioural change or test gap:** The comment reveals a real issue that requires a change in behaviour or a gap in test coverage. Before categorising a test gap, read `../testing/SKILL.md` and apply its test-admission criteria.
+- **Valid concern — behavioural change or test gap:** The comment reveals a real issue that requires a change in behaviour or a gap in test coverage. Before categorising a test gap, read `../testing/SKILL.md` and apply its test-admission criteria if that skill is available.
 - **Pedantic:** Technically accurate but adds coupling, complexity, or churn for negligible benefit. Common shapes:
   - Comments about intentional design trade-offs (colocation, inlined patterns)
   - Micro-optimizations outside hot paths
@@ -108,10 +112,11 @@ For intentional divergences, the recommendation depends on the doc type:
 
 - **Single-use plan or execution doc** (e.g. `plans/*.md`, pre-execution specs, one-off design notes consumed during implementation) — **no action**. The plan is a historical artifact; syncing it to final code adds churn without improving the codebase. Asking for a plan to be rewritten to match the code does not improve code quality.
 - **Living design or architecture doc** (e.g. `README.md`, `ARCHITECTURE.md`, docs kept as ongoing reference) — update the doc to match current behaviour.
-- **PR description** — update the description through the `writing-pr-bodies`
-  maintenance path. Only when commit history makes the intent unambiguous; if
-  commits and description conflict about what the PR is supposed to do, stop
-  and surface it to the user rather than rewriting either.
+- **PR description** — use the `writing-pr-bodies` maintenance path if that
+  skill is available. Otherwise preserve protected content and update only
+  claims made stale by the code. Act only when commit history makes the intent
+  unambiguous; if commits and description conflict about what the PR is supposed
+  to do, stop and surface it to the user rather than rewriting either.
 
 If the doc type is unclear, default to treating it as a single-use plan. Ask the user if uncertain.
 
@@ -127,10 +132,12 @@ primary register, or consequential constraints.
 
 ### Test-gap claims as a source of false positives
 
-Read `../testing/SKILL.md` before classifying a request for missing coverage.
-Categorise the comment as **Valid concern — test gap** only when the proposed
-test passes admission. Categorise a failed admission claim as **Pedantic** and
-name the failed criterion in the recommendation.
+If `../testing/SKILL.md` is available, read it before classifying a request for
+missing coverage. Categorise the comment as **Valid concern — test gap** only
+when the proposed test passes its admission criteria. Without that skill, apply
+repository and user test guidance and require the proposed test to exercise a
+distinct behaviour or regression risk. Categorise a failed admission claim as
+**Pedantic** and name the failed criterion in the recommendation.
 
 ### Present the table
 
@@ -170,7 +177,7 @@ This is advisory only. The user decides whether to proceed.
 Work through the approved items:
 
 1. **Batch simple fixes** (naming, formatting, missing checks, etc.) into a single commit. Commit and push.
-2. **Behavioural changes and test gaps:** load `../testing/SKILL.md` before editing tests or production code. Follow its admission and red-green decision. Since review comment fixes are typically small in scope, commit the passing test and implementation together unless the user explicitly requested committed red-green history. Push after committing.
+2. **Behavioural changes and test gaps:** if `../testing/SKILL.md` is available, load it before editing tests or production code and follow its admission and red-green decision. Otherwise follow repository and user test guidance. Since review comment fixes are typically small in scope, commit the passing test and implementation together unless the user explicitly requested committed red-green history. Push after committing.
 3. **Questions/discussion items and out-of-scope items** are skipped during execution — the user handles replies and follow-ups.
 4. **Outdated/already-fixed items** need no action.
 

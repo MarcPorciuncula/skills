@@ -6,15 +6,19 @@ description: >
   user says "babysit this PR", "watch this PR", "keep this PR mergeable",
   "tend the PR", "keep the branch up to date", or asks for an ongoing
   watch on a PR rather than a one-off pass. SKIP for a single "address
-  review comments" pass (use address-review) or a single "update the
-  branch" (use update-branch) with no ongoing watch.
+  review comments" pass (use address-review if available) or a single "update
+  the branch" (use update-branch if available) with no ongoing watch.
 ---
 
 # Babysit a PR
 
 Keep one PR healthy over time. Each iteration: address new bot review
-comments via the address-review skill, rebase the branch via the
-update-branch skill when it has gone stale, then report.
+comments via the address-review skill if available, rebase the branch via the
+update-branch skill if available when it has gone stale, then report.
+
+Treat both composed skills as optional. If a required skill is unavailable,
+report the pending review or branch update and skip that mutation. Continue
+monitoring the remaining signals.
 
 This skill is the loop *body*. It runs under an in-session `/loop`,
 covered at the end.

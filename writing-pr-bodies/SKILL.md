@@ -10,6 +10,11 @@ description: >
 
 # Writing PR titles and bodies
 
+If `writing-persistent-content` is available, load it before drafting and select
+its internal technical profile. When loaded, that profile owns the prose
+register and context assumptions. This skill always owns the PR body's evidence,
+reader model, composition, and posting workflow.
+
 Write for a senior engineer who knows the codebase but has not read the ticket,
 branch history, diff, or implementation discussion.
 

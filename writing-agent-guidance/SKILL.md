@@ -440,7 +440,7 @@ say so once and follow their call.
 
 | The rule is | Home |
 |---|---|
-| Fired by a nameable action (writing a query, running tests, opening a PR) | A skill, plus a one-line loader in the CLAUDE.md nearest to where the action happens ("BEFORE running tests, load the `running-tests` skill") |
+| Fired by a nameable action (writing a query, running tests, opening a PR) | A skill, plus a one-line loader in the CLAUDE.md nearest to where the action happens ("BEFORE running tests, load the `running-tests` skill if available") |
 | Orientation the agent won't discover from the code path it is on (structure, where X lives, what tooling exists) | CLAUDE.md |
 | An ordered procedure that must survive pressure | A skill |
 | Detailed reference or educational content | A skill or a linked doc, not inline in CLAUDE.md |
@@ -518,8 +518,9 @@ when writing one from scratch.
    - It does not restate the contents of a file or section it links to.
    State what the pass cut. A condense pass that cut nothing was not run.
 7. **Review the delta.** Read the change against the previous version; violations cluster in what was added. Then read the whole file once as a first-time reader and run its own standard against its own text. A skill that breaks its own rules has rotted.
-8. **Verify, if behaviour changed.** For a substantive change, use the
-   `pressure-test-skills` skill.
+8. **Verify, if behaviour changed.** For a substantive change, use
+   `pressure-test-skills` if available. Otherwise run an isolated behaviour
+   check and state its limitations.
 
 - DO produce the alignment statement as written text and get it confirmed before editing. Once confirmed, editing in a different register is a visible break from your own stated model
 - DO NOT skip the alignment step because you already know the skill. Skipping it is how the rot got in
@@ -537,9 +538,19 @@ reliably, and the skill must be pressure-tested before it ships.
 - DO write the description as TRIGGER and SKIP conditions concrete enough to fire without judgement (see Hard versus soft trigger in the technique catalogue)
 - DO NOT enumerate the skill's contents in the description. It is a router, not a summary
 
+### Optional cross-skill references
+
+Treat every other skill as independently installed.
+
+- DO put every cross-skill reference under an explicit `if available` condition
+- DO state the fallback when the referenced skill owns a required step
+- DO NOT make a sibling skill's path a prerequisite for using the current skill
+
 ### Strict workflows
 
-When a skill enforces an ordered process and steps get skipped under pressure, the failure is creative compliance, not ignorance. The `writing-pr-bodies` skill is the worked exemplar of the structure that holds:
+When a skill enforces an ordered process and steps get skipped under pressure,
+the failure is creative compliance, not ignorance. If `writing-pr-bodies` is
+available, use it as a worked exemplar of the structure that holds:
 
 - DO state the process as a numbered procedure that produces a concrete artifact, so a skipped step is a visible gap
 - DO put a recognition table of the specific failure patterns next to where each occurs
@@ -549,7 +560,7 @@ When a skill enforces an ordered process and steps get skipped under pressure, t
 ### Mining a skill from a document or conversation
 
 - DO extract through a lens ("what would make an agent more disciplined about X?") and write down only what an existing skill does not already cover
-- DO use `pressure-test-skills` before adding the result
+- DO use `pressure-test-skills` before adding the result if it is available. Otherwise run an isolated behaviour check and state its limitations
 
 ### CLAUDE.md and always-on guidance
 

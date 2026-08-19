@@ -4,7 +4,7 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 
 - **agency** — Choose report, execute, or monitor mode; answer mixed-turn questions in chat before starting accompanying work. Always applicable.
 - **review-findings** — Treat internal review findings as claims, publish their assessment, preserve a task-local record, and continue authorized work without losing feedback. Applies when the `review-findings` skill is installed.
-- **general-communication** — Decision-oriented chat structure, technical precision without technical prose, and concise progress updates. Always applicable.
+- **general-communication** — Decision-oriented chat structure, technical precision without technical prose, concise progress updates, and conditional routing for persistent authored content. Always applicable.
 - **design-and-change-proposals** — For architectural choices, state responsibility, boundary, and a rejected alternative. Skip when ownership is localized and unambiguous.
 - **visual-explanations** — Prefer ASCII diagrams, tables, and call trees for structural or relational explanations. Always applicable.
 - **attributing-content** — Label AI-authored GitHub/Linear comments, except primary-content fields, and preserve human-overview sections. Contains a `{{USER_NAME}}` placeholder. Skip for users who do not collaborate on shared issue trackers.
