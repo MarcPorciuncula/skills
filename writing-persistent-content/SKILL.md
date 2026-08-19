@@ -57,6 +57,8 @@ style before this general guidance.
   artifact unless the history is itself relevant reference material.
 - Use headings, links, lists, tables, and diagrams so their meaning survives
   outside the surrounding paragraph.
+- In repository documentation, refer to files in the same repository with
+  relative paths. Do not use absolute filesystem paths.
 - Prefer claims that remain true after routine implementation changes.
 - Preserve qualifications that affect correctness, compatibility, safety,
   permissions, availability, or user action.
