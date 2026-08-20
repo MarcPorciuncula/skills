@@ -13,6 +13,23 @@ domain but did not participate in the drafting conversation.
   approximations.
 - Link to the canonical explanation instead of duplicating it.
 
+## Technical register
+
+- Name the actual actor, operation, state, and consequence.
+- Describe technical changes and causality literally. Do not write that a
+  capability "grew," "emerged," "fell out of" an implementation, or was
+  "gained" by a component.
+- Do not use em dashes. Split the sentence or use a colon, parentheses, or a
+  list according to the relationship.
+- Do not introduce a list with an empty count such as "Three consequences:".
+  Use an informative heading or start with the content.
+- Do not coin a slogan or use a label-colon construction such as "The key
+  insight:" to make a statement feel important.
+- Use formatting to expose structure or syntax. Do not stack formatting or
+  format whole sentences for cadence.
+- Refer to headings, files, concepts, and procedures by stable name instead of
+  number or relative position.
+
 ## Durable technical content
 
 - Record invariants, ownership, contracts, constraints, and non-obvious
@@ -25,6 +42,8 @@ domain but did not participate in the drafting conversation.
   editing session.
 - Mark assumptions and unresolved questions explicitly when later work depends
   on them.
+- Keep ownership, exclusivity, causality, and other invariants within the
+  evidence. Do not turn a list of responsibilities into a stronger shared rule.
 
 ## Code comments
 

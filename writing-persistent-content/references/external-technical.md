@@ -50,6 +50,15 @@ public product or technical contract without access to internal context.
 
 - Use literal, precise language. Avoid idioms, culturally specific references,
   unnecessary figurative language, and jokes that carry meaning.
+- Explain technical relationships in simpler literal language. Do not invent a
+  metaphor, slogan, or parallel vocabulary to make a concept accessible.
+- Name the actual actor, operation, state, and consequence. Do not describe a
+  technical change as growth, emergence, acquisition, or motion when those
+  words obscure what changed.
+- Do not use em dashes. Split the sentence or use punctuation that states the
+  relationship directly.
+- Do not introduce a list with an empty count or prefix a statement with a
+  label-colon construction such as "The key insight:".
 - Use descriptive headings and link text that remain meaningful out of
   context.
 - Provide text alternatives for images and do not introduce information only
@@ -57,6 +66,8 @@ public product or technical contract without access to internal context.
 - Avoid directional references such as `above`, `below`, or `on the right`
   when a stable label or section name is available.
 - Use consistent terminology, formatting, capitalization, dates, and units.
+- Use formatting to expose structure or syntax. Do not stack formatting or
+  format whole sentences for emphasis or cadence.
 
 ## Google developer documentation reference
 
