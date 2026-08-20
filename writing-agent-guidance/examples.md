@@ -27,6 +27,81 @@ Keep a genuine ownership fact declarative when it supports later choices:
 The first sentence states a stable boundary. The second tells the agent how to
 act within it.
 
+Do not invent a shared invariant to make supplied responsibilities sound more
+cohesive:
+
+Before, when the source only assigns the listed responsibilities:
+
+> Each stage owns exactly one responsibility. Do not duplicate a check in
+> another stage.
+
+After:
+
+> Validate envelope syntax in HTTP handlers. Validate business rules in command
+> services. Select public error codes in queue workers.
+
+The before-form adds exclusivity and a prohibition that the source did not
+establish. The after-form preserves the supplied responsibilities without
+narrowing them.
+
+Do not add conventional implementation advice without source support:
+
+Before, when the source only says that `queue-policy.yaml` configures retry
+limits and backoff:
+
+> Configure retry limits and backoff in `queue-policy.yaml`. Do not hardcode
+> retry values in worker code.
+
+After:
+
+> Configure retry limits and backoff in `queue-policy.yaml`.
+
+The prohibition may be sensible, but it is new policy unless the source or
+inspected implementation establishes it.
+
+## Keep technical relationships literal
+
+Before:
+
+> Retry behaviour fell out of the worker implementation, and the adapter gained
+> responsibility for public errors.
+
+After:
+
+> The worker implementation now controls retry behaviour. The adapter now maps
+> provider failures to public errors.
+
+Name the component and operation directly. Do not substitute literary motion
+or acquisition for a technical change.
+
+## Remove manufactured salience
+
+Before:
+
+> **Two truths:** The key insight: generated files are disposable, and the rule
+> to remember is that schemas steer the ship.
+
+After:
+
+> Edit the schema, then regenerate the client. Do not edit generated files.
+
+Remove empty counts, slogan-like labels, decorative emphasis, and metaphor.
+Keep the actions.
+
+## Reference stable names
+
+Before:
+
+> Apply the technique in section 4. Then run step 7 below.
+
+After:
+
+> Apply *Anchor to a known concept*. Then run **Review the delta and the whole
+> artifact**.
+
+Names survive reordering and are easier to retrieve than numeric or positional
+references.
+
 ## Put the condition before the action
 
 Before:

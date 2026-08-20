@@ -99,6 +99,12 @@ corrupted the payload unless the system establishes that cause.
 - Introduce a project-specific term before relying on it alone.
 - Avoid synonyms that imply distinctions the system does not make.
 - Avoid idioms, slang, and figurative phrases that carry required meaning.
+- Do not invent a metaphor or parallel vocabulary to make a technical
+  relationship seem accessible. State the relationship in literal technical
+  language.
+- Name the actual component and operation. Do not give a component human-like
+  agency or describe a technical change as growth, acquisition, emergence, or
+  motion when those words obscure what changed.
 - Expand an abbreviation on first use unless the intended reader can safely be
   expected to know it.
 

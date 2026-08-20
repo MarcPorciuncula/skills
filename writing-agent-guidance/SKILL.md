@@ -116,6 +116,28 @@ repeated state combinations in shared primitives.
 When several facts define ownership or a decision boundary, prefer a compact
 table or diagram over a dense declarative lede.
 
+Ground every fact and mental model in the source artifact or inspected system.
+Do not invent an invariant to make a list of instructions sound cohesive. In
+particular, do not infer exclusive ownership, a one-to-one responsibility
+mapping, or a prohibition on overlap unless the source establishes it. When the
+source supplies responsibilities without a shared invariant, preserve them as
+instructions or an ownership table without adding one.
+
+Treat supplied requirements as a closed set unless the user asks you to derive
+new policy. Before adding a prohibition, exclusivity claim, causal explanation,
+or implementation constraint, map it to one of these sources:
+
+- An explicit requirement in the source artifact
+- A fact established by the inspected system
+- A necessary logical implication without which the supplied requirement is
+  false
+
+Omit the addition when no source supports it. Do not add a conventional best
+practice merely because it is compatible with the supplied requirements. An
+assignment such as "HTTP handlers validate envelope syntax" does not establish
+that handlers validate syntax only, that no other layer participates, or that
+handlers have exactly one responsibility.
+
 ## Use plain technical language
 
 Apply this profile, derived from ASD-STE100 Simplified Technical English, to
@@ -136,6 +158,36 @@ compliance.
 - Avoid idioms, decorative phrasing, and unexplained abbreviations that carry
   required meaning.
 
+### Keep the register literal and technical
+
+- Use the codebase's terms and name the actual actor, action, and consequence.
+- State changes and causal relationships directly. Write "the implementation
+  added the capability" or "the configuration causes the retry," not that
+  functionality "grew," "emerged," "fell out of" an implementation, or was
+  "gained" by a component.
+- Do not invent a metaphor, analogy, or parallel vocabulary to make technical
+  guidance accessible. Explain the technical relationship in simpler literal
+  language. Use a stable, widely known analogy only when it accurately replaces
+  a longer explanation and the *Anchor to a known concept* technique applies.
+- Do not use em dashes in agent guidance. Split the sentence or use a colon,
+  parentheses, or a list according to the relationship.
+- Do not use threaded clauses or a literary, academic, or colloquial register.
+  Split winding prose into direct sentences.
+- Keep precise descriptors that name distinct properties. Remove intensifiers
+  such as "very," "really," and "extremely" when they add no information.
+
+### Do not manufacture salience
+
+- Do not introduce a list with an empty count such as "Two consequences:" or
+  "Three rules follow:". Use an informative heading or start with the content.
+- Do not coin a slogan, maxim, or memorable label for an instruction.
+- Do not prefix guidance with a label-colon construction such as "The tell:",
+  "The key insight:", or "The rule to remember:". State the instruction or
+  fact directly.
+- Use bold, italics, capitals, code spans, and blockquotes to mark structure or
+  syntax. Do not stack marks or format whole sentences to create emphasis or
+  cadence.
+
 Read [STE-inspired language reference](references/ste-inspired-language.md)
 when reviewing language behaviour, deriving examples, or deciding whether a
 stricter STE rule belongs in agent guidance.
@@ -155,6 +207,9 @@ stricter STE rule belongs in agent guidance.
   to the current editing task.
 - Put the comprehensive form of a rule in one canonical location. Link to it
   elsewhere instead of maintaining parallel copies.
+- Refer to headings, procedures, and concepts by stable name. Do not refer to
+  them by section number, step position, or relative location such as "above"
+  or "the section below" when a stable name exists.
 - Include the minimum fallback needed to act when a linked or sibling guidance
   source is not guaranteed to be available.
 
@@ -166,8 +221,9 @@ stricter STE rule belongs in agent guidance.
 | Drafting-session leakage | The text recaps the conversation, alignment process, or roles between authors | Keep only information the executing agent uses |
 | Strawman rebuttal | The text argues against a position a fresh reader would not plausibly hold | Remove it or state the required behaviour directly |
 | Weak rationale | The text says a rule is important without naming a decision or consequence | Remove it or state the relevant consequence |
-| Coined label | A new slogan or label-colon construction stands in for an instruction | State the instruction or fact directly |
+| Manufactured salience | An empty count, slogan, coined label, label-colon construction, or performative formatting tries to make guidance feel important | Remove the device and state the instruction or fact directly |
 | Declarative command | The agent can violate a sentence that is written as a fact | Rewrite it in imperative form |
+| Unsupported invariant | A summary asserts exclusivity, causality, ownership, or another constraint not established by the source | Remove the inference and preserve only sourced facts and instructions |
 | Duplicate summary | A link site paraphrases the canonical rule and can drift | Name the source and relevant heading; add only required fallback |
 | Over-enforcement | A heuristic gains gates, announcements, and rebuttals without evidence | Return to the lightest form that protects the behaviour |
 
@@ -257,7 +313,11 @@ user has authorised that scope.
    for confirmation only when an unresolved choice would change the result.
 4. **Classify the content.** Distinguish instructions, triggers, facts,
    definitions, caveats, costs, examples, and reference material. Rewrite
-   ambiguous declarative commands before polishing style.
+   ambiguous declarative commands before polishing style. For substantial new
+   guidance or a broad rewrite, first extract the source into flat points with
+   one supplied fact, instruction, condition, or cost per point. Skip this
+   intermediate artifact for a localized edit whose source already matches the
+   target structure.
 5. **Select constraint strength and structure.** Choose the lightest forms that
    protect the behaviour. Add stronger devices only for fragility, failure
    cost, or evidenced noncompliance.
@@ -266,7 +326,12 @@ user has authorised that scope.
 7. **Review the delta and the whole artifact.** Check additions first, then read
    the final artifact without relying on the drafting conversation. Remove
    leakage, inconsistent terminology, accidental duplication, unsupported
-   rigidity, and instructions disguised as facts.
+   rigidity, instructions disguised as facts, and the register or salience
+   patterns in this skill. Trace each new prohibition, exclusivity claim,
+   causal explanation, and implementation constraint to its source. Remove it
+   when the source does not support it. Condense without dropping a
+   requirement. Do not require a separate announcement or report for this
+   pass.
 8. **Validate proportionally.** Run structural validation when available.
    Forward-test when routing, judgment, or compliance behaviour materially
    changed, is uncertain, or addresses a known failure.
