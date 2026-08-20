@@ -87,7 +87,9 @@ Ground claims and relationships in the source material, inspected system, or
 verified public contract. Do not invent an invariant, exclusivity claim,
 causal explanation, or prohibition to make supplied points sound cohesive.
 Preserve the supplied points without adding a stronger relationship when the
-source does not establish one.
+source does not establish one. Do not generalize a concrete mechanism into a
+broader quality claim such as secure, reliable, safe, resilient, or correct
+unless the source establishes that claim.
 
 ## Load the audience profile
 
@@ -126,7 +128,8 @@ instructional.
    authoring sequence.
 4. Read the result once without relying on the drafting conversation. Restore
    missing context, remove process narration, and trace material claims or
-   relationships to their source. Remove unsupported strengthening.
+   relationships to their source. Trace opening, heading, and summary claims
+   before supporting detail. Remove unsupported strengthening.
 5. For external content, verify public terminology, supported behavior,
    accessibility, and any version or availability claim before publication.
 
