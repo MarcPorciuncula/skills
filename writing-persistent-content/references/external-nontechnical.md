@@ -36,6 +36,24 @@ developer context to understand the text.
   privacy, or user action.
 - Do not present planned behavior as currently available.
 
+## Register boundary
+
+For controls, status text, errors, instructions, support content, pricing,
+permissions, policy, and safety information:
+
+- Name the user's action, the product state, or the consequence directly.
+- Do not use em dashes, empty quantified lead-ins, coined slogans,
+  label-colon constructions, or figurative language that obscures required
+  meaning.
+- Do not invent a simpler product term when an established interface label or
+  public term already exists.
+- Use formatting to expose structure. Do not use formatting to manufacture
+  emphasis.
+
+For marketing, brand, or editorial prose, follow the primary style authority.
+It can permit metaphor, cadence, or emphasis when those devices do not obscure
+a product claim, qualification, price, permission, or required action.
+
 ## Select the primary authority
 
 | Artifact | Primary style source |
