@@ -14,8 +14,10 @@ Retain user intent, domain and architecture decisions, and acceptance in the
 coordinator. Delegate repository investigation, implementation details, and
 code changes to a separate implementer agent.
 
-At the start, tell the user that implementation is delegated and interaction
-remains in the coordinator.
+At the start, tell the user that implementation is delegated. When the harness
+can keep the coordinator responsive during implementation, tell the user that
+interaction remains in the coordinator. Otherwise, disclose the limitation
+before dispatch.
 
 ## Responsibility boundary
 
@@ -54,7 +56,10 @@ provides:
 - A context separate from the coordinator
 - Access to the assigned checkout or worktree
 - Follow-up messages or resuming the same agent
-- Observable progress and completion status
+- Non-blocking dispatch when the harness provides it
+- A wait mechanism that new user input can interrupt when the harness provides it
+- Event-driven exception and completion status
+- Current status when the user requests a progress check
 - Coordinator control without requiring the user to message the implementer
 
 Read [Choose the implementer tool and model](references/harness-routing.md)
@@ -158,12 +163,37 @@ user, or deliberately delegate the decision to a stronger model. When more code
 facts are needed, ask the implementer to investigate and report them before
 deciding.
 
+## Wait without supervising implementation
+
+When the harness supports it, dispatch the implementer without waiting for
+implementation to finish. Wait through an event mechanism that new user input
+can interrupt. When input interrupts the wait, handle it in the coordinator,
+send any resulting decision or correction to the implementer, and resume
+waiting unless the input changes or cancels the task.
+
+While the implementer remains active:
+
+- Act when the implementer reports an exception or completion, the harness
+  reports a failure, or the user requests an update or intervention.
+- Treat a wait timeout as no event. Start another wait.
+- Do not read the implementer transcript, inspect the worktree or diff, run
+  verification, or request a progress report solely to measure progress.
+
+Disable coordinator-initiated progress checks by default. If the user requests
+a progress-check interval, treat it as the minimum time between checks. At a
+checkpoint, query agent status first. Inspect implementation state only when
+the user also requests interception or new evidence requires a
+coordinator-owned decision.
+
+If the harness provides only blocking dispatch or an uninterruptible wait,
+tell the user before creating the implementer. Continue with that surface only
+when the user did not require the coordinator to remain responsive.
+
 ## Collaborate through the work
 
 1. Resolve only the coordinator-owned decisions needed to state the outcome.
 2. Create or resume the implementer agent and send the concise handoff.
-3. Wait through the task or agent wait tool. Continue waiting while the status
-   is unchanged; do not treat unchanged status as a blocker or completion.
+3. Follow [Wait without supervising implementation](#wait-without-supervising-implementation).
 4. When the implementer stops, follow
    [Tell the implementer when to stop](#tell-the-implementer-when-to-stop).
 5. When the result misses the intent, explain the mismatch and send a focused
