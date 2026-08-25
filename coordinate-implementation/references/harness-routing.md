@@ -26,12 +26,16 @@ user-visible task or thread for the implementer.
 2. Prepare the worktree before creating the subagent. Put its absolute path in
    the handoff and require every repository command and edit to use that
    working directory.
-3. Create the subagent with fresh context. Set `fork_turns: "none"`, the
-   concrete model, and reasoning effort explicitly.
+3. Create the subagent with fresh context through the non-blocking dispatch.
+   Set `fork_turns: "none"`, the concrete model, and reasoning effort
+   explicitly.
 4. Select Luna for throughput work when the scoped-agent tool exposes it.
    Otherwise use Terra. Use Sol only for intentionally delegated reasoning.
 5. Use the subagent follow-up tool for decisions and corrections. Use the agent
-   wait tool for progress and completion.
+   wait tool for exceptions and completion. Use the longest practical wait
+   timeout. If only the timeout expires, wait again without inspecting the
+   shared worktree or implementer transcript. New user input interrupts the
+   wait and returns control to the coordinator.
 6. Keep the user in the coordinator task.
 
 If the scoped-agent tool cannot provide explicit model selection, the required
