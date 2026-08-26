@@ -93,6 +93,7 @@ A chunk may contain `{{PLACEHOLDER}}` tokens. Keep tokens literal in the chunk s
 Current placeholders:
 
 - **`{{USER_NAME}}`:** preferred name in AI-assisted attribution labels.
+- **`{{PR_REVIEW_REPLY_ALLOWLIST}}`:** Markdown bullet list of human reviewers with standing authorization for AI-generated PR review replies, or `_(none)_` when the list is empty.
 
 When applying a chunk with placeholders:
 
