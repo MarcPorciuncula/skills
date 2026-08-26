@@ -9,6 +9,7 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **address-review** | Analyze and address PR review comments |
 | **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
+| **linear-issue-workflow** | Keep Linear issues aligned with delivery units and reference them by recognizable titles |
 | **map-ui-affordances** | Design and review UI structure with affordance trees |
 | **pressure-test-skills** | Run blind behavior checks after skill changes |
 | **testing** | Admit valuable tests, choose their level, and run red-green |
