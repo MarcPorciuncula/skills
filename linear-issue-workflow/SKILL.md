@@ -32,20 +32,26 @@ Before creating or splitting an issue:
    issues when they may already own the outcome.
 4. Decide whether the new scope can be completed and accepted independently.
 
-Use the following evidence to select the action:
+Use the following evidence to select the issue boundary:
 
-| Situation | Action |
+| Situation | Boundary decision |
 |---|---|
-| The discussion adds behavior, presentation, implementation detail, or acceptance criteria to the same outcome | Update the existing issue. |
-| The discussion resolves or introduces open decisions for the same outcome | Update the existing issue and keep the decisions visibly settled or open. |
-| The proposed work has a separately meaningful outcome that can be completed and accepted independently | Create a separate issue. |
-| The proposed work produces a named document, contract, study, or decision artifact that is itself the requested deliverable | Create a separate issue for that artifact when separate tracking is useful. |
+| The discussion adds behavior, presentation, implementation detail, or acceptance criteria to the same outcome | Keep the work in the existing issue. |
+| The discussion resolves or introduces open decisions for the same outcome | Keep the work in the existing issue and keep the decisions visibly settled or open. |
+| The proposed work has a separately meaningful outcome that can be completed and accepted independently | Use a separate issue. |
+| The proposed work produces a named document, contract, study, or decision artifact that is itself the requested deliverable | Use a separate issue for that artifact when separate tracking is useful. |
 | The discussion has not established a stable outcome and no existing issue owns it | Keep the work in the discussion or a suitable design artifact. Do not create a placeholder issue solely to hold the discussion. |
+
+Treat this table as issue-boundary guidance, not permission to mutate Linear.
+On a discussion-only, analysis, review, or planning request, recommend the
+boundary and proposed issue changes without editing Linear. Create, update,
+retitle, relate, or consolidate issues only when the user has requested that
+mutation or the current authorized workflow already includes it.
 
 When the user explicitly chooses an issue boundary, follow it. When the
 boundary remains materially ambiguous, explain the plausible actions and ask
 before creating another issue. During a continuous discussion of one feature,
-default to updating its existing issue.
+default to recommending its existing issue as the owner.
 
 Do not infer a separate delivery unit from any of these facts alone:
 
@@ -62,6 +68,12 @@ Do not infer a separate delivery unit from any of these facts alone:
 When the user requests a ticket before every detail is settled, create one
 issue for the known outcome. Record unresolved details as open decisions or
 implementation-readiness gates. Update that issue as decisions settle.
+
+Before composing an incremental replacement for an existing issue, retrieve
+its live title, description, status, and relationships. Merge the new
+information into that current record. Do not compose a replacement description
+from incremental discussion alone. If the issue might have changed after that
+read, refresh it immediately before mutation and reconcile the changes.
 
 Keep the description as the current contract for the delivery unit:
 
