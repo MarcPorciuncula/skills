@@ -4,12 +4,21 @@ description: >
   Test admission, design, cleanup, and red-green workflow. TRIGGER before the
   first production-code edit for a behaviour change or bug fix; before creating
   or modifying tests; when reviewing whether tests are valuable, redundant, or
-  missing; or when the user requests tests, TDD, or red-green. SKIP for
-  documentation, copy, formatting, generated-only changes, and running an
-  already-selected test command without changing test design.
+  missing; or when the user requests tests, TDD, or red-green. SKIP while an
+  explicitly activated visual-iteration workflow remains in its disposable
+  visual-staging phase; for documentation, copy, formatting, or generated-only
+  changes; and when running an already-selected test command without changing
+  test design.
 ---
 
 # Testing
+
+## Check applicability after loading
+
+If an explicitly activated visual-iteration workflow remains in its disposable
+visual-staging phase, ignore the remainder of this skill. Do not inspect tests,
+publish a test decision, or run checks. Continue the draft under the
+visual-iteration constraints until the user explicitly exits that phase.
 
 A test is a permanent maintenance commitment. Admit the test before applying
 TDD. No new test is a valid outcome.

@@ -19,6 +19,7 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
 | **update-branch** | Rebase branches or restack git-spice stacks |
+| **visual-iteration** | Stage UI changes rapidly before production implementation |
 | **writing-persistent-content** | Write durable internal or external content for its eventual audience |
 
 ## Repo utilities
