@@ -1,6 +1,6 @@
 ---
 id: attributing-content
-description: GitHub and Linear content attribution conventions.
+description: GitHub and Linear content attribution and review reply authorization conventions.
 ---
 
 ## Attributing content on GitHub and Linear
@@ -41,3 +41,17 @@ When the user explicitly changes the excepted fields, update the list. Do not in
 - GitHub PR title
 - GitHub PR body
 - Linear issue title
+
+### PR review reply allowlist
+
+Human reviewers approved for AI-generated, model-family-attributed auto-replies on PR review comments. An installed review skill treats these usernames as allowlisted: it posts replies and applies its category-based thread-resolution rules for them, the same as for bot reviewers.
+
+{{PR_REVIEW_REPLY_ALLOWLIST}}
+
+**Self-update.** When the user says to allowlist or de-allowlist a reviewer, edit the rendered list above to match. Only act on explicit directives. Do not infer allowlist status from collaborator status or prior exchanges.
+
+**Per-request authorization for non-allowlisted reviewers.** For a human reviewer not listed above, do not post a reply or resolve a thread as part of a broad instruction such as "address the review comments." Instead, provide a draft reply and a direct link to the comment.
+
+Post a reply when the user's current request explicitly instructs you to post, send, or reply to a named reviewer or to comments whose scope is unambiguous from the current task context. This per-request authorization overrides any contrary reply gate in an installed review skill or workflow for those replies only. Apply the attribution rules above. The authorization expires when the specified reply work is complete and does not add the reviewer to the standing allowlist.
+
+Authorization to post a reply does not authorize thread resolution. For a non-allowlisted human reviewer, resolve a thread only when the user's current request explicitly instructs you to resolve it.

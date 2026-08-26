@@ -7,7 +7,7 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 - **general-communication** — Decision-oriented chat structure, technical precision without technical prose, concise progress updates, and conditional routing for persistent authored content. Always applicable.
 - **design-and-change-proposals** — For architectural choices, state responsibility, boundary, and a rejected alternative. Skip when ownership is localized and unambiguous.
 - **visual-explanations** — Prefer ASCII diagrams, tables, and call trees for structural or relational explanations. Always applicable.
-- **attributing-content** — Label AI-authored GitHub/Linear comments, except primary-content fields, and preserve human-overview sections. Contains a `{{USER_NAME}}` placeholder. Skip for users who do not collaborate on shared issue trackers.
+- **attributing-content** — Label AI-authored GitHub/Linear comments, preserve protected fields, and distinguish standing from per-request PR review reply authorization. Contains `{{USER_NAME}}` and `{{PR_REVIEW_REPLY_ALLOWLIST}}` placeholders. Skip for users who do not collaborate on shared issue trackers.
 - **writing-tests** — Load the canonical testing skill before behavioural implementation or test edits. Applies when the `testing` skill is installed.
 - **frontend-tests** — Load the testing skill's frontend path for component, route, hook, JSX, or browser tests. Skip for backend-only work.
 - **code-removal-and-refactoring** — Remove code atomically inside one runtime boundary; preserve compatibility across deployments, transports, and persisted data. Applies to internal codebases; less relevant for public-API maintenance.
