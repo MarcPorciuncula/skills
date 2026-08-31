@@ -396,23 +396,30 @@ Use static review for wording changes that cannot alter routing, decisions, or
 side effects. Validate frontmatter and bundled structure with the harness's
 validator when one is available.
 
-For a behavioural change:
+For a behavioural change, define the observable decision, output, or side
+effect first. Run the smallest realistic check that can answer the current
+question:
 
-1. Define the observable decision, output, or side effect the guidance should
-   change.
-2. Use a control and candidate with identical task prompts and raw artifacts.
-3. Run each in a fresh context that does not expose the diagnosis, expected
-   result, variant name, or authoring conversation.
-4. Activate the skill through the normal routing mechanism when testing its
-   trigger. Record an explicitly named activation as an adherence test, not a
-   routing test.
-5. Score observable behaviour against criteria written before the run.
-6. Confirm an apparent improvement on held-out tasks with different wording
-   and artifacts.
+- Use a candidate-only run to check whether the revised guidance produces the
+  intended behaviour.
+- Add a control when the conclusion depends on attributing an improvement to
+  the edit.
+- Use a fresh context without explicit activation when testing whether the
+  skill routes naturally. An explicitly named activation tests adherence.
+- Add held-out tasks when claiming that the result generalises beyond the
+  representative case.
 
-Use `pressure-test-skills` if it is available. Otherwise run the isolated
-comparison directly and state any limitation in the harness, context isolation,
-or sample size.
+Keep direct hints such as the diagnosis, expected result, authoring
+conversation, and visible variant labels out of the subject's context when
+practical. Do not pursue perfect isolation when remaining context is unlikely
+to change the measured behaviour. State material limitations instead.
+
+Score observable behaviour against criteria written before the run. Keep
+candidate and control prompts and raw artifacts identical when comparing them.
+
+Use `pressure-test-skills` if it is available. Otherwise run a proportional
+behaviour check and state any limitation in activation, context, comparison, or
+sample size.
 
 Do not require a behavioural test when the expected result is already
 deterministic from a structural validator or the change cannot affect agent
