@@ -8,12 +8,13 @@ description: >-
 
 # Pressure Test Skills
 
-Test whether a skill changes the intended observable behaviour. Prefer useful
-evidence soon enough to inform the edit. Isolation supports that goal by
-removing cues that would plausibly change the subject's behaviour; it is not a
-separate goal or a requirement for perfect experimental conditions.
+Run blind tests of whether a skill changes the intended observable behaviour.
+Keep the evaluation design out of the subject's context with the strongest
+isolation the existing runner readily provides. Remove cues that could
+plausibly change the subject's behaviour, but do not let custom harness work or
+exhaustive sanitation displace the behaviour test.
 
-## Choose the smallest useful check
+## Choose the smallest useful blind check
 
 | Question | Check |
 |---|---|
@@ -36,7 +37,7 @@ activation path, and only the raw artifacts needed to perform the task. Define
 the observable behaviour before the run and score the subject's output, tool
 calls, side effects, and changed artifacts against it.
 
-Remove direct evaluation cues when practical:
+Remove direct evaluation cues:
 
 - Do not pass the authoring conversation, diagnosis, intended answer, rubric,
   or prior conclusions.
@@ -49,17 +50,19 @@ Remove direct evaluation cues when practical:
 - Do not warn the subject not to mention the evaluation. The warning is itself
   a cue.
 
-Use a fresh process or `fork_turns: "none"` when inherited turns contain the
-diagnosis or expected result. Exclude this evaluator skill from the subject's
-catalogue when the runner makes that practical. Use neutral names for
+Use the strongest isolation available through the existing runner. Start the
+subject in a fresh context with no inherited authoring turns. Set
+`fork_turns: "none"` for Codex collaboration subagents. Exclude this evaluator
+skill when the runner provides skill-catalogue control. Use neutral names for
 subject-visible variants and fixtures when labels would reveal the expected
 condition.
 
-Do not inventory or sanitize every piece of metadata by default. Inspect a
-title, path, repository name, environment value, or tool output only when the
-subject can see it and it plausibly reveals the evaluation or expected result.
-Stop refining the setup when remaining differences are unlikely to change the
-behaviour being tested.
+Inspect subject-visible metadata for obvious evaluation labels or the expected
+result. Do not inventory every title, path, environment value, or tool output.
+Do not replace a working runner or build new infrastructure only to hide
+low-signal metadata. When the runner cannot isolate a surface directly, use the
+best available separation and report the limitation. Stop refining the setup
+when remaining differences are unlikely to change the behaviour being tested.
 
 ## Run proportionally
 
@@ -79,15 +82,17 @@ Retain enough of the prompt, trace, output, and artifacts to explain the
 result. Do not require a known-success and known-failure scorer calibration
 unless an automated scorer or ambiguous rubric makes calibration useful.
 
-If the subject notices the evaluation, decide whether that recognition could
-have changed the measured behaviour. Remove an obvious leak and rerun when the
-fix is cheap. Otherwise keep the result, disclose the cue as a limitation, and
-avoid claims that depend on blindness. Imperfect isolation does not erase
-otherwise useful evidence.
+If the subject notices the evaluation, classify the run as unblinded. Do not
+count it as evidence of ordinary blind behaviour. The run can still identify a
+leak or demonstrate adherence after explicit activation. Remove an obvious
+leak and rerun when the fix is cheap. If another rerun requires custom
+infrastructure or repeated setup, report the limitation and stop. Do not block
+a useful skill improvement solely because a fully blind run is unavailable.
 
-If setup fails or begins to dominate the work, simplify the check. Prefer an
-explicitly activated adherence run, a candidate-only run, or a clearly
-qualified comparison over repeated fixture and harness refinement.
+If setup fails or begins to dominate the work, simplify the blind check. Prefer
+an explicitly activated adherence run, a candidate-only run, or the strongest
+comparison the existing runner supports over repeated fixture and harness
+refinement.
 
 ## Report the result
 
@@ -96,6 +101,7 @@ State:
 - what behaviour the check exercised;
 - whether the observed result supports the skill change;
 - whether activation was natural or explicit;
+- whether the subject remained blind to the evaluation;
 - any cue, context difference, sample-size limit, or side-effect constraint
   that materially narrows the conclusion.
 

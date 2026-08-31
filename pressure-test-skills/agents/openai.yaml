@@ -1,4 +1,4 @@
 interface:
   display_name: "Pressure Test Skills"
-  short_description: "Run proportional behavior checks after skill changes"
-  default_prompt: "Use $pressure-test-skills to check whether this skill change produces the intended behavior."
+  short_description: "Run blind behavior checks after skill changes"
+  default_prompt: "Use $pressure-test-skills to run a blind check of whether this skill change produces the intended behavior."

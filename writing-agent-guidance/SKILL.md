@@ -397,8 +397,8 @@ side effects. Validate frontmatter and bundled structure with the harness's
 validator when one is available.
 
 For a behavioural change, define the observable decision, output, or side
-effect first. Run the smallest realistic check that can answer the current
-question:
+effect first. Run the smallest realistic blind check that can answer the
+current question:
 
 - Use a candidate-only run to check whether the revised guidance produces the
   intended behaviour.
@@ -410,16 +410,20 @@ question:
   representative case.
 
 Keep direct hints such as the diagnosis, expected result, authoring
-conversation, and visible variant labels out of the subject's context when
-practical. Do not pursue perfect isolation when remaining context is unlikely
-to change the measured behaviour. State material limitations instead.
+conversation, and visible variant labels out of the subject's context. Start
+the subject in a fresh context without inherited authoring turns when the
+runner supports it directly. Use the strongest isolation the existing runner
+provides, but do not build a custom harness or sanitize low-signal metadata
+solely to make the run perfectly blind. State material limitations. If the
+subject recognizes the evaluation, treat the result as unblinded diagnostic
+evidence rather than evidence of ordinary behaviour.
 
 Score observable behaviour against criteria written before the run. Keep
 candidate and control prompts and raw artifacts identical when comparing them.
 
-Use `pressure-test-skills` if it is available. Otherwise run a proportional
-behaviour check and state any limitation in activation, context, comparison, or
-sample size.
+Use `pressure-test-skills` if it is available. Otherwise run the strongest
+readily available blind behaviour check and state any limitation in activation,
+context, comparison, or sample size.
 
 Do not require a behavioural test when the expected result is already
 deterministic from a structural validator or the change cannot affect agent
