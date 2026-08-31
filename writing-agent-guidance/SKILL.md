@@ -397,8 +397,8 @@ side effects. Validate frontmatter and bundled structure with the harness's
 validator when one is available.
 
 For a behavioural change, define the observable decision, output, or side
-effect first. Run the smallest realistic blind check that can answer the
-current question:
+effect first. Select an evidence design that supports the current claim, then
+use the strongest blind setup the existing runner readily provides:
 
 - Use a candidate-only run to check whether the revised guidance produces the
   intended behaviour.
@@ -409,14 +409,19 @@ current question:
 - Add held-out tasks when claiming that the result generalises beyond the
   representative case.
 
+Do not reduce isolation because a candidate-only or narrowly scoped run needs
+less evidence. Evidence breadth and isolation quality are separate decisions.
+
 Keep direct hints such as the diagnosis, expected result, authoring
 conversation, and visible variant labels out of the subject's context. Start
 the subject in a fresh context without inherited authoring turns when the
-runner supports it directly. Use the strongest isolation the existing runner
-provides, but do not build a custom harness or sanitize low-signal metadata
-solely to make the run perfectly blind. State material limitations. If the
-subject recognizes the evaluation, treat the result as unblinded diagnostic
-evidence rather than evidence of ordinary behaviour.
+runner supports it directly. Attempt every readily available isolation measure
+before falling back. When a concrete obstacle remains, try another control the
+runner already provides, remove the specific revealing cue, then omit only the
+measure that would require custom infrastructure or repeated setup. State each
+material limitation. If the subject recognizes the evaluation, treat the
+result as unblinded diagnostic evidence rather than evidence of ordinary
+behaviour.
 
 Score observable behaviour against criteria written before the run. Keep
 candidate and control prompts and raw artifacts identical when comparing them.
