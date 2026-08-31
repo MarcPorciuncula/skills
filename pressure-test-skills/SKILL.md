@@ -8,100 +8,89 @@ description: >-
 
 # Pressure Test Skills
 
-Evaluate a skill without exposing the evaluation design to the agent using it.
-The evaluator owns context construction, variant setup, traces, and scoring.
+Run an ordinary task to determine whether guidance produces the intended
+observable behaviour. Isolation prevents evaluation cues from changing the
+subject's behaviour. It supports the behaviour check and must not displace it.
 
-## IRON LAW: isolate the subject from the evaluator
+## Match the evidence to the claim
 
-NO SUBJECT RUN WITH EVALUATOR CONTEXT.
-
-Keep this skill and every evaluation artifact out of the subject's context.
-
-| The subject receives | The evaluator retains |
+| Question | Check |
 |---|---|
-| Production system and developer instructions | The authoring conversation |
-| The skill under its normal name | The diagnosis and intended fix |
-| An ordinary task request | The scoring rubric and expected result |
-| Raw task artifacts | Variant labels and comparison instructions |
+| Can the subject follow the revised guidance? | Run the candidate on a representative task. This is an adherence check. |
+| Did the edit improve behaviour relative to the previous skill? | Compare candidate and control with the same task and relevant context. |
+| Will the skill load naturally for this request? | Run a fresh-context routing check without naming the skill. |
+| Does the result generalise beyond one task shape? | Add a materially different case or held-out task. |
 
-## Procedure
+Define the observable decision, output, or side effect before writing the task.
+Choose only the evidence needed for the current claim. A candidate-only run
+does not show that the edit improved behaviour. Do not add a control, held-out
+task, scorer calibration, or more cases unless the claim needs it.
 
-1. **Define the behaviour.** Write the observable decision, output, or side
-   effect the changed guidance should affect. Define the scorer before writing
-   the subject prompt.
-2. **Read the runner.** Confirm how it builds prompts, inherits parent turns,
-   discovers skills, chooses a working directory, shares files, applies tool
-   permissions, and stops runs. Record everything the subject can see.
-3. **Build isolated variants.** Start each subject in a fresh process or a
-   spawn mode that passes no parent turns. Use separate task fixtures outside
-   the skills repository. Mount candidate and control under the same normal
-   skill name and path shape. Assign opaque, production-plausible identifiers
-   that do not encode the condition or the evaluation. Keep the model, tools,
-   instructions, limits, and task identical.
-4. **Preflight the subject view.** Render every value the subject can observe:
-   task and thread titles, agent names, prompts, inherited turns, skill
-   catalogues, working directories, repository and branch names, filenames,
-   commands, tool output, artifact metadata, and environment values. Read the
-   rendered view as the subject. Replace every evaluation-labelled value.
-   Do not launch until the complete view looks like an ordinary production
-   task.
-5. **Choose the activation check.** For a trigger check, make the skill
-   discoverable and do not name it. For an adherence check, activate it through
-   the production routing mechanism. If the runner can only activate the skill
-   by naming it in the subject prompt, report the check as unblinded.
-6. **Write an ordinary task.** Give only task-local facts and raw artifacts.
-   Apply time pressure or sunk cost through facts already present in the task,
-   not through reusable evaluation prose. State side-effect limits as normal
-   requester instructions and enforce them in the runner too.
-7. **Run and retain the trace.** Preserve the visible prompt, reasoning,
-   tool-call sequence, tool results, output, and changed artifacts for each
-   run.
-8. **Apply the contamination gate.** When a subject infers that it is being
-   tested, benchmarked, compared, or placed in a scenario, mark the run
-   contaminated. Do not score it as a pass or failure. Find and remove the
-   leaked context before rerunning.
-9. **Score outside the subject.** Apply the prewritten scorer to observable
-   behaviour. Read the traces for leading and rejected variants. Confirm any
-   claimed improvement on held-out tasks with different artifacts and wording.
+An explicitly named skill run is valid evidence about adherence after
+activation. Do not present it as evidence about natural routing.
 
-## Isolation requirements
+## Keep the behaviour check blind
 
-- DO use a fresh process when the ordinary subagent surface cannot isolate the
-  skill catalogue, working directory, or parent history
-- DO set `fork_turns: "none"` for Codex collaboration subagents; the default
-  passes the parent turns
-- DO exclude this evaluator skill from the subject's available skills
-- DO use neutral task titles, agent names, repository names, branch names,
-  paths, filenames, and artifact labels everywhere the subject can observe them
-- DO assign opaque identifiers independently of condition; do not translate
-  `candidate` and `control` into synonyms
-- DO use separate working directories when agents or variants share a
-  filesystem
-- DO keep the candidate and control task prompts byte-identical
-- DO validate the scorer on a known failure and a known success before using it
-- DO NOT expose plans, diffs, branch names, filenames, or repository documents
-  that describe the evaluation
-- DO NOT pass the evaluator's diagnosis, intended answer, rubric, or prior
-  conclusions to the subject
-- DO NOT copy examples from the skill under test or the editing conversation
-  into subject prompts
-- DO NOT add "do not mention the evaluation" to a subject prompt; the warning
-  reveals the evaluation
-- DO NOT treat an explicitly activated run as evidence that the skill triggers
-  naturally
-- DO NOT claim a blinded comparison from ordinary subagents when their context
-  or filesystem cannot be isolated
+Before launching, apply this minimum isolation with controls already provided
+by the runner:
 
-## Red flags: STOP
+- Start the subject in a fresh context without inherited authoring or
+  evaluation turns. Set `fork_turns: "none"` for Codex collaboration
+  subagents.
+- Give the subject the skill under its normal name, an ordinary task, and only
+  the raw artifacts needed to perform it.
+- Keep the evaluator skill, authoring conversation, diagnosis, intended answer,
+  rubric, prior skill, evaluation plan, and variant labels out of the subject's
+  context.
+- Use separate working directories when a subject could inspect or change the
+  other variant's files or state.
 
-| Thought | Reality |
-|---|---|
-| "The task prompt does not mention testing, so the run is blind" | Parent turns, skill instructions, paths, diffs, and repository files can reveal the comparison before the task begins. Inventory the full subject-visible context. |
-| "The task name and directory are only runner metadata" | Task titles, agent names, commands, and paths appear in the subject trace and UI. Give them ordinary, condition-independent values before launch. |
-| "Renaming `candidate` to `experimental` is neutral enough" | A synonym still identifies the condition. Generate opaque names independently of the variant. |
-| "I need to tell the subject which edited skill to read" | That measures adherence after explicit activation. Use production routing or report the run as unblinded. |
-| "The agent noticed the test but still behaved correctly" | Recognition changes behaviour. The run is contaminated and carries no evidence about ordinary use. |
-| "I will tell it not to say that it is being evaluated" | The warning is an evaluation signal. Remove the leak instead. |
-| "One realistic pressure prompt is enough" | A repeated task shape measures recognition of that prompt. Use held-out artifacts and wording. |
+Write the task as a plausible request for the work itself. If pressure or sunk
+cost matters, express it through facts that naturally belong to the task. Do
+not invent an extreme emergency or conspicuous scenario language merely to
+force a decision.
 
-**Violating the letter of these rules is violating the spirit of them.**
+Do not tell the subject to evaluate, benchmark, compare, or pressure-test the
+skill unless evaluation is the behaviour under test. Do not warn the subject
+not to mention the evaluation. The warning is itself a cue.
+
+Inspect subject-visible metadata for obvious evaluation labels or the expected
+result. Do not inventory every title, path, environment value, or tool output.
+After the minimum isolation is in place, run the behaviour check. Do not build
+custom infrastructure or sanitize low-signal metadata to make the setup look
+perfect.
+
+## Run and score
+
+Run the chosen design with side effects limited to the user's authorized
+scope. For a comparison, keep the task prompt, model, tools, instructions, and
+limits the same where those factors affect the claim. Mount each skill under
+its normal name. Use separate working directories when variants could mutate
+or discover each other's state.
+
+Retain enough of the prompt, trace, output, and artifacts to explain the
+result. Score the subject's output, tool calls, side effects, and changed
+artifacts against the defined behaviour. Do not require a known-success and
+known-failure scorer calibration unless an automated scorer or ambiguous
+rubric makes calibration useful.
+
+If the subject infers that it is being tested, do not use that run as evidence
+of ordinary behaviour. Use it to identify the leak. If the run was explicitly
+activated from the start, use it only as an adherence check. Remove one obvious
+high-signal leak and rerun when an existing runner control makes that cheap.
+Otherwise report that the blind behaviour claim was not validated and stop.
+
+## Report the result
+
+State:
+
+- what behaviour the check exercised;
+- whether the observed result supports the skill change;
+- whether activation was natural or explicit;
+- whether the subject remained blind to the evaluation;
+- any cue, context difference, sample-size limit, or side-effect constraint
+  that materially narrows the conclusion.
+
+Stop when the evidence answers the decision needed for the current edit. Do
+not claim improvement from a candidate-only run or broad reliability from one
+task.

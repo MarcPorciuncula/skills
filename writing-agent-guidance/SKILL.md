@@ -396,23 +396,17 @@ Use static review for wording changes that cannot alter routing, decisions, or
 side effects. Validate frontmatter and bundled structure with the harness's
 validator when one is available.
 
-For a behavioural change:
+For a behavioural change, define the observable decision, output, or side
+effect first. Use `pressure-test-skills` if it is available.
 
-1. Define the observable decision, output, or side effect the guidance should
-   change.
-2. Use a control and candidate with identical task prompts and raw artifacts.
-3. Run each in a fresh context that does not expose the diagnosis, expected
-   result, variant name, or authoring conversation.
-4. Activate the skill through the normal routing mechanism when testing its
-   trigger. Record an explicitly named activation as an adherence test, not a
-   routing test.
-5. Score observable behaviour against criteria written before the run.
-6. Confirm an apparent improvement on held-out tasks with different wording
-   and artifacts.
-
-Use `pressure-test-skills` if it is available. Otherwise run the isolated
-comparison directly and state any limitation in the harness, context isolation,
-or sample size.
+Otherwise, run the revised guidance on an ordinary task in a fresh context.
+Keep the authoring conversation, expected result, and previous guidance out of
+the subject's context. Score the observable behaviour against criteria written
+before the run. Add a control only when claiming that the edit improved
+behaviour, and add held-out tasks only when claiming that the result
+generalises. If the subject recognizes the evaluation, treat the result as
+diagnostic rather than evidence of ordinary behaviour. State any material
+limitation.
 
 Do not require a behavioural test when the expected result is already
 deterministic from a structural validator or the change cannot affect agent
