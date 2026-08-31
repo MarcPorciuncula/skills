@@ -397,38 +397,16 @@ side effects. Validate frontmatter and bundled structure with the harness's
 validator when one is available.
 
 For a behavioural change, define the observable decision, output, or side
-effect first. Select an evidence design that supports the current claim, then
-use the strongest blind setup the existing runner readily provides:
+effect first. Use `pressure-test-skills` if it is available.
 
-- Use a candidate-only run to check whether the revised guidance produces the
-  intended behaviour.
-- Add a control when the conclusion depends on attributing an improvement to
-  the edit.
-- Use a fresh context without explicit activation when testing whether the
-  skill routes naturally. An explicitly named activation tests adherence.
-- Add held-out tasks when claiming that the result generalises beyond the
-  representative case.
-
-Do not reduce isolation because a candidate-only or narrowly scoped run needs
-less evidence. Evidence breadth and isolation quality are separate decisions.
-
-Keep direct hints such as the diagnosis, expected result, authoring
-conversation, and visible variant labels out of the subject's context. Start
-the subject in a fresh context without inherited authoring turns when the
-runner supports it directly. Attempt every readily available isolation measure
-before falling back. When a concrete obstacle remains, try another control the
-runner already provides, remove the specific revealing cue, then omit only the
-measure that would require custom infrastructure or repeated setup. State each
-material limitation. If the subject recognizes the evaluation, treat the
-result as unblinded diagnostic evidence rather than evidence of ordinary
-behaviour.
-
-Score observable behaviour against criteria written before the run. Keep
-candidate and control prompts and raw artifacts identical when comparing them.
-
-Use `pressure-test-skills` if it is available. Otherwise run the strongest
-readily available blind behaviour check and state any limitation in activation,
-context, comparison, or sample size.
+Otherwise, run the revised guidance on an ordinary task in a fresh context.
+Keep the authoring conversation, expected result, and previous guidance out of
+the subject's context. Score the observable behaviour against criteria written
+before the run. Add a control only when claiming that the edit improved
+behaviour, and add held-out tasks only when claiming that the result
+generalises. If the subject recognizes the evaluation, treat the result as
+diagnostic rather than evidence of ordinary behaviour. State any material
+limitation.
 
 Do not require a behavioural test when the expected result is already
 deterministic from a structural validator or the change cannot affect agent

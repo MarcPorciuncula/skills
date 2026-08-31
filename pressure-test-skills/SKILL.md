@@ -8,87 +8,57 @@ description: >-
 
 # Pressure Test Skills
 
-Run blind tests of whether a skill changes the intended observable behaviour.
-Keep the evaluation design out of the subject's context with the strongest
-isolation the existing runner readily provides. Remove cues that could
-plausibly change the subject's behaviour, but do not let custom harness work or
-exhaustive sanitation displace the behaviour test.
+Run an ordinary task to determine whether guidance produces the intended
+observable behaviour. Isolation prevents evaluation cues from changing the
+subject's behaviour. It supports the behaviour check and must not displace it.
 
 ## Match the evidence to the claim
 
 | Question | Check |
 |---|---|
-| Does the revised skill produce the intended decision or output? | Run the candidate on a representative task. |
+| Can the subject follow the revised guidance? | Run the candidate on a representative task. This is an adherence check. |
 | Did the edit improve behaviour relative to the previous skill? | Compare candidate and control with the same task and relevant context. |
 | Will the skill load naturally for this request? | Run a fresh-context routing check without naming the skill. |
 | Does the result generalise beyond one task shape? | Add a materially different case or held-out task. |
 
-Choose the evidence design that supports the conclusion you need. Add controls,
-held-out tasks, scorer validation, or more cases when the claim depends on
-them. Evidence breadth and isolation quality are separate decisions. A
-candidate-only run still uses the strongest available blind setup.
+Define the observable decision, output, or side effect before writing the task.
+Choose only the evidence needed for the current claim. A candidate-only run
+does not show that the edit improved behaviour. Do not add a control, held-out
+task, scorer calibration, or more cases unless the claim needs it.
 
 An explicitly named skill run is valid evidence about adherence after
 activation. Do not present it as evidence about natural routing.
 
-## Apply the strongest available isolation
+## Keep the behaviour check blind
 
-Before launching, apply every relevant isolation measure the existing runner
-readily supports. Do not choose a weaker setup because the preferred setup
-might need troubleshooting.
+Before launching, apply this minimum isolation with controls already provided
+by the runner:
 
-| Subject-visible risk | Isolation measure |
-|---|---|
-| Inherited authoring or evaluation turns | Start a fresh context with no inherited turns. Set `fork_turns: "none"` for Codex collaboration subagents. |
-| Evaluator-only skills or instructions | Exclude them when the runner provides skill-catalogue or prompt control. |
-| Labels that reveal the condition or expected result | Use neutral names for subject-visible variants and fixtures. |
-| Cross-variant files or mutable state | Use separate working directories when a subject could inspect or change the other variant's state. |
+- Start the subject in a fresh context without inherited authoring or
+  evaluation turns. Set `fork_turns: "none"` for Codex collaboration
+  subagents.
+- Give the subject the skill under its normal name, an ordinary task, and only
+  the raw artifacts needed to perform it.
+- Keep the evaluator skill, authoring conversation, diagnosis, intended answer,
+  rubric, prior skill, evaluation plan, and variant labels out of the subject's
+  context.
+- Use separate working directories when a subject could inspect or change the
+  other variant's files or state.
 
-Give the subject an ordinary task, the revised skill through the intended
-activation path, and only the raw artifacts needed to perform the task. Define
-the observable behaviour before the run.
+Write the task as a plausible request for the work itself. If pressure or sunk
+cost matters, express it through facts that naturally belong to the task. Do
+not invent an extreme emergency or conspicuous scenario language merely to
+force a decision.
 
-Remove direct evaluation cues:
-
-- Do not pass the authoring conversation, diagnosis, intended answer, rubric,
-  or prior conclusions.
-- Do not tell the subject to evaluate, benchmark, compare, or pressure-test the
-  skill unless evaluation is itself the behaviour under test.
-- Do not expose candidate or control labels, evaluation plans, or the previous
-  skill to a candidate run.
-- Do not copy distinctive examples from the skill or editing conversation into
-  the task prompt when a natural example is available.
-- Do not warn the subject not to mention the evaluation. The warning is itself
-  a cue.
+Do not tell the subject to evaluate, benchmark, compare, or pressure-test the
+skill unless evaluation is the behaviour under test. Do not warn the subject
+not to mention the evaluation. The warning is itself a cue.
 
 Inspect subject-visible metadata for obvious evaluation labels or the expected
 result. Do not inventory every title, path, environment value, or tool output.
-Do not replace a working runner or build new infrastructure only to hide
-low-signal metadata.
-
-## Fall back only when blocked
-
-When a concrete obstacle prevents the preferred blind setup, degrade in this
-order:
-
-1. Use another isolation control already provided by the runner, such as a
-   fresh process, no-history spawn mode, skill-catalogue control, or a separate
-   working directory.
-2. Remove or neutralize the specific subject-visible cue that reveals the
-   evaluation or expected result.
-3. If the remaining measure requires custom infrastructure, a replacement
-   runner, or repeated setup, omit that measure and record the limitation. Keep
-   every other available isolation measure.
-4. If the subject notices the evaluation, classify the run as unblinded. Use it
-   only to identify the leak or demonstrate adherence after explicit
-   activation. Remove an obvious leak and rerun when the fix is cheap.
-5. If no stronger blind run is practical after those attempts, report the best
-   result available and stop. Do not block a useful skill improvement solely
-   because perfect isolation is unavailable.
-
-Do not skip directly to a weaker setup. Name the obstacle that caused each
-fallback. Stop refining the setup when the remaining differences are unlikely
-to change the behaviour being tested.
+After the minimum isolation is in place, run the behaviour check. Do not build
+custom infrastructure or sanitize low-signal metadata to make the setup look
+perfect.
 
 ## Run and score
 
@@ -104,6 +74,12 @@ artifacts against the defined behaviour. Do not require a known-success and
 known-failure scorer calibration unless an automated scorer or ambiguous
 rubric makes calibration useful.
 
+If the subject infers that it is being tested, do not use that run as evidence
+of ordinary behaviour. Use it to identify the leak. If the run was explicitly
+activated from the start, use it only as an adherence check. Remove one obvious
+high-signal leak and rerun when an existing runner control makes that cheap.
+Otherwise report that the blind behaviour claim was not validated and stop.
+
 ## Report the result
 
 State:
@@ -116,5 +92,5 @@ State:
   that materially narrows the conclusion.
 
 Stop when the evidence answers the decision needed for the current edit. Do
-not claim broad reliability from one task, and do not delay a useful skill
-improvement solely to make a one-off test fully blind.
+not claim improvement from a candidate-only run or broad reliability from one
+task.
