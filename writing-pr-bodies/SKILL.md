@@ -140,9 +140,12 @@ Start the critic without inherited parent turns or conversation history.
 2. **Draft from the model.** Write the title and body together. Use the body
    shape for the primary classification. Draft through a file so the exact
    artifact can be reviewed and posted.
-3. **Run the blind read.** Give an isolated critic only the proposed title and
-   body plus the complete request below. When delegation is unavailable,
-   produce the same report yourself as a mechanical review artifact.
+3. **Run the blind read.** Give an isolated critic only the proposed title,
+   agent-authored body content, and complete request below. Exclude preserved
+   human-authored sections and everything inside them from the critic artifact.
+   Do not replace excluded content with a summary, placeholder, or description.
+   When delegation is unavailable, produce the same report yourself as a
+   mechanical review artifact.
 4. **Check the evidence.** The primary agent checks the reader model and body
    against the author brief, live PR, base-to-head diff, and relevant
    surrounding code. Correct unsupported claims and consequential omissions
@@ -204,11 +207,20 @@ wording, a revised section structure, or exact edits. The author owns all
 editorial decisions.
 ```
 
-The primary agent owns the title and body. The critic reports and verifies; it
-does not post or inspect implementation evidence. Check code against the user
-requirements and accepted behaviour, not against the PR body as an acceptance
-specification. When body and code differ, correct the body unless an independent
-requirement shows the code is wrong.
+The primary agent owns the title and agent-authored body content. The critic
+reports and verifies; it does not post or inspect implementation evidence.
+Check code against the user requirements and accepted behaviour, not against
+the PR body as an acceptance specification. When body and code differ, correct
+the agent-authored content unless an independent requirement shows the code is
+wrong.
+
+The cold-reader verdict applies only to the title and agent-authored body
+content supplied to the critic. Do not revise or compensate for an excluded
+human-authored section in response to critic feedback. The primary agent still
+assembles the complete body, preserves excluded sections byte-for-byte, and
+checks the complete artifact for factual conflicts before posting. If an
+excluded section contains a material conflict, report it instead of editing the
+protected content.
 
 A later code change requires another title and body check only when it
 invalidates a body claim or changes the reader model. Use the maintenance path
@@ -360,8 +372,9 @@ a rewrite.
 
 ## Cold-read checks
 
-Apply these checks to the title and body together. A substantial body cannot be
-posted with a failed check.
+Apply these checks to the title and agent-authored body content together. Exempt
+preserved human-authored sections from these checks. A substantial body cannot
+be posted with a failed check for the content in scope.
 
 1. Scan only the title, opening, headings, diagrams, and bullet leads. State the net change, motivation, and core model without reading prose paragraphs in full. Recast the body when load-bearing facts are invisible at scan depth.
 2. Read the body in full. Confirm that its sections and representations connect naturally instead of making the reader infer why one follows another. Add concise lead-ins or connective prose when the scan works but the full read feels abrupt.
