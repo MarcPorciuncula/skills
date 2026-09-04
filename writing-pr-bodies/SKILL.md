@@ -300,8 +300,8 @@ confirm all of these properties:
 
 - The spatial arrangement communicates information that another representation
   would make the reader reconstruct.
-- The visual has one dominant reading direction without crossings or long
-  return paths.
+- The visual has one dominant reading direction. Keep crossings out and keep
+  return paths local to the cycle they express.
 - Unlabelled connectors have one stable meaning. Label connectors when the
   diagram needs distinct relationships.
 - Branch origins, targets, and junctions do not imply unsupported ordering,
@@ -416,7 +416,7 @@ be posted with a failed check for the content in scope.
 8. Remove implementation details that the diff exposes without changing reviewer understanding or review strategy.
 9. Consolidate any capability, flow, or boundary explained in more than one place.
 10. For each diagram, state the reviewer question it answers and the relationship communicated by its geometry. Compare it with a numbered sequence, table, bullets, snippet, or prose. Recast it when the simpler form preserves the meaning or the visual combines distinct questions.
-11. Trace every diagram route. Recast a visual with ambiguous connectors, changing connector meanings, unclear branch origins or targets, crossings, long return paths, or implied relationships that the body does not claim.
+11. Trace every diagram route. Recast a visual with ambiguous connectors, changing connector meanings, unclear branch origins or targets, crossings, return paths that wind past unrelated nodes, or implied relationships that the body does not claim.
 12. Replace prose reconstruction of review-significant non-linear topology or branching state with a plain-text diagram when it passes the diagram checks.
 13. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
 14. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
