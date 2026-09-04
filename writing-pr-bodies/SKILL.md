@@ -188,6 +188,9 @@ Return:
 - full-read interpretation of the net change and motivation;
 - the three to five facts or relationships you retained;
 - the apparent functional or non-functional register;
+- representation fitness for each diagram: the reviewer question it answers,
+  the relationship its geometry communicates, whether a simpler conventional
+  form preserves the meaning, and any ambiguous connector;
 - blocking issues as: location, reader effect, and failed rubric check;
 - duplicated ideas, diff-level details, and context-dependent terms;
 - PASS or FAIL.
@@ -200,6 +203,9 @@ Rubric:
 4. Every section answers a distinct reviewer question without duplication.
 5. Terms and claims are understandable without ticket or branch history.
 6. Details visible in the diff are omitted unless they change review strategy.
+7. Each diagram makes a review-significant relationship easier to perceive than
+   a numbered sequence, table, bullets, snippet, or short prose. Its reading
+   direction, connectors, branches, and junctions are unambiguous.
 
 Identify what is unclear, redundant, unsupported by the body, or dependent on
 missing context and explain its reader effect. Do not propose a title, replacement
@@ -273,27 +279,51 @@ nearest existing implementation. State what is shared, what differs, and why.
 | Information | Representation |
 |---|---|
 | Parallel screens, surfaces, or affordances | Bullets or a compact table |
-| Component topology, branching flow, or state movement | Plain-text diagram |
-| Temporal procedure | Numbered sequence |
-| Responsibility ownership | Labels in a plain-text diagram or parallel bullets |
+| Ordered actions or a temporal procedure | Numbered sequence; a short one-direction chain only when it improves scanning |
+| Review-significant hierarchy or nesting | Plain-text tree |
+| Review-significant topology, branching, convergence, cycle, or state transition | Plain-text diagram |
+| Responsibility ownership without meaningful topology | Parallel bullets or a compact table |
 | Parallel guarantees, modes, conditions, or exceptions | Bullets |
 | Cause, comparison, implication, or rationale | Short prose |
-| Small API delta | Before/after snippet |
+| Data shape, predicate, or small API delta | Contract or before/after snippet |
 
-Use one primary representation for one model. Do not repeat the same model as a
-diagram, table, prose explanation, and test plan. Prose beside a diagram or
-table explains its implications instead of narrating it again. Keep one
-abstraction level in each visual.
+Choose the simplest conventional representation that preserves the
+review-significant relationship. Component count alone does not justify a
+diagram. Use one representation for each reviewer question. A body may use
+different representations for contracts, runtime order, ownership, and
+compatibility when those are distinct questions within one coherent model.
+Do not repeat one answer as a diagram, table, prose explanation, and test plan.
+
+Use a diagram only when its geometry makes a real hierarchy, topology, branch,
+convergence, cycle, or state transition easier to perceive. Before keeping one,
+confirm all of these properties:
+
+- The spatial arrangement communicates information that another representation
+  would make the reader reconstruct.
+- The visual has one dominant reading direction without crossings or long
+  return paths.
+- Unlabelled connectors have one stable meaning. Label connectors when the
+  diagram needs distinct relationships.
+- Branch origins, targets, and junctions do not imply unsupported ordering,
+  timing, ownership, or containment.
+- The reader can trace every route without prose that explains what an arrow
+  means.
+
+When a diagram fails one of these checks, simplify it, split distinct reviewer
+questions into separate representations, or use a numbered sequence, table,
+bullets, snippet, or prose. Keep one abstraction level in each visual.
 
 When a heading does not explain why a list, table, or diagram follows, add a
 short lead-in that frames the reviewer question or relationship. Do not repeat
 the heading in sentence form. A lead-in earns its place by making the material
 that follows easier to interpret.
 
-When prose asks the reader to connect three or more components or branching
-states, replace it with a plain-text diagram. Use subject-specific
-headings such as `Changed surfaces`, `Runtime flow`, `Permission model`,
-`Compatibility`, or `Release path`. Avoid a generic `Design` section.
+When prose makes the reader reconstruct review-significant non-linear topology
+or branching state, use a plain-text diagram if it passes the diagram checks.
+Do not turn a sequence or sparse ownership map into a diagram merely because it
+names several components. Use subject-specific headings such as `Changed
+surfaces`, `Runtime flow`, `Permission model`, `Compatibility`, or `Release
+path`. Avoid a generic `Design` section.
 
 After a diagram, use at most one short prose paragraph to explain its
 implication. A lead-in before the diagram does not count against that paragraph.
@@ -385,10 +415,12 @@ be posted with a failed check for the content in scope.
 7. Replace terminology that depends on the ticket, specification, branch history, or implementation discussion.
 8. Remove implementation details that the diff exposes without changing reviewer understanding or review strategy.
 9. Consolidate any capability, flow, or boundary explained in more than one place.
-10. Replace prose reconstruction of topology or branching state with a plain-text diagram.
-11. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
-12. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
-13. Remove `How to test` when it only restates the body or routine CI.
+10. For each diagram, state the reviewer question it answers and the relationship communicated by its geometry. Compare it with a numbered sequence, table, bullets, snippet, or prose. Recast it when the simpler form preserves the meaning or the visual combines distinct questions.
+11. Trace every diagram route. Recast a visual with ambiguous connectors, changing connector meanings, unclear branch origins or targets, crossings, long return paths, or implied relationships that the body does not claim.
+12. Replace prose reconstruction of review-significant non-linear topology or branching state with a plain-text diagram when it passes the diagram checks.
+13. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
+14. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
+15. Remove `How to test` when it only restates the body or routine CI.
 
 When a body exceeds 300 words before references, run an explicit compression
 check before posting. Length alone does not require a rewrite. Keep material
@@ -400,7 +432,8 @@ remove material that communicates the same model less directly.
 | Functional opening followed by implementation narration | Rebuild the body from changed surfaces and affordances |
 | Many accurate details but no retained model | Recast the body around the reader-model facts |
 | The same capability appears in several sections | Keep one representation and remove the repeats |
-| Prose makes the reader reconstruct connected components or branching states | Replace it with a plain-text diagram |
+| Prose makes the reader reconstruct non-linear topology or branching state | Use a diagram when its geometry makes the relationship clearer |
+| A diagram disguises a sequence, combines distinct questions, or uses ambiguous connectors | Split the reviewer questions and use the simplest form for each |
 | A diagram is followed by several paragraphs of responsibilities or guarantees | Move parallel facts into diagram labels or bullets and keep one implication paragraph |
 | Several independent guarantees share one prose paragraph | Convert them to bullets, even when the paragraph is short |
 | The scan works but the full read feels abrupt or fragmented | Add a concise lead-in, connect related ideas, or combine sections without hiding parallel facts in prose |

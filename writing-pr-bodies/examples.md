@@ -81,6 +81,44 @@ The user-facing inventory remains primary. The plain-text diagram earns its
 place because the immutable publishing boundary changes product behaviour and
 what reviewers must verify.
 
+## Contract change with a sequential runtime path
+
+```markdown
+Adds named credentials to deployment definitions so jobs can use centrally
+managed secrets without copying secret values into each definition. A caller
+selects an allowed credential when starting a deployment, and the runtime
+exchanges its stored reference for a short-lived provider token only when a job
+needs it.
+
+## Changed contracts
+
+| Surface | Contract |
+|---|---|
+| Deployment definition | Declares the credential names that its jobs may use. |
+| Start request | Binds each required name to a credential available in the current project. |
+| Deployment run | Stores the credential reference, not the secret value or provider token. |
+| Job runtime | Exchanges an allowed reference for a short-lived token immediately before provider access. |
+
+## Resolution sequence
+
+1. The start endpoint verifies that every required name has one binding.
+2. The credential service checks project membership and definition allowlists.
+3. The deployment run stores the validated credential references.
+4. Each job exchanges its reference for a short-lived token when execution
+   reaches the provider step.
+
+## Security boundary
+
+A stored reference identifies which credential a job may use. It does not
+contain a secret, grant access to credentials absent from the definition, or
+let one project resolve another project's credentials.
+```
+
+The body uses a table for contracts, numbered steps for temporal order, and
+prose for the security implication. These are distinct reviewer questions
+within one model. Combining them into one diagram would make connectors mean
+accepts, validates, stores, exchanges, and authorises at different points.
+
 ## Architecture and runtime flow
 
 ```markdown
