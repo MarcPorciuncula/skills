@@ -378,6 +378,9 @@ apply.
 - When several paragraphs under one heading make their relationship hard to recover, add connective wording, split a distinct reviewer question into its own section, or recast genuinely parallel facts. Paragraph count alone does not decide the structure.
 - When a paragraph functions as an inventory of parallel responsibilities, guarantees, modes, conditions, or exceptions, use bullets or a diagram. Keep causal, comparative, and connective explanation in prose.
 - Use bullets only for genuinely parallel items.
+- Do not hard-wrap prose or list items in PR body source. Keep each paragraph or
+  item on one source line and let GitHub wrap it visually. Preserve line breaks
+  required by Markdown structure or intentionally requested formatting.
 - Mention secondary changes only when they have a behavioural, API, review, or release consequence.
 - Omit file inventories, identifier inventories, generated-file recaps, routine test lists, diff statistics, process narration, and branch history.
 - Avoid marketing language, generic reassurance, literary transitions, and padding.
@@ -420,7 +423,8 @@ be posted with a failed check for the content in scope.
 12. Replace prose reconstruction of review-significant non-linear topology or branching state with a plain-text diagram when it passes the diagram checks.
 13. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
 14. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
-15. Remove `How to test` when it only restates the body or routine CI.
+15. Inspect the raw Markdown. Reflow manual line breaks inside prose paragraphs and list items while preserving structural or intentional line breaks.
+16. Remove `How to test` when it only restates the body or routine CI.
 
 When a body exceeds 300 words before references, run an explicit compression
 check before posting. Length alone does not require a rewrite. Keep material
