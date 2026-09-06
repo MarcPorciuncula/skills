@@ -79,12 +79,21 @@ This gate applies regardless of category. A "trivial directive" or "outdated" co
 
 ### Gather comments
 
-1. Determine the PR for the current branch: `gh pr view --json number,url`
+1. Determine the PR and record its current head as the review-iteration base:
+   `gh pr view --json number,url,headRefOid`.
 2. Fetch all inline review comments using `fetch-review-comments.sh`. Group into threads using the `Reply to` field (a comment with no reply-to is its thread's root).
 3. Fetch PR conversation comments: `gh pr view --comments`
 4. Fetch review statuses using `fetch-reviews.sh`.
 5. For each thread, read the full comment history in order and classify it as dealt-with or not-dealt-with per "Each run targets not-dealt-with threads". Only not-dealt-with threads enter the analysis table.
 6. Record every comment ID from step 2 that you analyze (i.e., comments in not-dealt-with threads). These IDs are needed in Phase 3 to scope replies and thread resolution to only the comments you actually reviewed.
+
+When the user supplies a specific review-comment URL or comment ID, target only
+that comment's full thread. A PR-only request targets all not-dealt-with threads.
+
+Treat suppressed comments embedded in an automated review summary as context,
+not as review threads. Do not add them to the implementation scope unless the
+user explicitly requests them or the analyzed thread cannot be fixed correctly
+without the same change.
 
 ### Assess each comment
 
@@ -176,15 +185,20 @@ This is advisory only. The user decides whether to proceed.
 
 Work through the approved items:
 
+Comments gathered in Phase 1 are external PR feedback, including comments from
+automated reviewers. Do not load `review-findings` for them.
+
 1. **Batch simple fixes** (naming, formatting, missing checks, etc.) into a single commit. Commit and push.
 2. **Behavioural changes and test gaps:** if `../testing/SKILL.md` is available, load it before editing tests or production code and follow its admission and red-green decision. Otherwise follow repository and user test guidance. Since review comment fixes are typically small in scope, commit the passing test and implementation together unless the user explicitly requested committed red-green history. Push after committing.
 3. **Questions/discussion items and out-of-scope items** are skipped during execution — the user handles replies and follow-ups.
 4. **Outdated/already-fixed items** need no action.
 
-Verify and self-review the fixes against the last reviewed head and their
-affected paths. Do not restart a whole-PR review for small fixes. Repeat it only
-when the fixes expand scope or cross a new responsibility, runtime,
-compatibility, or safety boundary.
+Verify and inspect the fixes against the review-iteration base recorded in
+Phase 1 and their affected paths. This is a review-comment iteration, not a PR
+submission boundary. Do not invoke a repository submission self-review skill or
+delegate a cumulative PR review. Repeat a whole-PR review only when the user
+explicitly requests it or the fixes expand scope or cross a new responsibility,
+runtime, compatibility, or safety boundary.
 
 In evaluate mode: do not post reply comments on GitHub — the user will handle the review conversation. Focus on code changes only.
 
