@@ -241,13 +241,18 @@ why it matters or why this approach exists within the opening paragraph or two.
 The title and opening should let a reviewer scanning a queue decide what context
 they need next.
 
-For a functional change, lead with externally observable behaviour. For a
-non-functional change, lead with the code or system boundary being changed.
+For a functional change, lead with the change in externally observable
+behaviour. For a non-functional change, lead with the code or system boundary
+being changed.
 Implementation belongs in the opening only when that boundary is the subject.
 
-Prefer subjectless present-active language when the PR is the implicit subject:
-`Adds`, `Moves`, `Switches`, `Removes`, `Prevents`. Use a named subject when it
-carries information: `Each upload now reports its own progress`.
+Make the first agent-authored change sentence state what the PR changes. Use the
+PR as the implicit subject with a present-active verb: `Adds`, `Moves`,
+`Updates`, `Switches`, `Removes`, `Prevents`. Do not open with a resulting-state
+claim such as `The service now deploys previews`; write `Updates preview
+deployment to run through the service` instead. After the change sentence, use
+a named subject when it clarifies the resulting behaviour: `Each upload now
+reports its own progress`.
 
 Do not use a `Summary` or `What changed` heading. The opening is the summary.
 
