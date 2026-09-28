@@ -25,8 +25,8 @@ explain the change as a whole.
 
 When a PR body exists, read it before inspecting the diff in depth. Treat it
 as an attempted explanation and one source of evidence, not as the outline or
-authority for your explanation. Identify what the body makes clear and what remains unclear
-so the investigation can focus on those gaps.
+authority for your explanation. Identify what the body makes clear and what
+remains unclear so the investigation can focus on those gaps.
 
 Assess whether the body provides:
 
