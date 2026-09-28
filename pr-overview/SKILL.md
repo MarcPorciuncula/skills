@@ -1,50 +1,29 @@
 ---
 name: pr-overview
 description: >
-  TRIGGER: Use when the user invokes `pr-overview` by name or slash command,
-  explicitly asks for a "PR overview", or asks for an explanatory walkthrough
-  of a PR or a specific part of its behaviour or implementation. SKIP: Do not
-  use for correctness review, PR status, review comments, or implementation
-  work unless the user also asks for an overview or explanation.
+  TRIGGER: Use only when the user invokes `pr-overview` by name or slash
+  command, or explicitly asks for an overview of a PR or branch. SKIP: Do not
+  use for a direct question about a PR, including its behaviour or
+  implementation, or for correctness review, PR status, review comments, or
+  implementation work unless the user also explicitly asks for an overview.
 ---
 
 # PR overview
 
-The user invoked this skill because the PR body is not sufficient for their
-review. Investigate the change independently and provide the explanation they
-need.
+## Check applicability after loading
 
-When the user supplies a question or area of focus, make it the primary target.
-Answer it directly and add enough surrounding context to make the answer
-understandable. Do not let a general PR overview displace or bury the answer.
+If the user did not explicitly ask for an overview of a PR or branch and did
+not invoke `pr-overview`, ignore the rest of this skill. Answer direct questions
+about a PR with the guidance applicable to the question.
 
-When the user supplies no question, explain the PR as a whole.
+Investigate the requested PR or branch and provide the overview the user asked
+for. When the request includes a question or area of focus, answer it directly
+and add only the context needed to understand it. When there is no focus,
+explain the change as a whole.
 
-## Assess the PR body
-
-Read the PR body before inspecting the diff in depth. Treat it as an attempted
-explanation and one source of evidence, not as the outline or authority for
-your explanation.
-
-Before deeper investigation, state a short note to the user covering:
-
-- what the body makes clear;
-- what it does not make understandable or reviewable; and
-- what evidence you will inspect to repair that gap.
-
-When the user supplied a question, assess the body against that question and
-the context needed to answer it. Keep this assessment out of the final
-explanation unless the user asks for it.
-
-Assess whether the body provides:
-
-- the net change and why it exists;
-- prerequisite context before relying on it;
-- a coherent before-and-after model;
-- the important behaviour, relationship, responsibility, or invariant;
-- the actual shape of any changed contract;
-- proportionate emphasis on consequential details; and
-- claims that agree with the implementation.
+Read the PR body when one exists. Use it as a source of context and check its
+claims against the implementation. Discuss the body's quality or gaps only
+when the user asks about them.
 
 ## Investigate the change
 
