@@ -21,9 +21,25 @@ for. When the request includes a question or area of focus, answer it directly
 and add only the context needed to understand it. When there is no focus,
 explain the change as a whole.
 
-Read the PR body when one exists. Use it as a source of context and check its
-claims against the implementation. Discuss the body's quality or gaps only
-when the user asks about them.
+## Assess the PR body
+
+When a PR body exists, read it before inspecting the diff in depth. Treat it
+as an attempted explanation and one source of evidence, not as the outline or
+authority for your explanation. Identify what the body makes clear and what remains unclear
+so the investigation can focus on those gaps.
+
+Assess whether the body provides:
+
+- the net change and why it exists;
+- prerequisite context before relying on it;
+- a coherent before-and-after model;
+- the important behaviour, relationship, responsibility, or invariant;
+- the actual shape of any changed contract;
+- proportionate emphasis on consequential details; and
+- claims that agree with the implementation.
+
+Keep this assessment internal. Do not announce what the body explains or omits
+unless the user asks about the body itself.
 
 ## Investigate the change
 
