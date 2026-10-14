@@ -279,6 +279,29 @@ Explain meaningful architecture at the level of components and responsibilities:
 When the PR adds a sibling, replacement, or parallel path, compare it with the
 nearest existing implementation. State what is shared, what differs, and why.
 
+### Review-significant internal contracts
+
+For a functional PR, include internal contracts only when they explain the
+behaviour, review risk, compatibility, persistence, or operational boundary.
+For a non-functional PR, make central contract changes visible without listing
+every changed identifier. Use the smallest table, snippet, or flow that answers
+the reviewer's question.
+
+- When persisted state is central, identify the records and relationships that
+  support the behaviour. Distinguish authoritative data from a derived
+  projection. If a projection changes, state its lookup purpose, what updates
+  and removes it, and the relevant keys or indexes when they explain the query
+  or invariant.
+- When a producer gains another reaction, show where fan-out is composed and
+  name the existing and new reactions. Distinguish direct calls, advisory
+  notifications, and queued work. Include transaction timing and delivery
+  properties when they affect the review or rollout. Identify the downstream
+  path shared by the reactions when that explains their relationship.
+
+Name the actor and operation at each consequential handoff. A phrase such as
+"completion queues coordination" is too compressed when it hides a new
+dispatcher, an existing publisher, or a different inline path.
+
 ### Choose the information shape
 
 | Information | Representation |

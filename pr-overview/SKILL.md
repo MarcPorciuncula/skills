@@ -79,6 +79,23 @@ For every central contract named in the explanation, show its relevant
 signature or members. A contract name in a diagram or paragraph does not count.
 Group related declarations when several contracts form one boundary.
 
+When a changed behaviour depends on persisted data, show the review-significant
+database shape. Name the records and relationships that locate the affected
+work, and distinguish authoritative state from a derived projection. For a
+projection, explain what updates it, how readers query it, and when entries are
+removed. Include columns or indexes only when they explain a lookup, invariant,
+or migration consequence. Do not let a description of an API or stored JSON
+hide a changed relational lookup.
+
+When a change adds a reaction to an existing completion or event path, trace
+the path from the producer to each consequential consumer. Identify the
+composition point where fan-out is added, which reactions already existed,
+and which are new. Name the actual boundary between inline calls, advisory
+notifications, and queued work, including transaction timing and delivery
+properties when they affect behaviour. Show the shared downstream path where
+branches converge. Do not collapse distinct mechanisms into an unspecified
+"event" or "hook".
+
 ## Write the explanation
 
 Lead with the answer to the user's question or the behavioural shape and reason
