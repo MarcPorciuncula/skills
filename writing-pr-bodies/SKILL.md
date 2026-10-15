@@ -32,20 +32,33 @@ why they matter. Leave supporting detail in the diff or linked specification.
 Classify the PR before drafting. Diff size and implementation complexity do not
 decide the classification.
 
-| Primary change | Main subject of the body |
+Classify a change as functional when it is intended to affect public or
+user-facing behaviour or contracts observed by a user or consumer. For a
+frontend application, that consumer is the person using the application. For a
+library, it is the developer consuming its public API. Classify an internal
+change as non-functional when it is intended to preserve consumer-visible
+behaviour and contracts. A developer-facing API change can therefore be
+functional; an internal interface change alone does not make it functional.
+
+| Primary change | Title, opening, and first part of the body |
 |---|---|
-| Functional | Changed surfaces, affordances, states, and user journeys |
-| Non-functional | Changed system boundaries, responsibilities, flows, developer interfaces, or operational behaviour |
+| Functional | Changed public or user-facing surfaces, consumer-visible behaviour and contracts, affordances, states, and user journeys |
+| Non-functional | Internal boundaries, responsibilities, flows, interfaces, or operations changed while preserving consumer-visible behaviour and contracts |
 | Mixed | The functional or non-functional change that explains why the PR exists |
 
-Keep the selected register throughout the body. For a mixed PR, use the primary
-register and add material from the other only when it affects behaviour, review
-risk, compatibility, safety, rollout, or a meaningful product limitation.
+Use classification to choose the lead and emphasis, not to exclude consequential
+architecture. For a functional PR, first explain what was delivered through
+changed public or user-facing surfaces and consumer-visible behaviour, contracts,
+affordances, states, and limitations. Then explain how it was delivered through
+the internal contracts and architectural choices needed to
+assess the implementation. Keep these subjects in separate paragraphs or
+sections; do not interleave product behaviour with implementation mechanics.
+For a non-functional PR, lead with the changed architecture or contract.
 
-Do not turn a functional PR into implementation narration after a user-facing
-opening. A product inventory of changed surfaces and affordances is orientation;
-an inventory of files, types, state objects, parsing steps, or serialization is
-not.
+Use subject-specific subsections when the architecture needs several views.
+A small change may need only a later paragraph. Do not require a fixed pair of
+headings or add an architecture section when no consequential boundary changes.
+Omit routine implementation narration in either classification.
 
 ## Reader contract
 
@@ -56,11 +69,12 @@ Every body must let a cold reader answer:
 
 For a functional change, it must also let the reader answer:
 
-- Which screens, commands, APIs, or other user-facing surfaces change?
-- What can the user do on each surface?
+- Which screens, commands, public APIs, or other user- or consumer-facing surfaces change?
+- What can the user or consumer do on each surface, and which observable contracts change?
 - Which important states, transitions, or limitations affect that experience?
 
-For a non-functional change, it must also let the reader answer:
+For any change with consequential architecture or internal contracts, it must
+also let the reader answer:
 
 - What are the major components, and how do control or data move between them?
 - Which component owns each important responsibility or invariant?
@@ -82,9 +96,13 @@ Use each source for the question it can answer:
 | What external state affects it? | The live PR, dependencies, deployment state, and linked work |
 | What must survive a revision? | The current PR body, especially human-authored or tool-delimited content |
 
-Read enough surrounding code to understand the boundary the change establishes
-or crosses. Do not infer motivation from implementation when author context
-provides it. Ask the author when material motivation is absent from every
+Investigate changed ownership, execution, persistence, communication, and
+compatibility boundaries regardless of classification. Follow construction and
+registration sites as well as call sites to identify new jobs, workers,
+transports, stores, and consumers. Read enough surrounding code to understand
+the boundary the change establishes or crosses. Select what to publish only
+after this investigation. Do not infer motivation from implementation when
+author context provides it. Ask the author when material motivation is absent from every
 available source.
 
 Describe the final net change, not the branch's sequence of experiments.
@@ -116,7 +134,7 @@ rollout, migration, parallel implementation, or non-obvious mechanism.
 ## Maintain an existing body
 
 Use the maintenance path when the title, intended takeaway, retained facts,
-primary register, and consequential constraints remain unchanged:
+headline classification, and consequential constraints remain unchanged:
 
 1. Re-read the live title, body, and head.
 2. Patch only claims made stale by the code or review discussion.
@@ -187,7 +205,7 @@ Return:
   bullet leads without reading prose paragraphs in full;
 - full-read interpretation of the net change and motivation;
 - the three to five facts or relationships you retained;
-- the apparent functional or non-functional register;
+- the headline classification and separation of delivered behaviour from architecture;
 - representation fitness for each diagram: the reviewer question it answers,
   the relationship its geometry communicates, whether a simpler conventional
   form preserves the meaning, and any ambiguous connector;
@@ -197,9 +215,12 @@ Return:
 
 Rubric:
 1. A scan reveals the net change, motivation, and core model.
-2. A full read teaches one coherent model in one primary register.
-3. Functional bodies identify changed surfaces and principal affordances;
-   non-functional bodies identify flow, ownership, and consequential constraints.
+2. A full read connects delivered behaviour to its consequential architecture
+   without interleaving the two descriptions.
+3. The title and opening match the headline change. Functional bodies explain
+   changed surfaces and principal affordances first. Any body with consequential
+   architecture exposes its changed contracts, flow, ownership, and constraints
+   in a distinct part.
 4. Every section answers a distinct reviewer question without duplication.
 5. Terms and claims are understandable without ticket or branch history.
 6. Details visible in the diff are omitted unless they change review strategy.
@@ -241,9 +262,9 @@ why it matters or why this approach exists within the opening paragraph or two.
 The title and opening should let a reviewer scanning a queue decide what context
 they need next.
 
-For a functional change, lead with the change in externally observable
-behaviour. For a non-functional change, lead with the code or system boundary
-being changed.
+For a functional change, lead with the change in user- or consumer-visible
+behaviour or public contracts. For a non-functional change, lead with the code
+or system boundary being changed.
 Implementation belongs in the opening only when that boundary is the subject.
 
 Make the first agent-authored change sentence state what the PR changes. Use the
@@ -258,18 +279,21 @@ Do not use a `Summary` or `What changed` heading. The opening is the summary.
 
 ### Functional body
 
-Inventory the changed surfaces and the main affordances, states, or transitions
-on each. Use parallel bullets or a compact table when several surfaces change.
+Inventory the changed public or user-facing surfaces and the consumer-visible
+behaviour, contracts, affordances, states, or transitions on each. Use parallel
+bullets or a compact table when several surfaces change.
 Organise them as a product model or user journey, not as the order in which the
 code processes data.
 
-Add implementation architecture only when it explains an observable behaviour,
-review risk, compatibility or safety property, rollout constraint, or meaningful
-product limitation. Diff size is not a reason to add it.
+After the functional description, explain consequential architecture using
+**Architecture and internal contracts**. Keep the architecture distinct even
+when it supports the same feature. Diff size does not decide its relevance.
 
-### Non-functional body
+### Architecture and internal contracts
 
-Explain meaningful architecture at the level of components and responsibilities:
+For a functional PR, put this material after the functional description. For a
+non-functional PR, use it as the main explanation. Explain meaningful
+architecture at the level of components and responsibilities:
 
 1. where input enters;
 2. which components own orchestration, state, policy, or external integration;
@@ -278,6 +302,44 @@ Explain meaningful architecture at the level of components and responsibilities:
 
 When the PR adds a sibling, replacement, or parallel path, compare it with the
 nearest existing implementation. State what is shared, what differs, and why.
+
+Identify contracts and architectural choices by the responsibilities and
+runtime boundaries they establish, not by a particular framework or repository
+layout. Include a choice when a reviewer needs it to judge correctness,
+coupling, persistence, permissions, operations, or compatibility.
+
+| Reviewer question | Consequential changes to inspect and explain |
+|---|---|
+| Who owns the behaviour or invariant? | Responsibility moves, policy ownership, composition, and cross-component dependencies |
+| Where and when does execution happen? | Direct calls, new or changed jobs and queues, workers, processes, threads, RPCs, and scheduling |
+| Where does state live and how is it found? | Authoritative records, projections, caches, relationships, lookup keys, and lifecycle |
+| What must participants agree on? | Interfaces, payloads, identity, ordering, versioning, and producer/consumer contracts |
+| What enforces correctness? | Transactions, concurrency control, uniqueness, authorization, idempotency, and failure handling |
+
+Use these questions for discovery, not as mandatory body sections. Ask whether
+a plausible implementation could deliver the same feature with a materially
+different boundary. Explain the chosen boundary when that difference affects
+review. Omit helpers, private types, and mechanical changes that do not affect
+such a decision. A contract's significance does not depend on whether it is
+public or whether it crosses a process boundary.
+
+Show the relevant shape of central changed contracts with an abridged signature,
+payload, schema, or flow. Mark what is new, changed, reused, or removed. Name
+the actor and operation at each consequential handoff. For added, changed, or
+removed execution paths, show where dispatch or fan-out is composed and how
+consumers are connected. Distinguish inline execution, notifications, and queued
+work when present. Include transaction timing, delivery, ordering, and failure
+properties when they affect the design. Show convergence only where it exists.
+A mechanism name alone does not explain its contract or ownership.
+
+When storage changes matter, prefer an ASCII schema block with comments beside
+the relevant fields and relationships. Mark new, changed, or removed elements;
+include unchanged elements only to establish context. Use comments to explain
+lookup purpose, authority, lifecycle, and relevant keys or indexes rather than
+repeating the schema in prose. Show only the shape needed to assess the choice,
+not complete DDL. Apply the same approach to relational, document, key-value,
+or other storage models. For a projection or cache, identify its source and
+what updates, invalidates, or removes entries.
 
 ### Choose the information shape
 
@@ -291,6 +353,7 @@ nearest existing implementation. State what is shared, what differs, and why.
 | Parallel guarantees, modes, conditions, or exceptions | Bullets |
 | Cause, comparison, implication, or rationale | Short prose |
 | Data shape, predicate, or small API delta | Contract or before/after snippet |
+| Consequential storage change | ASCII schema block with change markers and adjacent comments |
 
 Choose the simplest conventional representation that preserves the
 review-significant relationship. Component count alone does not justify a
@@ -417,7 +480,7 @@ be posted with a failed check for the content in scope.
 1. Scan only the title, opening, headings, diagrams, and bullet leads. State the net change, motivation, and core model without reading prose paragraphs in full. Recast the body when load-bearing facts are invisible at scan depth.
 2. Read the body in full. Confirm that its sections and representations connect naturally instead of making the reader infer why one follows another. Add concise lead-ins or connective prose when the scan works but the full read feels abrupt.
 3. Reconstruct the three to five facts or relationships the full body teaches. They must form one model and match the intended reader model.
-4. Confirm that the body keeps the primary functional or non-functional register after the opening.
+4. Confirm that classification controls the title and lead. For a functional PR, keep consequential architecture in distinct paragraphs or sections after the functional description; do not omit it to preserve a functional register.
 5. For a functional PR, enumerate the changed surfaces and their principal affordances from the body alone.
 6. Name the distinct reviewer question answered by each section. Cut or combine a section with no distinct answer.
 7. Replace terminology that depends on the ticket, specification, branch history, or implementation discussion.
@@ -427,7 +490,7 @@ be posted with a failed check for the content in scope.
 11. Trace every diagram route. Recast a visual with ambiguous connectors, changing connector meanings, unclear branch origins or targets, crossings, return paths that wind past unrelated nodes, or implied relationships that the body does not claim.
 12. Replace prose reconstruction of review-significant non-linear topology or branching state with a plain-text diagram when it passes the diagram checks.
 13. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
-14. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
+14. Compare the body with the investigated boundaries. Confirm that consequential ownership, execution, storage, contract, release, compatibility, and safety changes are visible regardless of classification. A new queue, worker, or store must not be hidden behind a generic description of the feature.
 15. Inspect the raw Markdown. Reflow manual line breaks inside prose paragraphs and list items while preserving structural or intentional line breaks.
 16. Remove `How to test` when it only restates the body or routine CI.
 
@@ -438,7 +501,8 @@ remove material that communicates the same model less directly.
 
 | Failure pattern | Required response |
 |---|---|
-| Functional opening followed by implementation narration | Rebuild the body from changed surfaces and affordances |
+| Functional description interleaved with implementation mechanics | Explain the delivered behaviour first; move consequential architecture into a distinct later part and remove routine mechanics |
+| Functional classification hides consequential architecture | Restore the changed boundaries and internal contracts after the functional description |
 | Many accurate details but no retained model | Recast the body around the reader-model facts |
 | The same capability appears in several sections | Keep one representation and remove the repeats |
 | Prose makes the reader reconstruct non-linear topology or branching state | Use a diagram when its geometry makes the relationship clearer |

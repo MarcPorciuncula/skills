@@ -53,14 +53,30 @@ adjacent paths when they establish context, ownership, compatibility, or an
 invariant needed by the answer. A focused question does not require a survey of
 unrelated parts of the PR.
 
-Classify the primary change before writing:
+Classify a change as functional when it is intended to affect public or
+user-facing behaviour or contracts observed by a user or consumer. For a
+frontend application, that consumer is the person using the application. For a
+library, it is the developer consuming its public API. Classify an internal
+change as non-functional when it is intended to preserve consumer-visible
+behaviour and contracts. A developer-facing API change can therefore be
+functional; an internal interface change alone does not make it functional.
 
-- For a functional change, explain the affected surfaces, behaviour, states,
-  transitions, and limitations.
-- For a non-functional change, explain the changed contracts, responsibilities,
+Classify the primary change to choose the lead and emphasis:
+
+- For a functional change, first explain the affected public or user-facing
+  surfaces and the behaviour, contracts, states, transitions, and limitations
+  visible to their users or consumers. Then explain consequential architecture
+  and internal contracts in distinct paragraphs or sections.
+- For a non-functional change, lead with the changed contracts, responsibilities,
   boundaries, control or data flow, and operational consequences.
-- For a mixed change, use the change that explains why the PR exists as the
-  primary frame.
+- For a mixed change, lead with the change that explains why the PR exists.
+
+Classification does not restrict architectural investigation or coverage.
+Inspect changed ownership, execution, persistence, communication, and
+compatibility boundaries. Follow construction and registration sites as well as
+calls to find new jobs, queues, workers, stores, and consumers. Include choices
+that affect assessment of correctness, coupling, operations, or compatibility;
+omit routine mechanics. A focused question still controls the requested scope.
 
 When the PR changes an interface, request or response, data schema, event,
 state model, protocol, or developer contract, show the relevant before-and-after
@@ -79,11 +95,39 @@ For every central contract named in the explanation, show its relevant
 signature or members. A contract name in a diagram or paragraph does not count.
 Group related declarations when several contracts form one boundary.
 
+Select internal contracts by the responsibility or runtime boundary they
+establish, regardless of framework, deployment model, or public visibility.
+Ask who owns the invariant, where execution happens, where state lives and how
+it is found, what participants must agree on, and what enforces correctness.
+Explain a choice when a plausible alternative could deliver the same feature
+but materially change one of these boundaries. Do not turn these questions into
+a mandatory section inventory.
+
+When storage changes matter, use a compact ASCII schema block. Mark new,
+changed, and removed fields or relationships; retain unchanged elements only
+for context. Put commentary beside the relevant elements as comments, including
+lookup purpose, authority, lifecycle, and keys or indexes when consequential.
+For a projection or cache, identify its source and what updates, invalidates,
+or removes entries. Apply this to the actual storage model, not only relational
+tables. Do not substitute an API payload for a changed storage contract or
+repeat the block as prose.
+
+When execution paths are added, changed, or removed, trace consequential
+handoffs from producer to consumer. Identify where dispatch or fan-out is
+composed, how consumers are connected, and which parts are new or reused.
+Distinguish direct calls, notifications, and queued work when present. Include
+transaction timing, delivery, ordering, and failure properties when they affect
+behaviour. Show shared downstream paths only where branches actually converge.
+Name actors and operations rather than hiding different mechanisms behind an
+unspecified "event" or "hook".
+
 ## Write the explanation
 
 Lead with the answer to the user's question or the behavioural shape and reason
-for the PR. Supply prerequisite context before implementation detail. Connect
-the behaviour to code and architecture where that helps the reviewer understand
+for the PR. For a functional overview, complete the functional description
+before a distinct account of consequential architecture. Use subject-specific
+subsections only when needed. Supply prerequisite context before implementation
+detail. Connect the behaviour to code and architecture where that helps the reviewer understand
 or navigate the change.
 
 Choose the smallest form that communicates the model:
@@ -116,6 +160,9 @@ Reinvestigate before answering when any applicable check fails:
 - For every central changed contract, the reviewer can identify the relevant
   signature, members, types, ownership, or invariants without reopening the
   diff; naming the contract alone does not satisfy this check.
+- Consequential architectural changes are visible regardless of classification,
+  with the functional description preceding a distinct architectural explanation
+  when both are needed.
 - The explanation contains enough context to stand alone without turning into
   a general diff recap.
 
