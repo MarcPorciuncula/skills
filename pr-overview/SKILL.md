@@ -53,10 +53,19 @@ adjacent paths when they establish context, ownership, compatibility, or an
 invariant needed by the answer. A focused question does not require a survey of
 unrelated parts of the PR.
 
+Classify a change as functional when it is intended to affect public or
+user-facing behaviour or contracts observed by a user or consumer. For a
+frontend application, that consumer is the person using the application. For a
+library, it is the developer consuming its public API. Classify an internal
+change as non-functional when it is intended to preserve consumer-visible
+behaviour and contracts. A developer-facing API change can therefore be
+functional; an internal interface change alone does not make it functional.
+
 Classify the primary change to choose the lead and emphasis:
 
-- For a functional change, first explain the affected surfaces, behaviour,
-  states, transitions, and limitations. Then explain consequential architecture
+- For a functional change, first explain the affected public or user-facing
+  surfaces and the behaviour, contracts, states, transitions, and limitations
+  visible to their users or consumers. Then explain consequential architecture
   and internal contracts in distinct paragraphs or sections.
 - For a non-functional change, lead with the changed contracts, responsibilities,
   boundaries, control or data flow, and operational consequences.

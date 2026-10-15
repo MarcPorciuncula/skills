@@ -32,16 +32,25 @@ why they matter. Leave supporting detail in the diff or linked specification.
 Classify the PR before drafting. Diff size and implementation complexity do not
 decide the classification.
 
+Classify a change as functional when it is intended to affect public or
+user-facing behaviour or contracts observed by a user or consumer. For a
+frontend application, that consumer is the person using the application. For a
+library, it is the developer consuming its public API. Classify an internal
+change as non-functional when it is intended to preserve consumer-visible
+behaviour and contracts. A developer-facing API change can therefore be
+functional; an internal interface change alone does not make it functional.
+
 | Primary change | Title, opening, and first part of the body |
 |---|---|
-| Functional | Changed surfaces, affordances, states, and user journeys |
-| Non-functional | Changed system boundaries, responsibilities, flows, developer interfaces, or operational behaviour |
+| Functional | Changed public or user-facing surfaces, consumer-visible behaviour and contracts, affordances, states, and user journeys |
+| Non-functional | Internal boundaries, responsibilities, flows, interfaces, or operations changed while preserving consumer-visible behaviour and contracts |
 | Mixed | The functional or non-functional change that explains why the PR exists |
 
 Use classification to choose the lead and emphasis, not to exclude consequential
 architecture. For a functional PR, first explain what was delivered through
-changed surfaces, affordances, states, and limitations. Then explain how it was
-delivered through the internal contracts and architectural choices needed to
+changed public or user-facing surfaces and consumer-visible behaviour, contracts,
+affordances, states, and limitations. Then explain how it was delivered through
+the internal contracts and architectural choices needed to
 assess the implementation. Keep these subjects in separate paragraphs or
 sections; do not interleave product behaviour with implementation mechanics.
 For a non-functional PR, lead with the changed architecture or contract.
@@ -60,8 +69,8 @@ Every body must let a cold reader answer:
 
 For a functional change, it must also let the reader answer:
 
-- Which screens, commands, APIs, or other user-facing surfaces change?
-- What can the user do on each surface?
+- Which screens, commands, public APIs, or other user- or consumer-facing surfaces change?
+- What can the user or consumer do on each surface, and which observable contracts change?
 - Which important states, transitions, or limitations affect that experience?
 
 For any change with consequential architecture or internal contracts, it must
@@ -253,9 +262,9 @@ why it matters or why this approach exists within the opening paragraph or two.
 The title and opening should let a reviewer scanning a queue decide what context
 they need next.
 
-For a functional change, lead with the change in externally observable
-behaviour. For a non-functional change, lead with the code or system boundary
-being changed.
+For a functional change, lead with the change in user- or consumer-visible
+behaviour or public contracts. For a non-functional change, lead with the code
+or system boundary being changed.
 Implementation belongs in the opening only when that boundary is the subject.
 
 Make the first agent-authored change sentence state what the PR changes. Use the
@@ -270,8 +279,9 @@ Do not use a `Summary` or `What changed` heading. The opening is the summary.
 
 ### Functional body
 
-Inventory the changed surfaces and the main affordances, states, or transitions
-on each. Use parallel bullets or a compact table when several surfaces change.
+Inventory the changed public or user-facing surfaces and the consumer-visible
+behaviour, contracts, affordances, states, or transitions on each. Use parallel
+bullets or a compact table when several surfaces change.
 Organise them as a product model or user journey, not as the order in which the
 code processes data.
 
