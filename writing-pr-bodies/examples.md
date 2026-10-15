@@ -65,6 +65,46 @@ The user-facing inventory remains primary. The plain-text diagram earns its
 place because the immutable publishing boundary changes product behaviour and
 what reviewers must verify.
 
+## Functional change with asynchronous delivery and new storage
+
+````markdown
+Adds scheduled report delivery. Users can choose a delivery time, inspect the latest attempt, and cancel future deliveries without deleting the report.
+
+## Scheduling behaviour
+
+- **Report editor:** Saves a delivery time and destination alongside the report.
+- **Delivery history:** Shows pending, delivered, and failed attempts. Retrying a failed attempt keeps its original report snapshot.
+- **Cancellation:** Prevents future attempts; an attempt already being sent can finish.
+
+## Dispatch and ownership
+
+The scheduler creates a delivery attempt and enqueues the NEW `report.deliver` job in one transaction. The new delivery worker runs on the existing background queue and uses the existing provider adapter. The scheduler owns when delivery becomes due; the worker owns sending and retrying an attempt.
+
+## Persisted delivery contract
+
+```text
+reports                              # existing report definitions
+  id
++ next_delivery_at                   # NEW: scheduler's due-work lookup
+
+report_delivery_attempts             # NEW: durable attempt state
+  id
+  report_id -> reports.id            # parent report, not the content to send
+  scheduled_for                      # identity of the scheduled occurrence
+  snapshot                           # immutable content used across retries
+  status                             # pending / delivered / failed
+  UNIQUE(report_id, scheduled_for)    # one attempt per scheduled occurrence
+```
+
+Cancellation clears `next_delivery_at`. It does not delete attempt records or cancel an in-flight provider request.
+````
+
+The functional description precedes the architectural account. The body exposes
+a new job and worker, queue reuse, transaction ownership, and the durable
+snapshot contract. The schema comments explain the relevant fields without
+reproducing migration DDL. The `+` marker distinguishes a new column on an
+existing record; the new-record comment applies to its listed fields.
+
 ## Contract change with a sequential runtime path
 
 ```markdown
