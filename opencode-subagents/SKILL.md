@@ -1,13 +1,18 @@
 ---
 name: opencode-subagents
 description: >-
-  Run tasks or consult other models using the OpenCode CLI. Use when requested
-  to delegate work, run a subagent, or invoke another model via OpenCode.
+  Run tasks or consult other models using the OpenCode CLI from an external agent
+  harness. Use when requested to delegate work, run a subagent, or invoke another
+  model via OpenCode.
 ---
 
 # OpenCode Subagents
 
 Quick reference and execution guidelines for delegating tasks or consulting other models via the OpenCode CLI.
+
+## Check applicability after loading
+
+If you are already running inside an OpenCode harness (e.g. you have the native `subagent` tool available), do not drive OpenCode via the CLI. Use your harness's native subagent tool directly and ignore the remainder of this skill.
 
 ## Subagent Guidelines
 
