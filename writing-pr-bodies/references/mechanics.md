@@ -30,6 +30,19 @@ from a short body file. After the last planned code push, draft the final title
 and body through a file and run the isolated cold-reader workflow from
 `SKILL.md`. Re-check the live PR and head before posting the reviewed artifact.
 
+### Screenshot attachments
+
+Append a screenshot without replacing the existing PR body:
+
+```bash
+gh pr edit 123 --attach '/tmp/after.png#Updated settings screen'
+```
+
+To place a screenshot within a new or revised body, include a Markdown image
+reference to the local file in the body file and pass the same path with
+`--attach`. GitHub CLI replaces that reference with the uploaded asset URL.
+Repeat `--attach` for multiple screenshots.
+
 ## External references
 
 Put references in a Markdown list so GitHub PR and issue references unfurl. Use one reference per item.
