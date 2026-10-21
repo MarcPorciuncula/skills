@@ -24,9 +24,14 @@ Check `opencode --version`, `opencode run --help`, and `command -v jq`.
 These recipes target OpenCode v2.1.2. If the installed interface differs,
 inspect its help before adapting the commands. V1 flags and API schemas differ.
 
-Run `opencode models` to discover model identifiers. Use the requested model
-when available. If the user did not choose one, select an available model
-suited to the task. Do not silently replace a requested unavailable model.
+Use the specific model and provider selected by the user or existing guidance.
+Run `opencode models` to verify availability and resolve the exact identifier.
+If the model is specified without a provider, use it only when exactly one
+available provider offers that model. If no model is specified, or multiple
+providers offer the specified model and none is selected, ask the user before
+invoking a model. Do not choose a model or provider based on availability,
+cost, or perceived suitability. If the selected model/provider combination is
+unavailable, report that and ask for a replacement rather than substituting one.
 
 Use the configured OpenCode service and credentials. If OpenCode cannot start
 or authenticate, report the specific prerequisite. Preserve the host's sandbox
@@ -46,8 +51,9 @@ Check whether the reply actually completed the requested work.
 
 ## Send and receive
 
-Set `model` to a discovered `provider/model` identifier. Use this pipeline
-for a new conversation; replace the example prompt with the delegated task:
+Set `model` to the `provider/model` identifier resolved from that selection.
+Use this pipeline for a new conversation; replace the example prompt with the
+delegated task:
 
 ```bash
 set -o pipefail
