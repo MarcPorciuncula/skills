@@ -433,6 +433,10 @@ Use `How to test` only for PR-specific reproduction or review steps. Do not use
 it to repeat the feature inventory. Routine CI commands and test inventories do
 not belong in the body.
 
+When attaching screenshots to a PR, upload them with `gh pr create --attach`
+or `gh pr edit --attach`. Do not commit screenshots solely to embed them in
+the PR body. If the installed CLI lacks `--attach`, update it before uploading.
+
 For stacks, external references, Linear triggers, dependencies, deploy blockers,
 human-authored content, and detailed posting mechanics, read
 [references/mechanics.md](references/mechanics.md). Load only the sections that
