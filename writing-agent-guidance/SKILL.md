@@ -1,12 +1,11 @@
 ---
 name: writing-agent-guidance
 description: >
-  Write, revise, or review instructions that an agent will execute, including
-  skills, AGENTS.md, CLAUDE.md, system prompts, subagent prompts, and inline
-  agent instructions. TRIGGER before creating or materially editing agent
-  guidance and when the user asks to improve, consolidate, or review a skill.
-  SKIP human-facing prose, quoted guidance that will not be revised, and
-  non-content file, Git, or pull-request operations.
+  Write, revise, or review persistent agent guidance in skill files,
+  AGENTS.md, CLAUDE.md, or equivalent guidance files and reusable prompt
+  templates. TRIGGER when authoring or reviewing these maintained artifacts.
+  SKIP ordinary agent-to-agent or agent-to-subagent messaging, including
+  delegation prompts, task assignments, status updates, and handoffs.
 ---
 
 # Writing Agent Guidance
@@ -18,8 +17,13 @@ authoring skill is installed.
 
 ## Check applicability after loading
 
-When this skill loads automatically, confirm that the task creates, revises, or
-reviews instructions that an agent will execute.
+Apply this skill when the requested output is a persistent agent-guidance
+artifact or a review of one.
+
+If the task only composes messages for the current agent interaction,
+including subagent instructions or delegation prompts, ignore the remainder
+of this skill and continue the task. Imperative wording and an agent
+recipient do not make a message a persistent guidance artifact.
 
 If the task only moves guidance files, changes non-content metadata, performs
 Git or pull-request operations, quotes guidance without revising it, or writes
@@ -267,7 +271,7 @@ chosen file when they name one.
 | Ordered procedure that must be available at the moment of use | Skill or dedicated prompt |
 | Repository-wide orientation or always-relevant policy | Root `AGENTS.md`, `CLAUDE.md`, or harness equivalent |
 | Directory-specific rules | The nearest supported directory guidance file |
-| Subagent role, output contract, or stopping condition | Subagent prompt or prompt template |
+| Subagent role, output contract, or stopping condition | Persistent subagent prompt template |
 | Detailed educational or reference material | Bundled reference loaded when needed |
 | Data or invariant bound to one code area | Stable adjacent documentation or a scoped guidance file |
 
