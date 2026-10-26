@@ -5,7 +5,7 @@ description: Temporary-file location and creation conventions.
 
 ## Temporary Files
 
-Permission prompts interrupt the user's flow and require them to stop and approve before work can continue. Each one is a small failure of preparation — a sign that the approach was wrong, not that the user needs to grant more access. The rules below exist to prevent them entirely. Follow them; don't look for alternatives.
+Permission prompts interrupt the user's flow and require them to stop and approve before work can continue. Each one is a small failure of preparation: a sign that the approach was wrong, not that the user needs to grant more access. The rules below exist to prevent them entirely. Follow them; do not look for alternatives.
 
 **When creating a temporary file, never use the system temp folder (`/tmp`, `/var/tmp`, `$TMPDIR`, `os.tmpdir()`, `tempfile`, or any OS-provided temp directory).** These locations trigger permission prompts and are harder to track. There are no exceptions.
 
@@ -21,11 +21,11 @@ The required pattern:
 2. Pass it to the command via flag (e.g., `git commit -F commit-msg.txt` or `gh pr create --body-file pr-body.txt`)
 3. Delete the temp file immediately after with a Bash tool call
 
-**Violating the letter of this rule is violating the spirit of it.** These are all violations even though they don't use `/tmp`:
+**Violating the letter of this rule is violating the spirit of it.** These are all violations even though they do not use `/tmp`:
 
 | Temptation | Reality |
 |-----------|---------|
 | "It's a short message, `-m` is fine" | Any message worth writing deserves the Write tool |
-| "Heredoc is faster than a tool call" | Heredocs trigger permission prompts — Write tool is faster |
+| "Heredoc is faster than a tool call" | Heredocs trigger permission prompts; Write tool is faster |
 | "I'm not using `/tmp` so the rule doesn't apply" | The rule covers every approach except Write tool + flag |
-| "Shell substitution `$(cat ...)` avoids the temp file" | Still triggers permission prompts — Write tool only |
+| "Shell substitution `$(cat ...)` avoids the temp file" | Still triggers permission prompts; Write tool only |
