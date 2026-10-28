@@ -76,10 +76,10 @@ Inspect the available tools before choosing how to create the implementer:
    documented or tool-provided information.
 5. Use a child agent only when its model can be selected explicitly and it
    meets the requirements in
-   [Create the implementer agent](../SKILL.md#create-the-implementer-agent).
+   [Select the implementer tool and model role](../SKILL.md#2-select-the-implementer-tool-and-model-role).
 6. Otherwise, use a top-level task or session only when it meets the
    requirements in
-   [Create the implementer agent](../SKILL.md#create-the-implementer-agent)
+   [Select the implementer tool and model role](../SKILL.md#2-select-the-implementer-tool-and-model-role)
    and can be clearly labelled.
 7. When the tool documentation and outputs do not establish the ordering, ask
    the user which available model corresponds to each role.

@@ -15,187 +15,52 @@ description: >-
 
 # Map UI Affordances
 
-An affordance tree is a text outline of the UI's user-perceived structure.
-Terminal descriptions state what each meaningful visible item lets the user do
-or understand.
+An affordance tree is a plain-text outline of a UI surface's user-perceived hierarchy, where each node states what the visible region, group, or control lets the user do or understand. Every structural UI element must trace to a settled user need and occupy a clear place in the affordance tree.
 
-**NO STRUCTURAL UI ELEMENT WITHOUT A USER PURPOSE AND A PLACE IN THE AFFORDANCE TREE.**
+## 1. Write the affordance tree
 
-Use required affordances from an applicable product-design skill as input when
-they exist. Use applicable presentation skills after the tree establishes the
-intended structure. Do not duplicate or override settled product decisions.
+Model the interface the user perceives, not its DOM or component wrappers:
 
-## Write the tree
+- Include meaningful regions, groups, controls, disclosed surfaces, status indicators, feedback, and required informational content.
+- Nest menu items, dialog actions, and disclosed details beneath the control that reveals them, qualifying conditional nodes inline with `[when ...]`.
+- Allow interactive parents (such as tabs, rows, or menus) to contain child affordances when that matches the perceived hierarchy.
+- Use a separate tree only when a state materially reorganises the surface; put multi-screen flows in a separate sequence or flow representation.
+- Omit layout wrappers, implementation-only components, decorative elements, component prop slots, and visual styling tokens.
 
-Model the interface the user perceives, not its DOM or component wrappers.
+## 2. Design or audit a surface
 
-- Include meaningful regions, groups, controls, disclosed surfaces, status,
-  feedback, instructions, and necessary content.
-- Nest menu items, dialog actions, and disclosed content beneath the control
-  that reveals them.
-- Qualify conditional items inline with `[when ...]`.
-- Put multi-screen flows and complex state transitions in a separate
-  representation.
-- Use separate trees only when a state materially reorganises the surface.
-- Omit layout wrappers, implementation-only components, decoration, evidence
-  IDs, formal node types, and visual specifications.
+| Mode | Workflow |
+|---|---|
+| **Design or revise** (creating or restructuring a UI surface) | 1. State the **primary user task** and completion condition from settled requirements.<br>2. List **required affordances**; record plausible but unconfirmed capabilities as **Open decisions** rather than promoting them into the UI.<br>3. Draft the **intended affordance tree** before choosing layout or styling: keep the primary path direct, group sibling actions together, place utility actions outside the primary path, present peer alternatives at the same level, and strip any node that does not map to a settled user need.<br>4. When delegating implementation, pass the accepted tree, exclusions, and open decisions, and require the implementer to stop before adding, removing, or reparenting user-visible nodes. |
+| **Review an existing surface** (auditing code, a mockup, or a screenshot) | 1. Establish the **primary user task** and **required affordances** from settled user needs (existing UI proves presence, never necessity).<br>2. Reconstruct the **observed tree** faithfully from the screenshot, markup, or code: use displayed labels, write `<unlabelled group>` when a group lacks orientation, write `?` when an item's purpose is unclear, and preserve repetition, asymmetry, or buried nesting without charitable cleanup.<br>3. Report **affordance coverage** (present, missing, and unmatched filler such as unrequested subtitles, marketing blurbs, or empty slot padding) and **structural findings** (split actions, skewed hierarchy, competing utility content).<br>4. Provide a **recommended intended tree**, **open decisions**, and the resulting user-visible changes. |
 
-An interactive parent such as a tab or menu may contain other affordances. Do
-not distort the perceived hierarchy to force every action into a leaf-only
-grammar.
+## 3. Worked example (review and redesign)
 
-## Example
-
-Settled requirements: a workspace member can connect their organisation to
-Claude or ChatGPT with one MCP URL, copy the URL, understand that the connected
-client uses their existing workspace permissions, follow client-specific setup
-steps, and open a detailed guide.
-
-Primary task: connect the organisation to one supported client.
-
-Observed tree:
+- **Settled requirements:** A workspace member can connect their organisation to Claude or ChatGPT using one shared MCP URL, copy the URL, see that the client uses their existing workspace permissions, and follow client-specific setup steps or open a detailed guide.
+- **Primary task:** Connect the organisation to a supported client.
 
 ```text
-Integrations & MCP
-├─ Intro: read generic connection benefits
-├─ Claude
-│  ├─ Why use Claude: read benefits
-│  ├─ Copy MCP URL: copy the shared connection value
-│  ├─ Quick setup: follow Claude steps
-│  └─ View Claude guide: open detailed help
-├─ Explore AI workflows: read educational content
-├─ More integrations
-│  └─ ChatGPT
-│     ├─ Why use ChatGPT: read benefits
-│     └─ View ChatGPT guide: open detailed help
-└─ Advanced connection details
+Observed tree:                                      Recommended intended tree:
+Integrations & MCP                                  Integrations & MCP
+├─ Intro: read generic connection benefits          └─ Connect to MCP
+├─ Claude                                              ├─ MCP URL
+│  ├─ Why use Claude: read benefits                    │  ├─ Endpoint: use the same URL with either client
+│  ├─ Copy MCP URL: copy the shared connection value   │  └─ Copy: copy the URL
+│  ├─ Quick setup: follow Claude steps                 ├─ Access notice: understand that the client uses existing permissions
+│  └─ View Claude guide: open detailed help            └─ Client setup
+├─ Explore AI workflows: read educational content         ├─ Claude: choose Claude setup
+├─ More integrations                                      │  ├─ Setup steps [when selected]: connect Claude
+│  └─ ChatGPT                                             │  └─ Detailed guide [when selected]: open further help
+│     ├─ Why use ChatGPT: read benefits                   └─ ChatGPT: choose ChatGPT setup
+│     └─ View ChatGPT guide: open detailed help              ├─ Setup steps [when selected]: connect ChatGPT
+└─ Advanced connection details                               └─ Detailed guide [when selected]: open further help
    └─ MCP URL: view the shared connection value
 ```
 
-Affordance coverage:
+- **Affordance coverage:** Present: choose client, view/copy URL, follow Claude steps, open guides. Missing: permission notice, ChatGPT setup steps. Unmatched filler: provider-benefit and educational blurbs.
+- **Structural findings:** The shared MCP URL is split between the Claude section and "Advanced connection details"; "More integrations" demotes ChatGPT below its peer Claude; educational filler interrupts the primary task.
+- **Open decisions (kept outside the tree until settled):** Whether an org owner must pre-authorise a client, whether to show live connection status, and whether a client can be unavailable.
 
-- Present: choose either client, view and copy the MCP URL, follow Claude
-  steps, and open either guide.
-- Missing: understand the permission impact and follow ChatGPT steps.
-- Unmatched: provider-benefit and educational content.
+## 4. Visual-review boundary
 
-Structural findings:
-
-- The shared URL is split between Claude and advanced details, so copying it
-  appears Claude-specific and viewing it appears secondary.
-- Claude and ChatGPT are alternatives but occupy different levels. The
-  "More integrations" parent makes ChatGPT secondary.
-- Educational content interrupts the path between the alternatives.
-
-Recommended intended tree:
-
-```text
-Integrations & MCP
-└─ Connect to MCP
-   ├─ MCP URL
-   │  ├─ Endpoint: use the same URL with either client
-   │  └─ Copy: copy the URL
-   ├─ Access notice: understand that the client uses existing permissions
-   └─ Client setup
-      ├─ Claude: choose Claude setup
-      │  ├─ Setup steps [when selected]: connect Claude
-      │  └─ Detailed guide [when selected]: open further help
-      └─ ChatGPT: choose ChatGPT setup
-         ├─ Setup steps [when selected]: connect ChatGPT
-         └─ Detailed guide [when selected]: open further help
-```
-
-Open decisions: whether an organisation owner must pre-authorise a client,
-whether to show connection status, and whether either client can be unavailable.
-Keep these outside the intended tree until settled.
-
-## Design or revise a surface
-
-1. Inspect the settled requirements and the current surface when one exists.
-2. State the primary user task and completion condition.
-3. List the required affordances and necessary information. Record plausible
-   but unsupported behaviour as an open decision; do not promote it into a
-   requirement.
-4. Construct the intended affordance tree before choosing concrete layout or
-   visual treatment.
-5. Audit the tree:
-   - Place every required affordance.
-   - Trace every intended node to a settled need. Exclude nodes that depend on
-     an unanswered product decision.
-   - Remove every unmatched item.
-   - Keep the primary path direct.
-   - Group related affordances as siblings.
-   - Keep utility actions outside the primary path.
-   - Keep disclosed actions beneath their trigger.
-   - Present alternatives in parallel unless their tasks materially differ.
-   - Give each group enough orientation to understand its children.
-6. Use the accepted tree to choose UI regions, controls, and presentation.
-7. When a proposal or implementation exists, reconstruct its observed tree and
-   compare it with the intended tree before accepting the structure.
-
-## Review an existing surface
-
-1. Establish the primary task from requirements or user context. Existing UI
-   proves presence, not necessity.
-2. List required affordances from settled needs without using the current
-   interface as evidence.
-3. Reconstruct the observed tree from the available screenshot, rendered UI,
-   proposal, markup, or component code.
-4. Use displayed labels and perceptible grouping. Write `<unlabelled group>`
-   when the interface supplies no name or orientation. Write `?` when an
-   item's purpose cannot be determined.
-5. Preserve repetition, asymmetry, awkward nesting, and disclosure depth. Do
-   not improve the interface while describing it.
-6. Map every observed item to a required affordance or user need.
-7. Report missing required affordances, unmatched content, duplicated
-   responsibility, incorrect grouping, excessive hiding, competing utility
-   content, non-parallel alternatives, and terminology the intended audience
-   cannot interpret. Report plausible interaction gaps that are not settled
-   needs as open decisions, not missing affordances.
-8. Produce a revised intended tree when recommending structural changes. Name
-   the resulting user-visible changes. Keep unanswered product decisions
-   outside the tree; do not add speculative controls, content, or states, even
-   when qualified with `[when ...]`.
-
-The observed tree records what the interface communicates, not what its author
-meant.
-
-## Output and handoff
-
-For design or revision, provide the primary task, required affordances,
-intended tree, open decisions, explicit exclusions, and presentation
-consequences.
-
-For review, provide the primary task, observed tree, affordance coverage,
-structural findings, recommended tree, open decisions, and resulting
-user-visible changes.
-
-Keep the output proportional to the surface.
-
-When delegating structural UI implementation, include the accepted intended
-tree with the required affordances, exclusions, terminology, and open product
-decisions. Require the implementer to stop before adding, removing, or
-reparenting a user-visible node. Leave component choice and local code
-structure with the implementer.
-
-## Visual-review boundary
-
-- Use screenshots or a running interface when the user supplies them or they
-  already exist.
-- Do not start a development server, render the UI, or capture screenshots
-  solely for this workflow.
-- State when review is limited to requirements, a proposal, markup, or code.
-- Treat validation of spacing, salience, contrast, responsiveness, and actual
-  perceived grouping as a separate opt-in visual review.
-
-## Red flags
-
-| Thought | Required response |
-|---|---|
-| "The component has a subtitle or helper slot, so I should supply something useful." | Optional slots do not establish user need. Leave the slot empty unless its content has a place in the tree. |
-| "This section makes the page feel complete." | Completeness is not an affordance. Remove the section unless its absence harms a named user outcome. |
-| "The group's purpose is obvious from its children." | In an observed tree, mark it `<unlabelled group>`. In an intended tree, decide whether users need visible orientation. |
-| "I can summarise these repeated or uneven blocks as one area." | Preserve the structure the interface presents. Compression hides repetition and asymmetry. |
-| "It already exists in the UI, so it must represent a requirement." | Existing implementation proves presence, not necessity. Map it to a user need or question it. |
-
-**Violating the letter of these rules is violating the spirit of them.**
+Use screenshots or a running UI only when they already exist or the user supplies them. Do not start a dev server, launch a browser, or capture screenshots solely to build an affordance tree; state when the review is based on code, markup, or a spec, and treat visual polish (spacing, contrast, typography) as a separate review pass.
