@@ -147,9 +147,4 @@ names, and source identifiers do not need the reader-facing form.
 
 ## Compose the issue text
 
-If `writing-persistent-content` is available, use it for the issue title,
-description, and comments after selecting the correct issue action. Otherwise,
-write for collaborators who know the product or codebase but did not
-participate in the drafting conversation. Keep the issue self-contained,
-separate settled requirements from open decisions, and omit session history
-that does not affect delivery.
+If `writing-specs` is available when authoring or revising a substantive feature, architecture, or contract issue, use it to structure the problem, domain boundaries, invariants, alternatives considered, and slice scope at spec altitude. If `writing-persistent-content` is available, use it for the issue title, description, and comments after selecting the correct issue action. Otherwise, write for collaborators who know the product or codebase but did not participate in the drafting conversation. Keep the issue self-contained, separate settled requirements from open decisions, and omit session history that does not affect delivery.
