@@ -10,408 +10,106 @@ description: >
 
 # Writing Agent Guidance
 
-Write guidance that lets a capable agent select and perform the intended
-behaviour without access to the drafting conversation. Keep the normal method
-complete in the guidance or skill bundle. Do not assume that a harness-specific
-authoring skill is installed.
+Write guidance that lets a capable agent select and perform the intended behaviour without access to the drafting conversation. Apply this skill only to persistent guidance files (`SKILL.md`, `AGENTS.md`, `CLAUDE.md`, and reusable prompt templates). If the task only composes transient messages or delegation prompts for the current session, or edits human-facing documentation, ignore this skill and continue the task.
 
-## Check applicability after loading
+## First-draft and revision rules
 
-Apply this skill when the requested output is a persistent agent-guidance
-artifact or a review of one.
+Every new or revised guidance artifact must satisfy these rules:
 
-If the task only composes messages for the current agent interaction,
-including subagent instructions or delegation prompts, ignore the remainder
-of this skill and continue the task. Imperative wording and an agent
-recipient do not make a message a persistent guidance artifact.
+- **Re-synthesize instead of appending patches:** When revising an existing section, integrate the change into the governing rule, list item, or table row and delete superseded wording. Never append a trailing `Note:`, `Important:`, `Exception:`, or bolt-on paragraph that leaves earlier text contradicting or competing with the new rule.
+- **Teach the decision boundary, not the textbook:** Assume a frontier model that already knows standard engineering concepts, tools, and language idioms. Include only repository-specific boundaries, non-obvious failure consequences, and exact contracts or commands.
+- **Treat supplied requirements as a closed set:** Ground every fact, prohibition, and mental model in the source artifact or inspected system. Do not invent exclusivity (`only`), a one-to-one responsibility mapping, causal claims, or extra prohibitions to make a list of rules sound cohesive. Do not generalize a narrow user correction into a blanket `never` or `always` policy.
+- **Eliminate drafting-session leakage:** Write for a cold reader. Strip references to the current conversation, branch history, prior versions ("previously", "was moved from"), or why an edit was just requested.
+- **Omit psychological compliance theatre:** Do not use Cialdini-style manipulation or legacy `obra/superpowers` devices (`Iron Laws`, `Violating the letter of this rule is violating the spirit of it`, `Thought | Reality` anti-rationalisation tables, mandatory start-of-turn announcements, existential threats, or flattery). State the boundary, action, or precondition directly.
 
-If the task only moves guidance files, changes non-content metadata, performs
-Git or pull-request operations, quotes guidance without revising it, or writes
-human-facing prose, ignore the remainder of this skill. Continue the task with
-the applicable guidance.
+## Choose the representation
 
-When the user explicitly invokes this skill, treat that invocation as evidence
-that they want it applied. Follow their requested scope even when another
-guidance source would normally own the artifact.
+Match the document form to the kind of decision or action the agent needs to make:
 
-## Start from the required behaviour
-
-Before drafting, identify:
-
-- The medium and where it loads
-- The behaviour the guidance must change or preserve
-- The agent or harness that will read it
-- The context the reader can rely on
-- The cost and recoverability of an incorrect choice
-- The amount of valid implementation freedom
-
-Read an existing artifact end to end before revising it. Infer routine details
-from the artifact, repository, and harness. Ask the user only when plausible
-interpretations would materially change the guidance or remove a load-bearing
-constraint.
-
-Assume the reader is capable but may encounter the guidance mid-task with
-competing context and strong priors. Include information that changes a
-decision or action. Omit explanations of concepts the reader already knows.
-
-## Calibrate constraint strength
-
-Match the form to the behaviour's variability, fragility, and failure cost.
-
-| Situation | Guidance form |
+| What the agent needs | Representation |
 |---|---|
-| Several outcomes or approaches are valid | Principle, heuristic, or selection criteria |
-| One approach is usually best but exceptions are legitimate | Default plus the conditions for departing from it |
-| A result must satisfy parallel requirements | Atomic checklist or DO / DO NOT list |
-| An order matters and a skipped step invalidates later work | Numbered procedure with observable checkpoints |
-| Progression would be unsafe or destructive before a condition holds | Hard gate |
-| Agents repeatedly override a clear rule | Evidence-based cost or anti-rationalisation device |
+| Unconditional or conditional action | Direct imperative (`Do Y` or `When X, do Y`) |
+| Parallel requirements sharing a subject (2 to 6 items) | Bullet list with one checkable action per bullet (use bold lead-in stems when items cover distinct surfaces or rules) |
+| Routing, scope tiers, or multi-owner boundaries | Compact Markdown table (`Condition \| Action` or `Surface \| Owner`) |
+| Ordered procedure where skipping or reordering breaks the result | Numbered sequence (1 to 6 steps) with concrete inputs and outputs |
+| Exact command, payload, schema, or prompt contract | Minimal copy-pasteable code or text block |
+| Non-obvious reason a shortcut fails | One-sentence observable consequence immediately after the instruction |
+| Prerequisite that makes proceeding unsafe or invalid | Explicit precondition (`Before X, confirm Y. Do not proceed when...`) |
 
-- Use a plain directive before adding a compliance device.
-- Keep judgment where the task genuinely requires judgment.
-- Add exact commands, scripts, schemas, or gates when variation is dangerous or
-  deterministic repetition is more reliable.
-- Do not make guidance rigid because the subject is important. Use stronger
-  constraints when the allowed path is narrow or a wrong choice is costly.
-- Use `must`, `always`, and `never` only for requirements that have no ordinary
-  exception within the stated scope.
-- Preserve prerequisite semantics such as `only if`, `unless`, `before`, and
-  `after`. Do not turn a necessary condition into a sufficient trigger.
+Keep judgment where the task genuinely requires judgment. Reserve `must`, `always`, and `never` for invariants that have no valid exception within the stated scope, and preserve prerequisite semantics (`only if`, `unless`, `before`, `after`) without turning a necessary condition into a sufficient trigger.
 
-## Write instructions and facts distinctly
+## Write instructions, facts, and technical prose
 
-### Write controllable behaviour as instructions
+### Distinguish instructions from facts
 
-- Start an unconditional instruction with the action.
-- Start a conditional instruction with the condition, then give the action.
-- Use the imperative or infinitive form.
-- Give one independently checkable action per sentence or bullet.
-- Prefer active voice and a direct verb.
-- State the required alternative beside a prohibition when the agent would not
-  otherwise know what to do.
-- Put caveats and rationale after the instruction they qualify.
-- Absorb a single rule's scope into its instruction instead of opening with a
-  redundant scope sentence.
+- If the agent can comply with or violate the sentence, write an imperative instruction (`Use semantic roles in feature modules`).
+- If the sentence is true or false independently of the agent's choices, write a declarative fact (`The identity service owns account-locking policy`).
+- Start a conditional instruction with the condition, then state the action (`When the request asks for a fresh read, bypass the cache`).
+- State the required alternative beside a prohibition when the valid path is not obvious.
 
-### Reserve declarative prose for facts
-
-Use declarative sentences for stable facts, ownership boundaries, definitions,
-and mental models that help the agent choose an action. Keep them close to the
-decision they inform.
-
-Apply this test:
-
-- If the reader can comply with or violate the sentence, write an instruction.
-- If the sentence can only be true or false independently of the reader, write
-  a fact.
-
-Do not disguise a directive as an invariant:
+Do not disguise controllable actions as architectural invariants, or invent unstated exclusivity:
 
 ```markdown
-# Unclear: controllable behaviour written as three facts
-Feature modules select semantic roles. `theme.css` owns theme values. Shared
-primitives own repeated state combinations.
+# Bad: controllable actions disguised as facts + invented exclusivity
+Feature modules select semantic roles. `theme.css` owns theme values. Each layer owns only one styling concern.
 
-# Clear: three actions
-Use semantic roles in feature modules. Define theme values in `theme.css`. Put
-repeated state combinations in shared primitives.
+# Good: direct actions preserving only supplied requirements
+Use semantic roles in feature modules. Define theme values in `theme.css`.
 ```
 
-When several facts define ownership or a decision boundary, prefer a compact
-table or diagram over a dense declarative lede.
+### Keep the register literal and direct
 
-Ground every fact and mental model in the source artifact or inspected system.
-Do not invent an invariant to make a list of instructions sound cohesive. In
-particular, do not infer exclusive ownership, a one-to-one responsibility
-mapping, or a prohibition on overlap unless the source establishes it. When the
-source supplies responsibilities without a shared invariant, preserve them as
-instructions or an ownership table without adding one.
+Apply this readability profile (derived from ASD-STE100 Simplified Technical English; see [references/ste-inspired-language.md](references/ste-inspired-language.md) when reviewing complex phrasing):
 
-Treat supplied requirements as a closed set unless the user asks you to derive
-new policy. Before adding a prohibition, exclusivity claim, causal explanation,
-or implementation constraint, map it to one of these sources:
+- **Name the actual actor, operation, and consequence:** Write `The worker retries failed deliveries` or `Inline error codes bypass client mapping and appear as unknown errors`, not `Retry behaviour fell out of the worker` or `The adapter gained responsibility for errors`.
+- **Keep sentences short and atomic:** Give one instruction per sentence unless two actions form one indivisible step. Do not hard-wrap prose or bullets across source lines when the target file uses unwrapped lines.
+- **Use one consistent term per concept:** Match the codebase's exact identifiers, commands, and domain terms. Refer to other sections or procedures by stable heading name, never by section number or relative position (`above`, `step 4 below`).
+- **Use generic, decoupled examples:** Use minimal examples that illustrate the pattern without coupling the rule to the specific file or ticket from the drafting session.
+- **Avoid manufactured salience and punctuation tics:** Never output Unicode `U+2014` em dashes; use a colon, parentheses, comma, or period. Do not open lists with empty counts (`Two consequences:`, `Three rules:`), coin slogans, or prefix sentences with label-colon hooks (`The key insight:`, `The tell:`). Use bold, italics, and code spans to mark structure or syntax, never on whole sentences for emphasis.
 
-- An explicit requirement in the source artifact
-- A fact established by the inspected system
-- A necessary logical implication without which the supplied requirement is
-  false
+## Strip common guidance failures
 
-Omit the addition when no source supports it. Do not add a conventional best
-practice merely because it is compatible with the supplied requirements. An
-assignment such as "HTTP handlers validate envelope syntax" does not establish
-that handlers validate syntax only, that no other layer participates, or that
-handlers have exactly one responsibility.
+When reviewing or revising guidance, recognize and remove these rot patterns:
 
-## Use plain technical language
-
-Apply this profile, derived from ASD-STE100 Simplified Technical English, to
-agent instructions. It is a readability profile, not a claim of STE
-compliance.
-
-- Keep sentences short enough to resolve in one reading. Split independent
-  clauses or use a list when a sentence carries several ideas.
-- Put a condition before the action it governs.
-- Give one instruction per sentence unless actions must occur together.
-- Prefer active voice. Use passive voice when the actor is unknown or when
-  changing the voice would change the technical meaning.
-- Use a direct verb instead of a noun phrase that names the same action.
-- Use one consistent term for each concept. Preserve established technical
-  names and identifiers.
-- Use vertical lists for complex, parallel, or sequential information.
-- Keep each paragraph on one topic.
-- Avoid idioms, decorative phrasing, and unexplained abbreviations that carry
-  required meaning.
-
-### Keep the register literal and technical
-
-- Use the codebase's terms and name the actual actor, action, and consequence.
-- State changes and causal relationships directly. Write "the implementation
-  added the capability" or "the configuration causes the retry," not that
-  functionality "grew," "emerged," "fell out of" an implementation, or was
-  "gained" by a component.
-- Do not invent a metaphor, analogy, or parallel vocabulary to make technical
-  guidance accessible. Explain the technical relationship in simpler literal
-  language. Use a stable, widely known analogy only when it accurately replaces
-  a longer explanation and the *Anchor to a known concept* technique applies.
-- Do not use em dashes in agent guidance. Split the sentence or use a colon,
-  parentheses, or a list according to the relationship.
-- Do not use threaded clauses or a literary, academic, or colloquial register.
-  Split winding prose into direct sentences.
-- Keep precise descriptors that name distinct properties. Remove intensifiers
-  such as "very," "really," and "extremely" when they add no information.
-
-### Do not manufacture salience
-
-- Do not introduce a list with an empty count such as "Two consequences:" or
-  "Three rules follow:". Use an informative heading or start with the content.
-- Do not coin a slogan, maxim, or memorable label for an instruction.
-- Do not prefix guidance with a label-colon construction such as "The tell:",
-  "The key insight:", or "The rule to remember:". State the instruction or
-  fact directly.
-- Use bold, italics, capitals, code spans, and blockquotes to mark structure or
-  syntax. Do not stack marks or format whole sentences to create emphasis or
-  cadence.
-
-Read [STE-inspired language reference](references/ste-inspired-language.md)
-when reviewing language behaviour, deriving examples, or deciding whether a
-stricter STE rule belongs in agent guidance.
-
-## Keep guidance independent of its drafting session
-
-- Write for a reader who did not participate in the conversation that produced
-  the guidance.
-- Remove editing history, abandoned approaches, and incident narration unless
-  the history is durable reference material the reader must act on.
-- Keep rationale when it defines an architectural boundary, explains a
-  surprising constraint, or changes how the agent chooses between valid paths.
-- Replace vague importance claims with an observable consequence when the
-  consequence helps the agent decide.
-- Use the codebase's names and precise technical terms.
-- Use generic examples that demonstrate the pattern without coupling the rule
-  to the current editing task.
-- Put the comprehensive form of a rule in one canonical location. Link to it
-  elsewhere instead of maintaining parallel copies.
-- Refer to headings, procedures, and concepts by stable name. Do not refer to
-  them by section number, step position, or relative location such as "above"
-  or "the section below" when a stable name exists.
-- Include the minimum fallback needed to act when a linked or sibling guidance
-  source is not guaranteed to be available.
-
-## Recognise common guidance failures
-
-| Pattern | Recognition | Response |
+| Rot pattern | Recognition | Fix |
 |---|---|---|
-| War story | The text names a past incident or prior version that the reader did not see | State the durable rule, fact, or failure category without the incident |
-| Drafting-session leakage | The text recaps the conversation, alignment process, or roles between authors | Keep only information the executing agent uses |
-| Strawman rebuttal | The text argues against a position a fresh reader would not plausibly hold | Remove it or state the required behaviour directly |
-| Weak rationale | The text says a rule is important without naming a decision or consequence | Remove it or state the relevant consequence |
-| Manufactured salience | An empty count, slogan, coined label, label-colon construction, or performative formatting tries to make guidance feel important | Remove the device and state the instruction or fact directly |
-| Declarative command | The agent can violate a sentence that is written as a fact | Rewrite it in imperative form |
-| Unsupported invariant | A summary asserts exclusivity, causality, ownership, or another constraint not established by the source | Remove the inference and preserve only sourced facts and instructions |
-| Duplicate summary | A link site paraphrases the canonical rule and can drift | Name the source and relevant heading; add only required fallback |
-| Over-enforcement | A heuristic gains gates, announcements, and rebuttals without evidence | Return to the lightest form that protects the behaviour |
+| **Bolt-on patch accrual** | Trailing `Note:`, `However,`, or stacked exceptions appended over multiple edits | Re-synthesize the governing rule or table so the section reads as one coherent design |
+| **War story or session leakage** | Mentions past incidents, prior versions, or what the author and user just discussed | State only the durable rule, boundary, or observable failure consequence |
+| **Compliance theatre** | `IRON LAW`, `Thought \| Reality` tables, `Violating the letter...`, mandatory announcements, or existential threats | Delete the device and state the rule, precondition, or consequence plainly |
+| **Declarative command** | Controllable agent behaviour written as a descriptive statement | Rewrite in the imperative form (`When X, do Y`) |
+| **Unsupported invariant** | Adds `only`, exclusive ownership, causal claims, or best-practice prohibitions absent from the source | Strip the unstated inference and keep only sourced facts and instructions |
+| **Textbook padding** | Explains standard tools, language features, or general concepts the model already knows | Delete the explanation; keep only project-specific rules and constraints |
+| **Duplicate summary** | Paraphrases a rule that already has a canonical home in another file | Link to the canonical file and heading; include only the minimum local fallback if that file may be absent |
 
-Before removing apparent rationale or repetition, test whether it intercepts a
-plausible default or preserves a boundary. Promote a useful insight into a
-clear instruction, condition, or cost. Remove content that only makes sense in
-the drafting session.
+Read [examples.md](examples.md) for concrete before-and-after rewrites of these failure modes.
 
-## Select structural and compliance techniques
+## Place guidance and structure skills
 
-Use the lightest technique that reliably protects the required behaviour.
+Put rules where they load at the moment of use, following the user's target file when specified:
 
-| Technique | Use when | Limits |
-|---|---|---|
-| Plain directive | A rule only needs to be stated clearly | Default form |
-| Shared mental model | Several rules depend on the same classification or boundary | Keep it factual and short; do not hide directives inside it |
-| DO / DO NOT list | Three or more parallel requirements share a subject | Keep one checkable action per bullet |
-| Cost statement | The reader cannot see a consequence that affects its choice | Name an observable, durable consequence |
-| Iron Law | One non-negotiable rule defines the discipline | Use at most one; omit when legitimate exceptions exist |
-| Hard gate | A later phase is invalid, unsafe, or destructive before a condition holds | State the condition and prohibited progression |
-| Commitment announcement | A public commitment materially improves adherence to a multi-step discipline | Do not require announcements for routine work |
-| Anchor to a known concept | A stable, widely known concept conveys the shape accurately | Do not use a team-specific or unexplained comparison |
-| Anti-rationalisation table | A repeated, evidenced excuse overrides an otherwise clear rule | Do not add speculative rows |
-| Spirit statement | Literal compliance repeatedly defeats the intended invariant | Use once and only with a concrete letter-versus-spirit risk |
-| Personality-setting directive | Judgment cannot be enumerated and a specific archetype usefully constrains it | Get human confirmation; reserve for posture-shaping guidance |
-| Existential cost statement | Mechanical consequences have failed and trust-level framing is intentionally required | Get human confirmation; use at most one |
-| Unity framing | Collaborative judgment benefits from treating the agent and user as colleagues | Do not use rapport, flattery, or reciprocity to compel compliance |
-
-Do not stack more than two or three devices on one rule. Additional devices can
-make every signal easier to ignore. Read [rewrite and technique
-examples](examples.md) when a heavier device appears necessary.
-
-## Put guidance where it will be available
-
-Choose the medium by the behaviour's scope and trigger. Follow the user's
-chosen file when they name one.
-
-| Guidance | Usual home |
+| Guidance scope | Home |
 |---|---|
-| Fired by a nameable action or task | Skill loaded near that action |
-| Ordered procedure that must be available at the moment of use | Skill or dedicated prompt |
-| Repository-wide orientation or always-relevant policy | Root `AGENTS.md`, `CLAUDE.md`, or harness equivalent |
-| Directory-specific rules | The nearest supported directory guidance file |
-| Subagent role, output contract, or stopping condition | Persistent subagent prompt template |
-| Detailed educational or reference material | Bundled reference loaded when needed |
-| Data or invariant bound to one code area | Stable adjacent documentation or a scoped guidance file |
+| Repository-wide orientation, commands, and always-on boundaries | Root `AGENTS.md` or `CLAUDE.md` |
+| Directory- or package-specific invariants | Nearest directory guidance file |
+| Workflow, checklist, or domain rules triggered by a distinct task | `SKILL.md` |
+| Heavy reference, CLI mechanics, scripts, or extended examples | `references/` or `examples.md` inside the skill directory |
+| Reusable subagent role, rubric, or output contract | Dedicated prompt template or inline block inside the owning skill |
 
-- Keep always-loaded guidance concise. Every line competes with the task and
-  other policies.
-- Put action-fired guidance where it can load near the action instead of
-  relying only on distant orientation text.
-- Follow ownership of the behaviour, not the file already open during the
-  editing session.
-- Treat sibling skills as independently installed. Qualify optional references
-  with `if available` and give a fallback for required behaviour.
-- Keep the normal workflow usable without any harness-specific authoring skill.
+When authoring or revising a skill (`SKILL.md`):
 
-## Revise existing guidance safely
+- **Write the frontmatter `description` as a router:** State what the skill does, concrete `TRIGGER` conditions, and `SKIP` exclusions for adjacent tasks that share vocabulary. Do not summarize the workflow in the description.
+- **Keep `SKILL.md` scannable and self-contained (~150 to 250 lines):** Put the core rules, decision tables, and workflow in `SKILL.md`. Move large command recipes, reference catalogues, and extended examples into `references/` or `examples.md`, and link to them with a clear instruction on when to read them.
+- **Add an in-body scope bailout only when routing is ambiguous:** If keyword overlap causes false-positive loads, add a 1 to 2 sentence scope check in the opening paragraph telling the agent when to ignore the skill. Do not add boilerplate bailout sections when the frontmatter `TRIGGER` and `SKIP` are already unambiguous.
+- **Keep sibling skills decoupled:** Qualify cross-skill references with `if available` and include a concise local fallback whenever the step is required to complete the task.
 
-Preserve:
+## Workflow: Draft, revise, and verify
 
-- Requirements, prohibitions, and exceptions that still affect behaviour
-- Architecture, ownership, compatibility, safety, and rollout boundaries
-- Commands, diagrams, schemas, examples, migration notes, and checklists that
-  provide non-obvious reference
-- Existing structure and terminology when they remain fit for the objective
-
-Change directly when the edit strengthens an instruction, removes clear
-session leakage, repairs ambiguity, or consolidates exact duplication. Ask the
-user before removing content that may be load-bearing or changing the
-artifact's objective, audience, authority, or enforcement posture.
-
-Match the existing voice during a focused edit. Reorganise or rewrite the whole
-artifact when its current structure prevents the requested outcome and the
-user has authorised that scope.
-
-## Procedure
-
-1. **Check applicability.** Apply the post-load check before producing
-   announcements, artifacts, or side effects required by the skill.
-2. **Inspect the artifact and context.** Read the complete guidance, applicable
-   higher-priority instructions, linked sources needed for the edit, and the
-   relevant harness or repository conventions.
-3. **Align to the outcome.** Identify the medium, objective, reader, available
-   context, register, degree of freedom, and load-bearing constraints. State
-   this alignment to the user when it communicates a material decision. Ask
-   for confirmation only when an unresolved choice would change the result.
-4. **Classify the content.** Distinguish instructions, triggers, facts,
-   definitions, caveats, costs, examples, and reference material. Rewrite
-   ambiguous declarative commands before polishing style. For substantial new
-   guidance or a broad rewrite, first extract the source into flat points with
-   one supplied fact, instruction, condition, or cost per point. Skip this
-   intermediate artifact for a localized edit whose source already matches the
-   target structure.
-5. **Select constraint strength and structure.** Choose the lightest forms that
-   protect the behaviour. Add stronger devices only for fragility, failure
-   cost, or evidenced noncompliance.
-6. **Draft or edit.** Write against the artifact and preserve its technical
-   meaning. Use the plain-language profile and generic examples.
-7. **Review the delta and the whole artifact.** Check additions first, then read
-   the final artifact without relying on the drafting conversation. Remove
-   leakage, inconsistent terminology, accidental duplication, unsupported
-   rigidity, instructions disguised as facts, and the register or salience
-   patterns in this skill. Trace each new prohibition, exclusivity claim,
-   causal explanation, and implementation constraint to its source. Remove it
-   when the source does not support it. Condense without dropping a
-   requirement. Do not require a separate announcement or report for this
-   pass.
-8. **Validate proportionally.** Run structural validation when available.
-   Forward-test when routing, judgment, or compliance behaviour materially
-   changed, is uncertain, or addresses a known failure.
-
-## Skill-specific guidance
-
-### Write the description as a router
-
-Include what the skill does and concrete conditions for when it should load.
-Add useful exclusions when adjacent tasks use the same vocabulary. Keep the
-normal workflow in the body rather than summarising its steps in metadata.
-
-### Add a post-load bailout when routing is imperfect
-
-Add a bailout when a broad description or external loader has a recognizable
-false-positive class. Put it before announcements, artifacts, gates, or other
-side effects.
-
-State the concrete condition that makes the skill inapplicable. Tell the agent
-to ignore the remainder of the skill and continue the user's task with the
-applicable guidance.
-
-```markdown
-## Check applicability after loading
-
-If this task only inspects an existing report and does not create or revise a
-report, ignore the remainder of this skill. Continue the inspection without
-applying the report-authoring workflow.
-```
-
-- Do not use a discretionary condition such as "if this skill seems
-  irrelevant."
-- Do not repeat every metadata exclusion in the body. Cover false positives
-  that remain plausible after routing.
-- Do not turn the bailout into permission to escape a load-bearing rule after
-  the skill is applicable.
-- Treat explicit user invocation as evidence of applicability unless the user
-  says otherwise.
-
-### Keep optional resources portable
-
-Keep the core workflow and decisions in `SKILL.md`. Move detailed variants,
-large examples, domain reference, and deterministic utilities into bundled
-resources. Link each resource from the core and state when to read or run it.
-
-When another skill owns a useful step, invoke it only if available. Include a
-local fallback for any step required to complete the current skill.
-
-### Use strict workflows selectively
-
-Use a numbered procedure when order is part of correctness. Give each required
-step an observable result or checkpoint when a skipped step would otherwise be
-invisible. Do not add commitment announcements, hard gates, recognition tables,
-and a spirit statement to every ordered workflow.
-
-Add those devices individually when the applicable selection criteria in this
-skill justify them.
-
-## Validate behavioural changes
-
-Use static review for wording changes that cannot alter routing, decisions, or
-side effects. Validate frontmatter and bundled structure with the harness's
-validator when one is available.
-
-For a behavioural change, define the observable decision, output, or side
-effect first. Use `pressure-test-skills` if it is available.
-
-Otherwise, run the revised guidance on an ordinary task in a fresh context.
-Keep the authoring conversation, expected result, and previous guidance out of
-the subject's context. Score the observable behaviour against criteria written
-before the run. Add a control only when claiming that the edit improved
-behaviour, and add held-out tasks only when claiming that the result
-generalises. If the subject recognizes the evaluation, treat the result as
-diagnostic rather than evidence of ordinary behaviour. State any material
-limitation.
-
-Do not require a behavioural test when the expected result is already
-deterministic from a structural validator or the change cannot affect agent
-behaviour.
+1. **Inspect the target and context:** Read the existing artifact end to end, along with any linked files or repository conventions it depends on. Ask the user only when plausible interpretations materially change the policy or remove a load-bearing constraint.
+2. **Draft or re-synthesize:** Apply the change directly into the artifact's structure. Preserve load-bearing requirements, architecture/compatibility boundaries, and useful reference blocks (commands, schemas, diagrams) while stripping patched-on fluff and session leakage.
+3. **Run the cold-reader check:** Read the complete modified file from top to bottom as an agent encountering it mid-task with zero conversation history:
+   - Every controllable requirement is an imperative instruction (`Do Y` or `When X, do Y`), not a disguised fact.
+   - No new prohibition, `only` / exclusivity claim, or causal explanation exceeds the source evidence.
+   - Re-edited sections read as a single unified rule or table without trailing contradiction patches.
+   - No Unicode `U+2014` em dashes, label-colon hooks (`The key insight:`), empty list counts (`Two rules:`), or compliance theatre remain.
+   - Cross-references use stable heading or file names and include `if available` fallbacks for optional sibling skills.
+4. **Validate proportionally:** For wording, compression, or structural cleanup, the cold-reader check suffices. When a change alters skill routing or compliance on a contested behaviour, test it on a realistic task in a fresh context (using `pressure-test-skills` if available).

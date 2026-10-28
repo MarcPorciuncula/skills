@@ -1,247 +1,93 @@
-# Rewrite and technique examples
+# Rewrite Examples for Agent Guidance
 
-Use these examples when the main skill identifies the applicable pattern. The
-subjects are generic so the examples do not bias a review toward the artifact
-that prompted the guidance.
+Use these before-and-after pairs when revising guidance or stripping common rot patterns.
 
-## Rewrite declarative commands as instructions
+## Re-synthesize instead of appending bolt-on patches
 
-Before:
+Before (accumulated patches over several edits):
 
-> Feature modules select semantic roles. `theme.css` owns theme values. Shared
-> primitives own repeated state combinations.
+> Run `pnpm test` before pushing.
+>
+> Note: Do not run the full test suite for small changes; scope it to the changed file.
+>
+> Exception: If you only edited documentation or comments, skip tests completely. Also, clean rebases do not need tests.
 
-After:
+After (re-synthesized into one coherent rule):
 
-> Use semantic roles in feature modules. Define theme values in `theme.css`.
-> Put repeated state combinations in shared primitives.
+> When verifying locally, run only the test file or package that exercises the changed behaviour. Skip local tests for documentation, comment-only edits, and clean rebases.
 
-The before-form presents three choices the agent controls as if they were facts.
-The after-form makes each required action explicit.
+## Strip compliance theatre and state the boundary directly
 
-Keep a genuine ownership fact declarative when it supports later choices:
+Before (legacy `obra/superpowers` devices):
 
-> The identity service owns account-locking policy. Route lock and unlock
-> operations through that service.
+> **IRON LAW: NO MIGRATIONS WITHOUT BACKWARDS COMPATIBILITY**
+>
+> Announce at the start of your turn: "I am checking the migration compatibility boundary."
+>
+> | Thought | Reality |
+> |---|---|
+> | "This column is unused, I can drop it now" | Old workers still read this column during rolling deploys. |
+>
+> **Violating the letter of this rule is violating the spirit of it.**
 
-The first sentence states a stable boundary. The second tells the agent how to
-act within it.
+After (direct instruction + observable runtime consequence):
 
-Do not invent a shared invariant to make supplied responsibilities sound more
-cohesive:
+> Keep schema migrations backwards-compatible with the currently deployed worker version. Do not drop or rename a column in the same release that removes its code references, because old workers continue querying the schema until the rolling deployment completes.
 
-Before, when the source only assigns the listed responsibilities:
+## Rewrite declarative commands as imperative instructions
 
-> Each stage owns exactly one responsibility. Do not duplicate a check in
-> another stage.
+Before (controllable choices disguised as facts):
 
-After:
+> Feature modules select semantic roles. `theme.css` owns theme values. Shared primitives own repeated state combinations.
 
-> Validate envelope syntax in HTTP handlers. Validate business rules in command
-> services. Select public error codes in queue workers.
+After (explicit actions):
 
-The before-form adds exclusivity and a prohibition that the source did not
-establish. The after-form preserves the supplied responsibilities without
-narrowing them.
+> Use semantic roles in feature modules. Define theme values in `theme.css`. Put repeated state combinations in shared primitives.
 
-Do not add conventional implementation advice without source support:
+Keep genuine architectural boundaries declarative when they inform an adjacent instruction:
 
-Before, when the source only says that `queue-policy.yaml` configures retry
-limits and backoff:
+> The identity service owns account-locking policy. Route lock and unlock operations through that service.
 
-> Configure retry limits and backoff in `queue-policy.yaml`. Do not hardcode
-> retry values in worker code.
+## Preserve closed-set requirements without inventing invariants
 
-After:
+Before (when the source only assigns three responsibilities):
 
-> Configure retry limits and backoff in `queue-policy.yaml`.
+> Each stage owns a single responsibility. Do not duplicate checks across stages. Validate envelope syntax in HTTP handlers, business rules in command services, and public error codes in queue workers.
 
-The prohibition may be sensible, but it is new policy unless the source or
-inspected implementation establishes it.
+After (preserves supplied rules without inventing exclusivity):
 
-## Keep technical relationships literal
+> Validate envelope syntax in HTTP handlers. Validate business rules in command services. Map failures to public error codes in queue workers.
 
-Before:
-
-> Retry behaviour fell out of the worker implementation, and the adapter gained
-> responsibility for public errors.
-
-After:
-
-> The worker implementation now controls retry behaviour. The adapter now maps
-> provider failures to public errors.
-
-Name the component and operation directly. Do not substitute literary motion
-or acquisition for a technical change.
-
-## Remove manufactured salience
+## Keep technical relationships literal and remove manufactured salience
 
 Before:
 
-> **Two truths:** The key insight: generated files are disposable, and the rule
-> to remember is that schemas steer the ship.
+> **Two truths:** The key insight: retry behaviour fell out of the worker implementation, and the rule to remember is that schemas steer the ship.
 
 After:
 
-> Edit the schema, then regenerate the client. Do not edit generated files.
+> The worker implementation controls retry behaviour. Edit the schema first, then regenerate the client; do not edit generated files directly.
 
-Remove empty counts, slogan-like labels, decorative emphasis, and metaphor.
-Keep the actions.
-
-## Reference stable names
+## Replace vague importance claims with observable consequences
 
 Before:
 
-> Apply the technique in section 4. Then run step 7 below.
+> Always register error codes in the shared registry. This is very important for consistency across services.
 
 After:
 
-> Apply *Anchor to a known concept*. Then run **Review the delta and the whole
-> artifact**.
+> Register error codes in the shared registry. Inline codes bypass client mapping and surface as generic `UNKNOWN` errors to callers.
 
-Names survive reordering and are easier to retrieve than numeric or positional
-references.
+## Remove drafting-session leakage while keeping load-bearing rationale
 
-## Put the condition before the action
+Before (session history):
 
-Before:
+> We moved this check out of the individual reviewers because the earlier version duplicated the final verification pass.
 
-> Use the cached result, unless the request asks for a fresh read.
+After (durable ownership rule):
 
-After:
+> Run this check only in the final verification pass; do not repeat it in individual reviewers.
 
-> When the request asks for a fresh read, bypass the cache. Otherwise, use the
-> cached result.
+Before (load-bearing runtime rationale worth keeping):
 
-The after-form makes both paths explicit and preserves the exception.
-
-## Add a post-load bailout
-
-Use a bailout for a recognizable false-positive class that can remain after
-metadata routing:
-
-```markdown
-## Check applicability after loading
-
-If this task only reads or summarizes an existing incident report, ignore the
-remainder of this skill. Continue without applying the report-authoring
-workflow.
-```
-
-Do not write:
-
-> If this skill does not seem relevant, ignore it.
-
-The vague form permits convenience-based escape after the skill is applicable.
-
-## Calibrate constraint strength
-
-### High freedom
-
-> Organize the explanation around the reader's primary decision. Use prose, a
-> table, or a diagram according to the relationships that need explanation.
-
-Several structures can satisfy the outcome. Selection criteria provide enough
-guidance.
-
-### Preferred default
-
-> Put one behavior change in each commit by default. Combine changes when
-> separating them would create an invalid intermediate state.
-
-The instruction establishes a default and preserves a legitimate exception.
-
-### Ordered procedure
-
-> 1. Capture the current schema version.
-> 2. Apply the additive migration.
-> 3. Verify that old and new readers accept the schema.
-> 4. Enable the new writer.
-
-The order protects compatibility and each step has an observable result.
-
-### Hard gate
-
-> Do not enable the new writer until old and new readers accept the additive
-> schema.
-
-The gate earns its place because crossing it early breaks a compatibility
-boundary.
-
-## Use a cost statement only when it changes the choice
-
-Without a useful cost:
-
-> Always use the shared error registry. This is important for consistency.
-
-With an observable cost:
-
-> Add error codes to the shared registry. Inline codes bypass client mapping
-> and appear as unknown errors.
-
-The second sentence explains a consequence the agent needs to understand. It
-does not merely assert importance.
-
-## Add anti-rationalisation only from evidence
-
-Weak row:
-
-| Thought | Response |
-|---|---|
-| "I will ignore the validation step" | Run validation |
-
-This restates the prohibited act and does not capture a plausible reason for
-overriding it.
-
-Evidence-based row:
-
-| Thought | Response |
-|---|---|
-| "The generated file is mechanical, so validating one sample proves the whole batch" | Generation can preserve a template defect across every output. Validate the generated set required by the repository. |
-
-Use the second form only after this rationalisation appears in a trace, review,
-or repeated failure.
-
-## Remove drafting-session leakage
-
-Before:
-
-> We moved this check out of the reviewer because the earlier version duplicated
-> the final verification pass.
-
-After, when only the current responsibility matters:
-
-> The final verification pass owns this check.
-
-After, when the agent also needs an action:
-
-> Run this check only in the final verification pass. Do not repeat it in each
-> reviewer.
-
-The rewrite keeps the durable ownership boundary and removes branch history.
-
-## Preserve load-bearing rationale
-
-Do not remove rationale merely because it contains `because`:
-
-> Keep the event field additive during the rolling deployment because old
-> workers can process queued payloads until the previous revision drains.
-
-The rationale defines a runtime compatibility boundary. Removing it would make
-the temporary additive requirement look arbitrary and easier to delete early.
-
-## Link without maintaining a parallel copy
-
-Before:
-
-> Validate request payloads at the handler boundary. The shared validation
-> guide explains schema selection, error conversion, nested fields, and custom
-> validators. See `docs/validation.md` under "Handler validation."
-
-After:
-
-> Validate request payloads at the handler boundary. See "Handler validation"
-> in `docs/validation.md`.
-
-Add a short fallback only when the linked source might not be available to the
-reader and the agent cannot act safely without it.
+> Keep the event field additive during the rolling deployment because old workers can process queued payloads until the previous revision drains.
