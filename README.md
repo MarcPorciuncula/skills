@@ -9,6 +9,9 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **address-review** | Analyze and address PR review comments |
 | **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
+| **coordinate-implementation** | Retain architecture and domain decisions while delegating implementation to a subagent |
+| **dex** | Decompose multi-step work into `dex` epics, tasks, and dependency DAGs, and execute task trees |
+| **inspect-depot-ci** | Inspect and diagnose Depot CI failures from remote logs before reproducing locally |
 | **linear-issue-workflow** | Keep Linear issues aligned with delivery units and reference them by recognizable titles |
 | **map-ui-affordances** | Design and review UI structure with affordance trees |
 | **opencode-subagents** | Run subagents and consult models via the OpenCode CLI |
