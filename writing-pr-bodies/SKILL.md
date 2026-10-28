@@ -19,8 +19,9 @@ Write for a senior engineer who knows the codebase but has not read the ticket, 
 Every PR title and body must satisfy these rules on the first draft:
 
 - **Open with a present-active PR verb:** Start the first agent-authored sentence with what the PR changes (`Adds`, `Updates`, `Replaces`, `Moves`, `Removes`, `Prevents`). Never open with `<Subject> now <verb>s...` (`Human checklist items now appear as...`) or `This PR...`.
+- **Foreground contract and schema deltas as diff snippets:** Whenever a PR adds, modifies, or removes database tables/columns/indexes, protobuf/RPC methods or messages, public API payloads, or job/event schemas, render an abridged before/after diff block (`+`, `-`, `~`) showing the exact field, method, or column names and types. Never hide contract or schema changes inside prose summaries.
 - **Match body shape to scope:** Use the simplest tier in **Size and shape** below. Do not turn a small fix or visual cleanup list into a multi-section document.
-- **Break up dense prose:** Keep paragraphs to 3 sentences or fewer. Never write more than 2 consecutive prose paragraphs without a visual break (heading, bullet list, table, schema block, or diagram). Never list 3 or more inline file paths, RPCs, or identifiers inside a prose sentence. Do not hard-wrap prose or bullets across source lines.
+- **Break up dense prose:** Keep paragraphs to 3 sentences or fewer. Never write more than 2 consecutive prose paragraphs without a visual break (heading, bullet list, table, diff/schema block, or diagram). Never list 3 or more inline file paths, RPCs, or identifiers inside a prose sentence. Do not hard-wrap prose or bullets across source lines.
 - **Bound bullet lists:** Keep bullet lists to 2 to 6 items, one sentence per item, with no nested sub-bullets. Use bold lead-in stems (`- **Surface:** ...`) when items describe distinct surfaces, components, or guarantees.
 - **Omit banned sections and footers:** Never add `Summary`, `What changed`, `Design`, `Validation:`, `Testing:`, `Verification:`, `Test plan`, unit/CI/linter pass recaps, diff statistics, AI attribution, or file/identifier inventories in the PR body. When the repository uses a separate `Review focus` PR comment, put the reading-order file table there.
 
@@ -76,16 +77,48 @@ Include internal architecture only when a reviewer needs it to judge correctness
 
 When storage changes matter, use an ASCII schema block with `+` / `~` / `-` markers and adjacent `# comments` explaining authority, lookup purpose, and lifecycle instead of repeating DDL in prose.
 
+### Visualise contract and schema deltas
+
+Whenever a PR changes an RPC service or message, public API or webhook payload, database table/column/index, or persisted job/event contract, show the exact added, modified, or removed declarations in a compact `diff` or annotated block. Reviewers catch naming, type, nullability, and symmetry issues immediately when the exact names are visible in the PR body; prose summaries and conceptual tables hide those names.
+
+- Include only the changed methods, fields, or columns plus 1 to 2 unchanged lines for context.
+- Use `+` / `-` markers (in a ```` ```diff ```` or ```` ```text ```` block) and short adjacent `#` or `//` comments for non-obvious semantics, units, lookup keys, or constraints.
+
+````markdown
+```diff
+ service ActionItemsService {
++  rpc ListActionItems(ListActionItemsRequest) returns (ListActionItemsResponse);
++  rpc UpdateActionItem(UpdateActionItemRequest) returns (UpdateActionItemResponse);
+ }
+
+ message ActionItem {
+   string id = 1;
++  ActionItemState state = 2;              // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
++  google.protobuf.Timestamp due_time = 3; // deadline only; does not schedule a reminder
+ }
+```
+````
+
+````markdown
+```diff
+ calendar_events
+   id
+-  organiser_copy_seen boolean NOT NULL DEFAULT false
++  organiser_last_seen_time timestamptz NULL  # set when organiser's calendar copy is observed
+```
+````
+
 ### Choose the representation
 
 Use one representation per reviewer question; do not repeat the same model in a diagram, table, and prose walkthrough.
 
 | Information | Representation |
 |---|---|
-| Parallel surfaces, contracts, or ownership without branching topology | Compact table or 2 to 6 bold-stem bullets |
+| Added, modified, or removed RPCs, messages, API fields, or job/event payloads | Compact `diff` snippet with exact method/field names, types, and adjacent comments |
+| Added, modified, or removed database tables, columns, or constraints | ASCII schema `diff` block (`+`, `-`, `~`) with adjacent `#` comments |
+| Parallel UI surfaces, affordances, or component ownership without branching topology | Compact table or 2 to 6 bold-stem bullets |
 | Ordered runtime sequence | Numbered list (1 to 5 steps) |
 | Non-linear topology, branching, convergence, cycle, or state transition | Plain-text diagram |
-| Consequential storage shape | ASCII schema block with adjacent comments |
 | Cause, tradeoff, compatibility, or implication | Short prose (1 to 3 sentences) |
 
 Before keeping a plain-text diagram, confirm that its geometry communicates branching, convergence, or containment that a numbered list or table would hide, that it has one dominant reading direction with no crossings, and that unlabelled arrows share one meaning. Follow a diagram with at most one short paragraph stating its implication; put additional parallel facts in bullets.
@@ -137,9 +170,10 @@ Consequential constraints:
 Before posting, verify the draft against this checklist:
 
 1. **First-draft rules pass:** Starts with a present-active PR verb; contains no `Validation:`/`Testing:` footer, `How to test` recap of routine CI, or file/identifier inventory; paragraphs are <= 3 sentences; at most 2 consecutive prose paragraphs appear without a structural break; no sentence lists 3+ inline paths or identifiers.
-2. **Scan test passes:** Reading only the title, opening, headings, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
-3. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
-4. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
+2. **Contract and schema deltas are visible:** Any changed RPC method/message, API payload, persisted job/event schema, or database table/column/constraint is shown as a compact `diff` snippet with exact field/column names and types, not merely described in prose or a conceptual table.
+3. **Scan test passes:** Reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
+4. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
+5. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
 
 When subagent delegation is available on a substantial PR, pass only the proposed title and agent-authored body (excluding human-authored sections) to an isolated subagent with no repo access or tools:
 
@@ -147,9 +181,10 @@ When subagent delegation is available on a substantial PR, pass only the propose
 Cold-read this PR title and body using only the text below. Do not use tools or inspect any files.
 
 Return:
-1. Scan-only takeaway from reading only the title, opening, headings, diagrams, tables, and bullet stems.
+1. Scan-only takeaway from reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bullet stems.
 2. Any violation of these rules:
    - First sentence must start with a present-active PR verb (Adds, Updates, Replaces, Moves, Removes, Prevents), never "<Noun> now <verb>s" or "This PR".
+   - Changed RPCs, API/message fields, database tables/columns, or persisted schemas must appear as a compact diff/schema block showing exact names and types, not only prose or a conceptual summary table.
    - No Validation/Testing/Verification summaries, CI/test-pass recaps, or file/identifier inventories.
    - Max 3 sentences per paragraph; max 2 consecutive prose paragraphs without a visual break; no 3+ inline paths/identifiers in a prose sentence.
    - Functional behaviour must precede internal architecture without interleaving or narrating routine mechanics (timers, cache wiring, local hooks).
