@@ -27,6 +27,8 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **visual-iteration** | Stage UI changes rapidly before production implementation |
 | **writing-agent-guidance** | Write, revise, or review persistent agent guidance and skills |
 | **writing-persistent-content** | Write durable internal or external content for its eventual audience |
+| **writing-pr-bodies** | Write or revise PR titles and bodies as standalone review briefs |
+| **writing-specs** | Write, revise, or review specifications, design docs, and RFCs at spec altitude |
 
 ## Repo utilities
 
