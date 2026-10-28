@@ -21,6 +21,7 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
 | **update-branch** | Rebase branches or restack git-spice stacks |
 | **visual-iteration** | Stage UI changes rapidly before production implementation |
+| **writing-agent-guidance** | Write, revise, or review persistent agent guidance and skills |
 | **writing-persistent-content** | Write durable internal or external content for its eventual audience |
 
 ## Repo utilities
