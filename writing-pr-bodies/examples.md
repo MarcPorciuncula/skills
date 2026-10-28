@@ -15,6 +15,27 @@ The opening is the complete body. The change has no new architectural boundary
 or rollout constraint, so headings and an implementation inventory would add no
 review value.
 
+## Focused multi-item visual cleanup
+
+```markdown
+Tidies narrow workflow and task run side rails:
+
+- Gives text links blue and neutral roles independent of primary button colours.
+- Uses compact contextual list items with aligned, padded hover surfaces.
+- Stacks parameter labels above values and expands text longer than three lines from the full row.
+- Tightens section spacing and aligns assignee and reviewer rows.
+- Omits "(You)" from user parameters, hides redundant single-source headings, and uses grey acceptance-criteria checkmarks.
+
+![Light-mode workflow run sidebar](https://github.com/user-attachments/assets/example-workflow-sidebar)
+
+![Light-mode task run sidebar](https://github.com/user-attachments/assets/example-task-sidebar)
+```
+
+A set of related visual or ergonomic cleanups needs only a one-sentence framing
+line, a bounded list of parallel one-sentence bullets, and 16:9-framed
+screenshots of the affected regions. Sections and implementation prose would obscure
+the scan.
+
 ## Multi-surface functional change
 
 ```markdown
