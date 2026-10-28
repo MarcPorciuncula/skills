@@ -15,6 +15,27 @@ The opening is the complete body. The change has no new architectural boundary
 or rollout constraint, so headings and an implementation inventory would add no
 review value.
 
+## Focused multi-item visual cleanup
+
+```markdown
+Tidies narrow workflow and task run side rails:
+
+- Gives text links blue and neutral roles independent of primary button colours.
+- Uses compact contextual list items with aligned, padded hover surfaces.
+- Stacks parameter labels above values and expands text longer than three lines from the full row.
+- Tightens section spacing and aligns assignee and reviewer rows.
+- Omits "(You)" from user parameters, hides redundant single-source headings, and uses grey acceptance-criteria checkmarks.
+
+![Light-mode workflow run sidebar](https://github.com/user-attachments/assets/example-workflow-sidebar)
+
+![Light-mode task run sidebar](https://github.com/user-attachments/assets/example-task-sidebar)
+```
+
+A set of related visual or ergonomic cleanups needs only a one-sentence framing
+line, a bounded list of parallel one-sentence bullets, and 16:9-framed
+screenshots of the affected regions. Sections and implementation prose would obscure
+the scan.
+
 ## Multi-surface functional change
 
 ```markdown
@@ -107,17 +128,27 @@ existing record; the new-record comment applies to its listed fields.
 
 ## Contract change with a sequential runtime path
 
-```markdown
+````markdown
 Adds named credentials to deployment definitions so jobs can use centrally managed secrets without copying secret values into each definition. A caller selects an allowed credential when starting a deployment, and the runtime exchanges its stored reference for a short-lived provider token only when a job needs it.
 
 ## Changed contracts
 
-| Surface | Contract |
-|---|---|
-| Deployment definition | Declares the credential names that its jobs may use. |
-| Start request | Binds each required name to a credential available in the current project. |
-| Deployment run | Stores the credential reference, not the secret value or provider token. |
-| Job runtime | Exchanges an allowed reference for a short-lived token immediately before provider access. |
+```diff
+ message DeploymentDefinition {
+   string id = 1;
++  repeated string allowed_credential_names = 4; // names that jobs in this definition may request
+ }
+
+ message StartDeploymentRequest {
+   string definition_id = 1;
++  map<string, string> credential_bindings = 3;  // required name -> project credential_id
+ }
+
+ deployment_runs
+   id
+   definition_id -> deployment_definitions.id
++  credential_bindings jsonb NOT NULL            # validated name -> credential_id map; never stores secret values
+```
 
 ## Resolution sequence
 
@@ -129,12 +160,13 @@ Adds named credentials to deployment definitions so jobs can use centrally manag
 ## Security boundary
 
 A stored reference identifies which credential a job may use. It does not contain a secret, grant access to credentials absent from the definition, or let one project resolve another project's credentials.
-```
+````
 
-The body uses a table for contracts, numbered steps for temporal order, and
-prose for the security implication. These are distinct reviewer questions
-within one model. Combining them into one diagram would make connectors mean
-accepts, validates, stores, exchanges, and authorises at different points.
+The body uses a diff block to expose the exact proto and database field names,
+numbered steps for temporal order, and prose for the security implication. These
+are distinct reviewer questions within one model. Combining them into one diagram
+would make connectors mean accepts, validates, stores, exchanges, and authorises
+at different points.
 
 ## Architecture and runtime flow
 

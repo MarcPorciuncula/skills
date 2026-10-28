@@ -16,32 +16,73 @@ Retain verified motivation, constraints, and consequential decisions from the ex
 
 Re-read the live title and body immediately before posting an asynchronous draft. If either changed after drafting began, stop and return the draft to the primary agent. Do not overwrite concurrent work with the stale snapshot.
 
-## Posting
+## Posting and review focus comments
 
-Draft through a file so the exact artifact can be reviewed and posted without shell-quoting damage.
+Draft through a file so the exact artifact can be reviewed and posted without shell-quoting damage:
 
 ```bash
 gh pr create --title "<title>" --body-file <path>
 gh pr edit <number> --title "<title>" --body-file <path>
 ```
 
-When a fresh PR needs a concise initial body before the final review, create it
-from a short body file. After the last planned code push, draft the final title
-and body through a file and run the isolated cold-reader workflow from
-`SKILL.md`. Re-check the live PR and head before posting the reviewed artifact.
+Keep file-by-file reading order out of the PR body. When the repository uses a separate `Review focus` PR comment (such as `pr-handoff`), maintain a single `<!-- review-focus -->` comment with a grouped reading-order table rather than listing files in the PR body or posting a new comment on each push.
 
-### Screenshot attachments
+## Framing and attaching screenshots
 
-Append a screenshot without replacing the existing PR body:
+Never commit screenshots to the repository solely to embed them in a PR body. Upload them with `gh pr create --attach` or `gh pr edit --attach` (if the installed `gh` CLI lacks `--attach`, update `gh` first).
 
-```bash
-gh pr edit 123 --attach '/tmp/after.png#Updated settings screen'
+### 1. Capture the target region with context padding
+
+Crop to the changed UI component or region with 24 to 48px of surrounding padding rather than capturing a mostly empty full-screen viewport. In Puppeteer or Playwright, compute the element's bounding box and expand the clip rectangle:
+
+```js
+const rect = await page.locator('<selector>').boundingBox();
+const pad = 32;
+await page.screenshot({
+  path: '/tmp/opencode/raw-crop.png',
+  clip: {
+    x: Math.max(0, Math.floor(rect.x - pad)),
+    y: Math.max(0, Math.floor(rect.y - pad)),
+    width: Math.ceil(rect.width + pad * 2),
+    height: Math.ceil(rect.height + pad * 2),
+  },
+});
 ```
 
-To place a screenshot within a new or revised body, include a Markdown image
-reference to the local file in the body file and pass the same path with
-`--attach`. GitHub CLI replaces that reference with the uploaded asset URL.
-Repeat `--attach` for multiple screenshots.
+### 2. Pad tall or narrow crops to a ~16:9 frame
+
+GitHub scales standalone portrait or square images (`width / height < 1.4`, such as side rails, dialogs, popovers, or mobile viewports) across the full PR column width. Before attaching a narrow crop, composite it onto a ~16:9 canvas with neutral background padding that contrasts subtly with the component surface (for example, `#f5f4f0` behind a white light-mode surface, or `#141413` behind a dark-mode surface):
+
+**Option A: `ffmpeg` (when installed)**
+
+```bash
+# Pads any narrow image out to a 16:9 canvas with at least 48px vertical margin
+ffmpeg -y -i /tmp/opencode/raw-crop.png \
+  -vf "pad='max(iw+96,ceil((ih+96)*16/9/2)*2)':'ceil((ih+96)/2)*2':'(ow-iw)/2':'(oh-ih)/2':color=#f5f4f0" \
+  /tmp/opencode/framed-shot.png
+```
+
+**Option B: In-browser HTML canvas (zero external CLI dependencies)**
+
+When capturing through a headless or host browser, composite the PNG buffer onto a 16:9 `<canvas>` inside `page.evaluate` or stage the target component centered inside a `1312x738` (`16:9`) container with `background: #f5f4f0` before taking the clip screenshot.
+
+### 3. Attach inline with `gh pr`
+
+Include a local Markdown image link in the body file and pass the same path to `--attach`. GitHub CLI uploads the image and replaces the local path with the hosted asset URL:
+
+```markdown
+![Light-mode workflow run sidebar](/tmp/opencode/framed-shot.png)
+```
+
+```bash
+gh pr edit 123 --body-file /tmp/opencode/pr-body.md --attach /tmp/opencode/framed-shot.png
+```
+
+To append a screenshot without replacing the existing PR body:
+
+```bash
+gh pr edit 123 --attach '/tmp/opencode/framed-shot.png#Light-mode workflow run sidebar'
+```
 
 ## External references
 
