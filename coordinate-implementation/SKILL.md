@@ -10,213 +10,53 @@ description: >-
 
 # Coordinate Implementation
 
-Retain user intent, domain and architecture decisions, and acceptance in the
-coordinator. Delegate repository investigation, implementation details, and
-code changes to a separate implementer agent.
+Retain user intent, domain and architecture decisions, and acceptance in the coordinator while delegating repository investigation, local code structure, and edits to a separate implementer subagent.
 
-At the start, tell the user that implementation is delegated. When the harness
-can keep the coordinator responsive during implementation, tell the user that
-interaction remains in the coordinator. Otherwise, disclose the limitation
-before dispatch.
+At the start, inform the user how the implementer will be created (including its concrete model, role tier, and reasoning effort) and whether the coordinator remains responsive while the implementer runs.
 
-## Responsibility boundary
+## 1. Responsibility boundary
 
-Use this boundary to decide what to retain and what to delegate:
-
-| Coordinator | Implementer agent |
+| Coordinator owns | Implementer subagent owns |
 |---|---|
-| User communication, priorities, and scope | Repository and dependency investigation |
-| Domain semantics and observable behavior | Implementation approach within those decisions |
-| Architecture, ownership, and compatibility | Naming, imports, function boundaries, and local patterns |
-| Rollout and cross-system tradeoffs | Debugging and routine fixes caused by the change |
-| Product and domain acceptance | Tests and checks appropriate to the change, plus self-review |
-| Worktree, branch, pushes, PRs, review replies, and issues | Commits only when the coordinator allows them in the initial message |
+| User communication, priorities, and scope | Repository and dependency discovery |
+| Domain semantics, observable behaviour, and UI affordance trees | Local implementation approach, naming, imports, and function decomposition |
+| Architecture, ownership, compatibility, and rollout boundaries | Code edits, debugging, and routine fixes caused by the change |
+| Product and domain acceptance | Narrow tests and checks for the touched scope, plus self-review |
+| Worktree setup, git pushes, PRs, review replies, and Linear issues | Local commits only when authorized by the coordinator in the handoff |
 
-Read code only to answer the user, make a domain or architectural decision, or
-assess the delivered behavior. Do not inspect code solely to prepare an
-exhaustive file, symbol, dependency, or command inventory for the implementer.
+- **Inspect code only for coordinator decisions:** Read repository files only to answer the user, settle a domain or architectural boundary, or assess acceptance. Do not pre-read files solely to compile an exhaustive file, symbol, or command inventory for the implementer.
+- **Keep all code edits in the implementer:** Run at most one implementer at a time against a worktree and reuse that same agent for follow-ups. Even when a follow-up fix looks small, send a focused correction to the implementer instead of editing the worktree directly in the coordinator.
+- **Keep transport checkpoints on schedule:** When the repository's PR workflow requires an early draft PR after the first push, complete the coordinator-owned push and draft PR at that checkpoint without waiting for final product acceptance.
 
-When a code-level representation defines domain semantics or invariants, reason
-about it in the coordinator. Treat identity, ordering, graph structure,
-persistence, and concurrency semantics as coordinator concerns when they define
-the system's behavior.
+## 2. Select the implementer tool and model role
 
-Keep edits, routine fixes, tests, and code-quality cleanup in the implementer
-agent. Send a focused correction when a change looks small instead of taking
-over the edit.
+Read [references/harness-routing.md](references/harness-routing.md) to verify subagent capabilities (explicit model/effort selection, isolated context, worktree access, follow-up resumption, and interruptible event waiting) before creating the implementer.
 
-## Create the implementer agent
-
-Before choosing how to create the implementer, verify that the available tool
-provides:
-
-- Explicit concrete model selection
-- Explicit reasoning effort when the available tools support it
-- The tools and permissions required for implementation
-- A context separate from the coordinator
-- Access to the assigned checkout or worktree
-- Follow-up messages or resuming the same agent
-- Non-blocking dispatch when the harness provides it
-- A wait mechanism that new user input can interrupt when the harness provides it
-- Event-driven exception and completion status
-- Current status when the user requests a progress check
-- Coordinator control without requiring the user to message the implementer
-
-Read [Choose the implementer tool and model](references/harness-routing.md)
-before creating the implementer agent.
-
-Run one implementer agent at a time against a worktree. Reuse the same agent
-while it works toward the same requested outcome in that worktree. Do not run
-competing agents against the same files.
-
-Use the model the user requests. Otherwise, choose the lowest-cost role suited
-to the judgment the implementer must exercise:
+Unless the user requests a specific model, select the lowest-cost role that matches the unguided engineering judgment required; never upgrade the model tier merely because a change touches many files or call sites:
 
 | Implementation work | Model role |
 |---|---|
-| Already-exact transformation with deterministic verification | Throughput |
-| Specified behavior with routine engineering judgment | Balanced |
-| Intentionally delegated diagnosis or decisions about behavior or architecture | Reasoning |
+| Exact, deterministic transformation with prescribed before/after mapping (read [references/throughput-handoff.md](references/throughput-handoff.md)) | **Throughput** |
+| Specified behaviour and boundaries requiring routine local engineering judgment | **Balanced** (default when uncertain) |
+| Intentionally delegated diagnosis or open design/architectural judgment | **Reasoning** |
 
-When the role is not evident from known context, use balanced. Do not inspect
-code merely to justify throughput. Broaden verification for a large or
-high-impact change. Select a stronger role only for additional judgment, not
-for file count, diff size, importance, or the number of affected systems or
-users alone.
+## 3. Send a self-contained handoff with explicit stop conditions
 
-Read [Throughput handoff](references/throughput-handoff.md) before assigning
-work to a throughput implementer.
+Include only the context the implementer cannot recover from the repository:
 
-Before assigning the work, tell the user how the implementer agent will be
-created, the concrete model, the model role, and the reasoning effort when the
-available tools support it.
+- **Outcome and settled constraints:** The target behaviour, architectural/compatibility boundaries, worktree path, and whether the implementer may commit.
+- **Settled requirements vs. suggestions:** Distinguish binding requirements from illustrative starting points (such as candidate file paths, rough layouts, or unconfirmed copy). For user-facing UI, pass the settled affordance tree (`map-ui-affordances`), explicit exclusions, and approved terminology.
+- **Execution expectations:** Instruct the implementer to read applicable repository guidance, make the changes, run narrow verification on the touched scope, self-review, and report what changed, verification run, remaining concerns, and worktree/commit state (without requiring rigid status keywords).
+- **Mandatory stop conditions:** Authorize reversible local code choices, but require the implementer to **stop, preserve work, and report options** before making any choice that alters:
+  - Observable user or domain behaviour
+  - Component ownership or architectural boundaries
+  - Public API contracts, stored data schemas, or rollout compatibility
+  - Agreed scope or security/permission invariants
 
-## Send a concise handoff
+## 4. Wait passively and collaborate through acceptance
 
-Send a concise, self-contained handoff. Include only the parts that apply:
+When the harness supports non-blocking dispatch, wait via an event mechanism that new user input can interrupt:
 
-- The required outcome
-- User, product, or domain context it cannot recover from the repository
-- Decisions and constraints already established
-- For user-facing UI, the primary task, required affordances, explicit
-  exclusions, and approved terminology
-- Genuine scope boundaries
-- A known starting point when one is useful
-- Whether the implementer may create a commit
-
-Tell the implementer to:
-
-- Read the applicable repository guidance and inspect the repository
-- Choose the local implementation
-- Make the changes and repair routine failures caused by them
-- Run tests and checks appropriate to the change
-- Self-review and report the result
-
-Present known files, symbols, commands, and implementation ideas as useful
-starting points. Mark them as requirements only when they are genuine
-constraints.
-
-For user-facing UI, map each required affordance to a settled requirement or
-user need before delegating. Treat proposed copy, layout, optional fields, and
-analogous screens as suggestions unless the user selected them or they carry
-settled behaviour. A detailed or complete-looking proposal is not itself a list
-of requirements.
-
-Leave naming, imports, use of existing dependencies, function decomposition,
-and routine refactoring to the implementer. Specify a local code choice only
-when the user requested it or it carries domain or architectural meaning.
-
-Keep pushes, PR changes, review replies, issues, and other external messages in
-the coordinator unless the user explicitly delegates them.
-
-When the PR workflow requires a draft transport checkpoint, complete the
-coordinator-owned push and draft PR at that checkpoint. Do not wait for product
-acceptance. Acceptance gates readiness and final handoff.
-
-Require the implementer to report:
-
-- What changed
-- Verification performed
-- Remaining concerns
-- Commit and worktree state
-
-Do not require fixed status labels such as `DONE` or `BLOCKED`.
-
-## Tell the implementer when to stop
-
-In every handoff, authorize the implementer to make reversible choices that
-affect only local implementation details.
-
-Also instruct the implementer to stop before choosing an option that changes:
-
-- Observable behavior or domain meaning
-- Architecture or ownership boundaries
-- Compatibility for public APIs or stored data, or rollout behavior
-- Agreed scope or user priorities
-- A safety or security property not already decided
-
-Require the implementer to preserve useful work and report the exact location,
-observed facts, and available options when it stops.
-
-When the implementer stops, decide the issue in the coordinator, involve the
-user, or deliberately delegate the decision to a stronger model. When more code
-facts are needed, ask the implementer to investigate and report them before
-deciding.
-
-## Wait without supervising implementation
-
-When the harness supports it, dispatch the implementer without waiting for
-implementation to finish. Wait through an event mechanism that new user input
-can interrupt. When input interrupts the wait, handle it in the coordinator,
-send any resulting decision or correction to the implementer, and resume
-waiting unless the input changes or cancels the task.
-
-While the implementer remains active:
-
-- Act when the implementer reports an exception or completion, the harness
-  reports a failure, or the user requests an update or intervention.
-- Treat a wait timeout as no event. Start another wait.
-- Do not read the implementer transcript, inspect the worktree or diff, run
-  verification, or request a progress report solely to measure progress.
-
-Disable coordinator-initiated progress checks by default. If the user requests
-a progress-check interval, treat it as the minimum time between checks. At a
-checkpoint, query agent status first. Inspect implementation state only when
-the user also requests interception or new evidence requires a
-coordinator-owned decision.
-
-If the harness provides only blocking dispatch or an uninterruptible wait,
-tell the user before creating the implementer. Continue with that surface only
-when the user did not require the coordinator to remain responsive.
-
-## Collaborate through the work
-
-1. Resolve only the coordinator-owned decisions needed to state the outcome.
-2. Create or resume the implementer agent and send the concise handoff.
-3. Follow [Wait without supervising implementation](#wait-without-supervising-implementation).
-4. When the implementer stops, follow
-   [Tell the implementer when to stop](#tell-the-implementer-when-to-stop).
-5. When the result misses the intent, explain the mismatch and send a focused
-   correction to the same implementer.
-6. Use the implementer's report, focused diff inspection, CI, and user-facing
-   evidence to assess acceptance. Do not repeat routine investigation or tests
-   without a concrete reason.
-7. After the implementation is accepted, complete the remaining
-   coordinator-owned commits, pushes, PR changes, review replies, issues, and
-   other external messages.
-
-## Red flags
-
-| Thought | Required response |
-|---|---|
-| "There are too many call sites for the cheapest model." | More identical call sites increase cost and time, not reasoning. Use throughput. |
-| "The API is important, so a balanced model is safer." | Resolve compatibility in the coordinator and strengthen verification. |
-| "A large diff needs a smarter implementer." | Name the unresolved behavior, architecture, or compatibility decision, or use throughput. |
-| "The implementer must run tests and fix the resulting failures." | Leave expected fixes with the throughput implementer until a new decision appears. |
-| "The throughput implementer stopped, so it needs a stronger model." | Read [Throughput handoff](references/throughput-handoff.md) and classify the cause before changing models. |
-| "Luna is available only in a top-level Codex task." | Use a scoped implementer. Select Luna when the scoped-agent tool exposes it; otherwise use Terra. |
-| "This fix is small enough for the coordinator to do directly." | Send a focused correction to the implementer agent. |
-| "The implementation is not accepted, so opening a draft PR is premature." | Follow the PR workflow. A draft transport checkpoint does not claim acceptance. |
-| "The proposal is detailed enough to copy into the handoff as requirements." | Classify each item as settled behaviour, required affordance, suggestion, or open decision. Require only the first two. |
-
-**Violating the letter of these rules is violating the spirit of them.**
+- **Do not poll or supervise:** While waiting, act only on implementer completion/exception events, harness errors, or new user input. Treat a wait timeout as a no-op and re-enter the wait; do not read implementer transcripts, inspect worktree diffs, or run checks mid-flight unless the user asks for an update or intervention.
+- **Resolve escalations at the right tier:** When the implementer stops on an open decision, resolve it in the coordinator (or with the user) and resume the same implementer. If a throughput implementer stops, classify the cause using [references/throughput-handoff.md](references/throughput-handoff.md) before considering a model upgrade.
+- **Verify acceptance without duplicating work:** Assess the implementer's report, focused diff, and user-facing behaviour, then complete coordinator-owned pushes, PR updates, and issue handoffs.

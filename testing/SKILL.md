@@ -13,121 +13,52 @@ description: >
 
 # Testing
 
-## Check applicability after loading
+A test is a permanent maintenance commitment. Admit each test before applying TDD; `No test` is a valid first-class outcome, including for bug fixes that only touch obvious glue or library usage.
 
-If an explicitly activated visual-iteration workflow remains in its disposable
-visual-staging phase, ignore the remainder of this skill. Do not inspect tests,
-publish a test decision, or run checks. Continue the draft under the
-visual-iteration constraints until the user explicitly exits that phase.
+If an explicitly activated `visual-iteration` workflow is in its disposable staging phase, ignore this skill until the user exits visual iteration.
 
-A test is a permanent maintenance commitment. Admit the test before applying
-TDD. No new test is a valid outcome.
+## 1. Discover the local test surface
 
-## Procedure
+Before editing, inspect the affected code and neighbouring tests to identify the repository's actual test framework and narrow verification commands. Never assume commands from another project.
 
-### 1. Discover the local test surface
+## 2. Apply test admission
 
-Before editing, read the repository guidance and the affected code and tests.
-Identify the actual test framework and the narrow commands used by the
-repository. Do not infer them from another project.
+Admit a proposed test only when **every** criterion holds:
 
-### 2. Apply test admission
+1. **Worth maintaining:** The behaviour is a correctness requirement or functional contract, not an optimisation or cleanup preference.
+2. **Non-trivial product logic:** The test exercises real domain or product logic rather than a framework/library contract, source structure, or trivial glue.
+3. **Deterministic:** The behaviour can be asserted without timing, scheduling, or ordering flakiness (unless concurrency/timing is the contract under test).
+4. **Non-obvious from the diff:** A plausible regression would not already be immediately obvious from reading the implementation diff.
+5. **High signal-to-harness ratio:** The assertion carries more value than the mocks, providers, fixtures, or harness required to reach it.
 
-Admit a proposed test only when every criterion passes:
+When any criterion fails, choose `No test` and proceed with the production change without manufacturing coverage. (If the user explicitly asks for a specific test that fails admission, implement it and note which criterion it would otherwise fail.)
 
-- The behaviour is a correctness requirement or functional contract worth
-  maintaining, not an optimisation or cleanup preference.
-- The test exercises non-trivial product logic rather than a library contract,
-  source structure, or readable glue.
-- The behaviour can be tested deterministically without timing, scheduling, or
-  ordering fragility, unless those semantics are the product behaviour.
-- A plausible regression would not already be obvious from the implementation
-  diff.
-- The assertion carries more value than the mocks, providers, fixtures, timers,
-  or other harness needed to reach it.
+## 3. Audit existing coverage and publish the `Test decision`
 
-When any criterion fails, choose `No test`. Continue the requested production
-change without manufacturing coverage. An explicit user requirement to add a
-specific test overrides admission; record which criterion it would otherwise
-fail.
-
-### 3. Record the test decision
-
-Publish this artifact before the first test or production edit:
+Before making the first test or production edit (and before returning an assessment in review-only work), audit related tests in the touched area and publish this compact decision block in chat:
 
 ```text
 Test decision
 - Behaviour: <contract being changed>
 - Existing tests:
-  - <test name>: <keep, remove, or consolidate> — <distinct failure caught,
-    or the test it duplicates>
-- Decision: <add, modify, remove, consolidate, or no test>
-- Level: <direct unit/domain test, component exception, or wiring test>
-- Failure proof: <input, assertion, and plausible bug that makes it fail>
+  - <test name>: <keep | remove | consolidate> (<distinct failure caught, or the test it duplicates>)
+- Decision: <add | modify | remove | consolidate | no test>
+- Level: <direct unit/domain test | component exception | wiring test> (or failed admission criterion for `no test`)
+- Failure proof: <input, assertion, and plausible product bug that makes it fail>
 ```
 
-For `No test`, replace `Level` and `Failure proof` with the failed admission
-criterion. Keep one entry per independent behaviour.
+- **Name each related test or table case individually:** Every retained test must catch a distinct plausible defect. When two tests fail for the same defect through the same call path, mark one for removal or consolidation before adding new cases.
 
-Name each related test or table case; do not summarize them as coverage to
-keep. A kept test must catch a distinct plausible defect. When two tests fail
-for the same defect through the same call path, designate one for removal or
-consolidation before adding coverage. Do not list unrelated tests.
+## 4. Choose the lowest direct level
 
-For review-only work, publish the named `Existing tests` audit before the final
-assessment even though no edit follows it. Do not return `Clean` until every
-related retained test has a distinct failure proof.
+Test at the lowest boundary where the contract is directly observable:
 
-### 4. Choose the direct level
+- Keep mapping, validation, and state-transition tests at the owning pure function or domain service.
+- Add at most one higher-level wiring test when non-obvious integration cannot be observed at the unit/domain level; do not repeat the happy path across every layer.
+- Do not extract trivial code solely to make it unit-testable.
+- For UI components, routes, hooks, JSX, or browser interactions, read [references/frontend.md](references/frontend.md) before admitting a component test.
 
-Test at the lowest level where the contract is directly observable.
+## 5. Execute and reconcile
 
-- Keep mapping, validation, and state-transition coverage at the owning pure or
-  domain boundary.
-- Add at most one higher-level test when non-obvious wiring cannot be observed at
-  the lower level.
-- Do not repeat a happy path through every layer.
-- Do not extract trivial production logic solely to make it testable.
-- Keep one logical behaviour per test and name it by that behaviour.
-
-For components, routes, hooks, JSX, or browser interactions, read
-`references/frontend.md` before choosing the level.
-
-### 5. Run the admitted workflow
-
-When an admitted test accompanies a production behaviour change, read
-`references/red-green.md` and follow it before implementation.
-
-When the request changes tests without changing production behaviour, prove
-that each assertion distinguishes a plausible wrong result. Do not alter
-production code solely to manufacture a red phase.
-
-### 6. Reconcile the test area
-
-After the behaviour passes:
-
-- Apply the removals and consolidations recorded in the test decision.
-- Remove related assertions that became redundant or indirect.
-- Consolidate cases that protect the same contract through the same path.
-- Keep distinct cases when they catch distinct plausible failures.
-- Re-run only the narrow checks selected by repository verification guidance.
-
-Update the test-decision artifact when implementation changes the intended
-coverage.
-
-In review-only work, report retained redundancy as a finding when the diff adds
-or modifies coverage in that test area. The duplicate may predate the diff; the
-failure is adding or changing nearby coverage without reconciling it.
-
-## Red flags: STOP
-
-| Thought | Response |
-|---|---|
-| "This is a bug fix, so it automatically needs a regression test." | Apply admission. Some fixes are obvious glue or library usage and do not earn permanent coverage. |
-| "TDD means I should cover every edge and error path." | Admit each behaviour separately. TDD controls sequence after admission, not coverage quantity. |
-| "Another layer would make this safer." | Add a wiring test only when lower-level coverage cannot expose a plausible wiring failure. |
-| "I touched this test file, so I can add my case and leave the rest alone." | Audit related coverage and record what to remove or consolidate before editing. |
-| "The duplicate predates this diff, so review should ignore it." | If this diff changes coverage in the same test area, report the missed reconciliation. |
-| "The implementation is small, so I can write the admitted test afterwards." | An admitted production behaviour follows the red-green reference regardless of implementation size. |
-
-**Violating the letter of these rules is violating the spirit of them.**
+- **Red-green execution:** When an admitted test accompanies a production behaviour change, follow [references/red-green.md](references/red-green.md) (confirm the test fails for the expected missing behaviour before editing production code). When modifying tests without changing production behaviour, confirm each assertion distinguishes a plausible bug without breaking production code just to manufacture a red phase.
+- **Reconcile the test area:** After the change passes, apply the removals and consolidations recorded in your `Test decision` and run only the narrow verification commands for the touched scope. In code reviews, flag any diff that adds or modifies tests in an area without reconciling adjacent duplicate coverage.

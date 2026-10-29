@@ -13,131 +13,37 @@ description: >
 
 # Review Findings
 
-Verify and preserve every finding before acting on it. Publish the assessment
-in chat, then continue authorized work unless a finding creates a blocking
-decision.
+Treat internal or subagent self-review findings as unverified claims. Verify every finding against the code and current milestone scope, record it in a durable task-local file, and publish the assessment table in chat before editing code.
 
-## Procedure
+## 1. Verify findings against current scope and assign a disposition
 
-### 1. Recover the applicable scope
+Establish the user's requested outcome, the current milestone/checkpoint (an intermediate prototype or migration slice may be intentionally incomplete), and supported code paths. Inspect the cited code and assign one disposition per finding:
 
-Establish these boundaries before judging a finding:
-
-- The user's overall requested outcome.
-- The current milestone or checkpoint. An inspectable UI, prototype, migration
-  stage, or other intermediate artifact may intentionally be incomplete.
-- Work explicitly deferred to a later iteration.
-- The code paths and environments the product currently supports.
-
-Judge against those boundaries. Do not replace them with the reviewer's
-preferred end state.
-
-### 2. Verify every finding
-
-Inspect the cited code and enough surrounding context to decide whether the
-finding is true. Verify that it was introduced by the reviewed change or is
-required for the changed behavior to work.
-
-Before assigning `Fix now`, name the current requirement or observable user or
-domain outcome that the artifact violates. A possible state transition,
-different component lifetime, or missing defensive behavior is not evidence of
-a defect by itself.
-
-Do not inherit the reviewer's severity, confidence, or suggested remedy. Find
-the smallest response that satisfies the actual requirement. Do not guess when
-the answer depends on a product, UX, architecture, compatibility, or scope
-choice.
-
-For lifecycle findings, assess the operation and its initiating surface
-separately. Closing a surface does not require an accepted operation to be
-cancellable. Add cancellation only when a current user, domain, or runtime
-requirement needs to stop the operation and the underlying contract supports
-it.
-
-### 3. Assign a disposition
-
-Use exactly one disposition per finding:
-
-| Disposition | Meaning |
+| Disposition | Criteria |
 |---|---|
-| `Fix now` | Verified defect in the artifact due at the current checkpoint. At final submission, this includes defects that prevent the completed requested outcome from being correct. |
-| `Decision` | Plausible concern whose response changes product behavior, architecture, compatibility, or agreed scope. |
-| `Deferred` | Valid for a later planned milestone, explicitly excluded scope, or unsupported corner case. |
-| `Reject` | Incorrect, already handled, not introduced by the change, or not required for the requested behavior. |
+| `Fix now` | Verified defect that violates a current requirement or observable user/domain outcome due at the current checkpoint. |
+| `Decision` | Plausible concern whose fix alters product behaviour, UX, architecture, compatibility, or agreed scope. |
+| `Deferred` | Valid for a later milestone, excluded scope, or theoretical hardening not required by the current contract. |
+| `Reject` | Factually incorrect, already handled, not introduced by the change, or unnecessary for the requested behaviour. |
 
-A theoretical hardening opportunity is not `Fix now` unless the current scope
-requires it. A repository instruction to fix every finding does not change the
-disposition. Classify the finding before comparing implementation costs. Low
-code churn can make a chosen response proportionate; it cannot promote a
-`Decision`, `Deferred`, or `Reject` concern to `Fix now`.
+- **Require a concrete failure proof for `Fix now`:** A theoretical state transition, missing defensive check, or reviewer preference is not a defect by itself. For lifecycle/cancellation findings, evaluate the background operation and the initiating UI surface separately; closing a UI surface does not require cancelling an accepted operation unless the product contract requires it.
+- **Classify before considering edit size:** A repository rule to "fix every finding" or the fact that a proposed change is a 2-line edit never promotes a `Decision`, `Deferred`, or `Reject` item into `Fix now`.
+- **Find the minimal fix:** Do not blindly adopt a reviewer's suggested refactor when a smaller fix satisfies the invariant.
 
-### 4. Record the findings
+## 2. Record and publish before editing code
 
-Create a task-specific Markdown file in the system temporary directory when the
-first finding arrives. Prefix its name with `review-findings-`, keep it outside
-every repository and worktree, and retain its path in task state so it can be
-recovered after context compaction.
+1. **Maintain a task-local findings file:** On the first finding, create `/tmp/opencode/review-findings-<task-slug>.md` (outside any git repository or worktree so it survives context compaction without dirtying the worktree). Append or update rows across review passes without deleting prior `Fixed`, `Deferred`, or `Rejected` rows:
+   ```markdown
+   | # | Source & location | Finding & evidence | Scope assessment | Disposition | Proposed response | Status |
+   |---|---|---|---|---|---|---|
+   | 1 | Reviewer A, `path:line` | Verified explanation | Required at current checkpoint | Fix now | Minimal concrete fix | Open |
+   ```
+   Use status values `Open`, `Fixed`, `Needs user`, `Deferred`, or `Rejected`.
+2. **Publish in chat before editing:** Print the complete findings table in chat before invoking any file-edit tool for a review-driven fix. For `Decision` items, state the options and trade-off neutrally rather than defaulting to the reviewer's preference.
 
-Use stable finding numbers and this table:
+## 3. Execute fixes and reconcile at final handoff
 
-```markdown
-# Review findings
-
-| # | Source and location | Finding and evidence | Stage and scope assessment | Disposition | Proposed response | Status |
-|---|---|---|---|---|---|---|
-| 1 | Reviewer A, `path:line` | Concise verified explanation | Required at the current checkpoint | Fix now | Smallest concrete fix | Open |
-```
-
-Use `Open`, `Fixed`, `Needs user`, `Deferred`, or `Rejected` as the status.
-Record every finding before making a review-driven edit. Update the existing row
-when a later review repeats a finding or its status changes. Do not delete fixed,
-deferred, or rejected findings.
-
-### 5. Report the findings
-
-Send the current review's complete findings table to the user in chat before
-invoking an edit tool for a review-driven change. Include deferred and rejected
-findings. Do not wait for a response unless the continuation rules require user
-input.
-
-For a `Decision`, name the choice, plausible alternatives, and observable
-tradeoff instead of presenting the reviewer's remedy as the default. State when
-no finding survives verification.
-
-### 6. Continue the authorized work
-
-- For a review-only request, report the findings without editing code.
-- During authorized implementation, or when the user asked to address findings,
-  fix verified `Fix now` items after publishing them and continue the task.
-- Do not implement `Decision`, `Deferred`, or `Reject` items without a
-  finding-specific user instruction.
-- Continue independent authorized work while a `Decision` remains open. Request
-  user input only when it blocks the remaining work.
-- Do not let review-driven edits delay a draft transport checkpoint authorised
-  by the PR workflow.
-- After fixes, recheck the recorded findings and affected paths. Restart a
-  whole-artifact review only when the fixes expand scope or cross a new
-  responsibility, runtime, compatibility, or safety boundary. Update the
-  findings file with the result and each affected status.
-
-An explicit user disposition wins over a reviewer or repository default. A
-general request to fix or address findings does not pre-approve `Decision` or
-`Deferred` items.
-
-### 7. Reconcile at final handoff
-
-Read the findings file before final handoff. Show the complete accumulated table
-to the user, including findings already fixed, deferred, or rejected. Do not
-claim completion without surfacing the file when the task recorded findings.
-Do not delete the file before the handoff.
-
-## Red flags
-
-| Thought | Response |
-|---|---|
-| "The subagent marked it actionable, so I should fix it." | Verify and classify it against the user's scope first. |
-| "Handling this possible future case is safer." | Classify it as `Deferred` unless the current contract supports the case. |
-| "I fixed it quickly, so the user does not need to see it." | Record and publish every finding before the edit, then preserve its `Fixed` status. |
-| "The user is not watching, so a chat update has no value." | Publish it anyway and preserve it in the findings file for final handoff. |
-| "The proposed remedy is small, so accepting it costs less than deciding." | Classify first. Low code churn can make the chosen response proportionate; it cannot make the concern a defect. |
-| "The review found defects, so the draft PR must wait until the review is clean." | Follow the PR workflow. Finding resolution gates final handoff, not a draft transport checkpoint. |
+- **Review-only requests:** Stop after publishing the table; do not edit code.
+- **Authorized implementation:** Fix only `Fix now` items (plus any `Decision` or `Deferred` items the user explicitly instructs you to implement). Do not delay an early draft PR transport checkpoint for review-driven fixes.
+- **Incremental re-verification:** After applying `Fix now` edits, re-verify only the recorded findings and affected paths (update their status to `Fixed` in the findings file). Repeat a whole-branch review only if the fixes cross a new architectural, runtime, or compatibility boundary.
+- **Final handoff reconciliation:** Before claiming task completion, read the findings file and display the complete accumulated table (`Fixed`, `Needs user`, `Deferred`, `Rejected`) in chat so no finding is silently lost.
