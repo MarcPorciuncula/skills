@@ -114,7 +114,7 @@ instructional.
 | Artifact | Audience profile | Additional owner |
 |---|---|---|
 | Pull request body | Internal technical | `writing-pr-bodies`, if available |
-| Specification or design document | Internal technical unless intended for publication | The active specification workflow |
+| Specification or design document | Internal technical unless intended for publication | `writing-specs`, if available |
 | Code comment | Internal technical unless rendered or exported publicly | Repository and language conventions |
 | Proto or schema comment | The audience of the generated description | Proto, schema, and API conventions |
 | Public developer documentation | External technical | Product and documentation conventions |
