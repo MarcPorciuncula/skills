@@ -21,8 +21,14 @@ Use the file named by the user. Otherwise use the active harness's user-level gu
 |---|---|---|
 | Claude Code | `~/.claude/CLAUDE.md` | `~/.claude/skills/` |
 | Codex | `~/.codex/AGENTS.md` | `~/.codex/skills/` |
+| OpenCode | `~/.config/opencode/AGENTS.md` | `~/.config/opencode/skills/`, plus discovered `~/.claude/skills/` and `~/.agents/skills/` |
+| Antigravity | `~/.gemini/AGENTS.md` | Inspect the installed surface: App, CLI, and IDE use different skill locations. |
 
-When the active harness is unclear, ask which guidance file to manage. Process one target at a time. Repeat the process when the user requests multiple targets.
+For Antigravity, inspect existing global guidance under `~/.gemini/`, `~/.gemini/config/`, and `~/.gemini/antigravity-cli/`. Preserve existing discovery paths. When several paths alias the same guidance, update the shared target once. Verify current locations against the [Antigravity rules](https://antigravity.google/docs/rules/) and [skills](https://antigravity.google/docs/skills/) documentation before creating new paths. OpenCode documents its [global rules](https://opencode.ai/docs/rules/) and [skill discovery](https://opencode.ai/docs/skills/).
+
+Render independently configurable harness files from the canonical chunks rather than linking another harness's complete guidance file. Include `codex-harness-execution` only for Codex when targets are independent. When the environment intentionally shares one backing file across harnesses, retain the chunk's explicit active-harness condition and report the shared configuration. Inspect symlinks, file identity, and bind mounts before replacing a target; update mounted backing files in place so existing mounts remain valid. Preserve unmanaged content, attribution values, reviewer allowlists, and repository PR modes when reconciling a target. For a missing target, recover shared user settings from an existing rendered file and evaluate conditional content against the new harness's discovered skills.
+
+When the active harness is unclear, ask which guidance file to manage. Process one target at a time. When the user requests cross-harness synchronization, inventory all four targets and their aliases before applying changes. Existing authorization to synchronize the selected targets satisfies the confirmation steps below; ask only about unresolved policy choices.
 
 ## Chunk file format
 
