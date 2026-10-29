@@ -1,153 +1,73 @@
 ---
 name: babysit-pr
 description: >
-  Watch a pull request over time and keep it healthy: address new bot
-  review comments and rebase the branch when it goes stale. Use when the
-  user says "babysit this PR", "watch this PR", "keep this PR mergeable",
-  "tend the PR", "keep the branch up to date", or asks for an ongoing
-  watch on a PR rather than a one-off pass. SKIP for a single "address
-  review comments" pass (use address-review if available) or a single "update
-  the branch" (use update-branch if available) with no ongoing watch.
+  Watch a pull request over time and keep it healthy: address new review
+  comments and rebase the branch when it goes stale. TRIGGER when the user says
+  "babysit this PR", "watch this PR", "keep this PR mergeable", "tend the PR",
+  or asks for an ongoing watch on a PR rather than a one-off pass. SKIP for a
+  single "address review comments" pass (use address-review if available) or a
+  single "update the branch" pass (use update-branch if available) with no
+  ongoing watch.
 ---
 
 # Babysit a PR
 
-Keep one PR healthy over time. Each iteration: address new bot review
-comments via the address-review skill if available, rebase the branch via the
-update-branch skill if available when it has gone stale, then report.
+Keep an open pull request healthy across recurring loop iterations. In each iteration, check the live PR state from GitHub (never rely on memory from prior iterations), delegate new review threads to `address-review` (if available), delegate branch staleness to `update-branch` (if available), and report a one-line status update.
 
-Treat both composed skills as optional. If a required skill is unavailable,
-report the pending review or branch update and skip that mutation. Continue
-monitoring the remaining signals.
+Never edit code, post review replies, resolve threads, or rebase inline inside `babysit-pr`; always delegate mutations to `address-review` and `update-branch` so their allowlist, attribution, and rebase rules are enforced. If either composed skill is unavailable when its signal fires, report the pending action and skip that mutation.
 
-This skill is the loop *body*. It runs under an in-session `/loop`,
-covered at the end.
+## Loop iteration steps
 
-## Iron Law
+### 1. Read the PR lifecycle state
 
-NO PR MUTATION EXCEPT THROUGH THE COMPOSED SKILLS.
-
-babysit-pr does not edit code, reply to comments, resolve threads, or
-rebase on its own. Every change to the PR goes through the address-review
-skill or the update-branch skill. Those skills carry the gates that keep
-this safe — the reviewer allowlist, the attribution labels, the
-analysis-table gate, the fetch-before-rebase rule. Reimplementing their
-work here bypasses those gates and posts or pushes things it should not.
-
-## Each run reads state from the PR, not from memory
-
-A loop iteration starts fresh. It may have no memory of prior iterations
-once context is summarised between them. Determine everything from the PR
-itself: mergeability, unresolved threads, CI, merge/close state. Never
-assume work from a previous iteration is done or not done.
-
-## Loop body
-
-Run these steps in order, every iteration.
-
-### 1. Resolve the PR
-
-Take the PR from the user's argument, or fall back to the current
-branch's PR. Confirm it exists and read its state in one query:
+Resolve the PR from the user's argument or the current branch:
 
 ```bash
 gh pr view <pr> --json number,state,isDraft,headRefName,baseRefName,mergeable,mergeStateStatus,url
 ```
 
-- DO stop the loop if `state` is `MERGED` or `CLOSED`. Report it done. Nothing left to babysit.
-- DO keep babysitting a PR sitting in a merge queue. A queued PR is still `OPEN` and can be knocked back if a required check fails or the base advances. Only `state: MERGED` means it landed — exit on that, not on "queued".
-- DO treat `mergeable: UNKNOWN` as "GitHub is still computing the conflict signal" — skip the conflict check this iteration, re-read next time. The `behind_by` check is independent and still runs.
-- DO keep babysitting a `DRAFT` PR. Bots still comment on drafts.
+- **`state` is `MERGED` or `CLOSED`:** Stop the loop and report completion.
+- **PR is in a merge queue (`state: OPEN`):** Keep watching. A queued PR can still be evicted if a check fails or the base branch advances; only exit on `MERGED` or `CLOSED`.
+- **`isDraft: true`:** Keep watching; automated reviewers and humans still comment on drafts.
 
-### 2. Gather the two signals cheaply
+### 2. Check the two action signals cheaply
 
-Before invoking the heavy skills, check whether either has work to do.
+Before loading `address-review` or `update-branch`, check whether either has work:
 
-- **New review activity** — are there unresolved review threads? Check with `gh pr view <pr> --comments`, or reuse address-review's fetch scripts. Presence of unresolved threads is the signal; the dealt-with analysis belongs to address-review, not here.
-- **Branch staleness** — two independent signals, read separately:
+1. **Unresolved review activity:** Check for unresolved review threads via `gh pr view <pr> --comments` or `address-review`'s `fetch-review-comments.sh`. If unresolved threads exist, mark the review signal active (`address-review` determines whether threads are already dealt with).
+2. **Branch staleness:** Check both staleness signals independently:
+   - **Behind base (`behind_by > 0`):** Query the compare API directly:
+     ```bash
+     gh api "repos/{owner}/{repo}/compare/<baseRefName>...<headRefName>" --jq '.behind_by'
+     ```
+     Never infer behind-base status from `mergeStateStatus`: `BLOCKED` and `UNSTABLE` outrank `BEHIND` in GitHub's single precedence enum and mask that a branch is behind its base.
+   - **Conflicting with base:** `mergeStateStatus: DIRTY` or `mergeable: CONFLICTING`. (If `mergeable: UNKNOWN`, GitHub is still computing mergeability; skip the conflict check for this tick while still honouring `behind_by`.)
 
-  - **Behind base** — read `behind_by` from the compare API, not from `mergeStateStatus`:
+If neither signal fires, skip steps 3 and 4 and report status.
 
-    ```bash
-    gh api repos/{owner}/{repo}/compare/<base>...<head> --jq '.behind_by'
-    ```
+### 3. Address review comments first
 
-    Use `baseRefName` for `<base>` and `headRefName` for `<head>`. `behind_by > 0` → update the branch. `mergeStateStatus` is a single precedence-ordered value: `BLOCKED` and `UNSTABLE` outrank `BEHIND`, so a branch behind a protected base reports `BLOCKED` and its behind status is masked. Never infer "behind" from `mergeStateStatus`.
+When step 2 detects unresolved review threads, invoke `address-review` in address mode:
 
-  - **Conflict with base** — `mergeStateStatus: DIRTY` or `mergeable: CONFLICTING` → update the branch.
+- Let `address-review` classify dealt-with vs. not-dealt-with threads, apply its reviewer reply allowlist, post attributed replies, and resolve eligible threads.
+- If `address-review` surfaces threads requiring human reply or a product decision in `Needs your attention`, preserve that handoff for step 6.
 
-If neither signal fires, skip to the report. Do not invoke the composed skills with no work for them.
+### 4. Update the branch second
 
-### 3. Address new bot review comments
+When step 2 detects that the branch is behind or conflicting with its base, invoke `update-branch` *after* step 3 so any commits pushed by `address-review` are included in the rebase. If `update-branch` hits an ambiguous conflict it cannot safely resolve, stop and surface the conflict to the user.
 
-When step 2 found unresolved threads, invoke the address-review skill in
-address mode (analyze, then execute). Delegate completely:
+### 5. Report iteration status
 
-- DO let address-review decide which threads are not-dealt-with, which to reply to, and which to resolve. It owns that logic.
-- DO let address-review apply its reviewer allowlist and attribution labels. A thread from an author it cannot auto-reply to is handed back for the user — that is correct, not a failure to fix.
-- DO NOT pre-filter, reply, or resolve threads yourself. That is an Iron Law violation.
+Output one concise status line covering: review comments addressed (or none pending), branch rebase status, current CI/mergeability state, and any items requiring user action.
 
-### 4. Update the branch if it went stale
+### 6. Schedule the next check (self-paced loops)
 
-When step 2 found the branch behind base or in conflict with it,
-invoke the update-branch skill for the current branch. Run this *after*
-step 3 so any commits address-review just pushed are included in the
-rebase.
+When running under a self-paced loop, **re-run the step 2 signal checks before sleeping**. Steps 3 and 4 take several minutes, during which new bot comments or base-branch commits frequently land; sleeping without re-checking delays already-queued work.
 
-- DO let update-branch handle the rebase-or-restack decision and the git-spice detection.
-- DO stop and surface to the user if update-branch reports a conflict it cannot resolve cleanly. Do not force or guess a resolution.
-
-### 5. Report
-
-One concise status line per iteration. Cover: comments addressed (or
-none pending), branch updated (or already current), current
-mergeability/CI, and anything handed back for the user.
-
-### 6. Pick the next cadence (self-paced runner only)
-
-When the runner lets you choose the next wake-up (a `/loop` with no fixed
-interval), re-read the step 2 signals first, then set the wait from that
-fresh read.
-
-**Re-read before you wait.** Steps 3–4 take minutes. New bot comments or a
-freshly-advanced base can land while address-review or update-branch runs, so
-the signals you gathered in step 2 are stale by the time you reach here.
-Re-run the step 2 checks. If either signal fires, start the next iteration now
-instead of waiting. A long sleep here misses work already queued.
-
-Set the wait from the fresh read:
-
-- **Active** — comments just addressed, branch just rebased, CI running → short wait (minutes).
-- **Quiet** — nothing pending on the re-read, CI green, branch current → long wait (up to an hour).
-- **Blocked on a human** — address-review handed back a thread, or update-branch hit an unresolvable conflict → report, send a push notification if the user has stepped away, and end the loop. Spinning changes nothing until the human acts.
-- **Done** — PR merged or closed → end the loop.
-
-A fixed-interval `/loop` ignores this step; it re-fires on its own schedule and re-reads state each time.
-
-## Red flags: STOP
-
-| Thought | Reality |
+| Fresh re-read state | Next action |
 |---|---|
-| "There's a new comment from a human reviewer, I'll just reply to keep things moving" | babysit-pr never posts. Hand it to address-review, which decides reply eligibility by its allowlist. |
-| "The branch conflicts; I'll resolve it inline, it's faster than invoking update-branch" | Iron Law: rebases go through update-branch. Inline resolution skips its git-spice handling and its fetch-first rule. |
-| "address-review already ran this PR last session, so the threads are handled" | State comes from the PR, not memory. Re-read. A thread reopened since then is not-dealt-with again. |
-| "`mergeStateStatus` is `BLOCKED`, not `BEHIND`, so the branch is up to date with base" | `BLOCKED` and `UNSTABLE` outrank `BEHIND` in a single precedence-ordered field and mask it. Read `behind_by` from the compare API; don't infer behind from `mergeStateStatus`. |
-| "`mergeable` is UNKNOWN, I'll still read the conflict state from `mergeStateStatus`" | UNKNOWN means GitHub is still computing the merge state. Skip the conflict check this tick; the `behind_by` compare check is independent and still runs. |
-| "Nothing is pending, but I'll invoke address-review each tick just to be sure" | With zero unresolved threads there is nothing to analyze. Skip it; the cheap signal in step 2 is the gate. |
-| "I just finished addressing comments and rebasing, so nothing new can have arrived, I'll sleep an hour" | Those runs took minutes; bot comments and base advances land during them. Re-read the step 2 signals before scheduling any wait. |
-
-Violating the letter of these rules is violating the spirit of them.
-
-## Runner
-
-Run the loop body under an in-session `/loop`, while the Claude Code
-session stays open, with full local context and the installed skills.
-
-```text
-/loop /babysit-pr 1234          # fixed cadence you set
-/loop                           # self-paced; built-in maintenance prompt already tends the current PR
-```
-
-- A self-paced `/loop` (no interval) lets step 6 choose each wake-up.
-- Closing the terminal stops the loop. Recurring loops expire 7 days after creation.
-- To make a bare `/loop` babysit a specific PR by default, put the instruction in `.claude/loop.md` (project) or `~/.claude/loop.md` (user).
+| New review threads or base commits arrived during steps 3 to 4 | Start the next iteration immediately |
+| Comments were just addressed, branch was just rebased, or CI is still running | Short wait (a few minutes) |
+| No pending signals, branch is current, and CI is green | Long wait (up to 1 hour) |
+| Blocked on human action (non-allowlisted reviewer reply needed, open design decision, or unresolvable rebase conflict) | Report the blocker, send a notification if configured, and exit the loop |
+| PR is `MERGED` or `CLOSED` | Exit the loop |

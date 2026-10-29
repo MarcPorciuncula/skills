@@ -11,6 +11,7 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **clean-workspaces** | Clean up worktrees for merged branches |
 | **coordinate-implementation** | Retain architecture and domain decisions while delegating implementation to a subagent |
 | **dex** | Decompose multi-step work into `dex` epics, tasks, and dependency DAGs, and execute task trees |
+| **github-stacks** | Distinguish base-chained PRs from GitHub native Stacks (`/stacks/` and `gh stack`) and manage native stacks |
 | **inspect-depot-ci** | Inspect and diagnose Depot CI failures from remote logs before reproducing locally |
 | **linear-issue-workflow** | Keep Linear issues aligned with delivery units and reference them by recognizable titles |
 | **map-ui-affordances** | Design and review UI structure with affordance trees |
@@ -22,7 +23,7 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **review-findings** | Audit self-review findings before changing code |
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
-| **update-branch** | Rebase branches or restack git-spice stacks |
+| **update-branch** | Rebase a branch or stack of PR branches |
 | **visual-iteration** | Stage UI changes rapidly before production implementation |
 | **writing-agent-guidance** | Write, revise, or review persistent agent guidance and skills |
 | **writing-persistent-content** | Write durable internal or external content for its eventual audience |
