@@ -58,8 +58,14 @@ domain but did not participate in the drafting conversation.
 
 ## Specifications and design documents
 
-- State scope, required behavior, affected contracts, and responsibility
-  boundaries before implementation detail.
+- Write a persistent repository spec only when the user asks to record a design
+  or when an architectural contract needs a durable reference in the repository.
+  Do not commit single-use implementation checklists or task-by-task execution
+  plans (`plans/*.md`).
+- Write at spec altitude: state the target outcome, user- or consumer-facing
+  surfaces, exact contract and schema shapes (`diff` or schema blocks with
+  field/method/column names and types), and component ownership boundaries. Omit
+  file-by-file implementation steps that will drift as code is written.
 - Keep decisions and rejected alternatives only when the distinction affects
   the resulting boundary or constraint.
 - Separate committed requirements from proposals and unresolved questions.
