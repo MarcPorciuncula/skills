@@ -88,19 +88,25 @@ true after merge.
 
 ## Publish in two stages
 
+For a multi-PR change, include the required [review navigation
+block](#multi-pr-review-navigation) in the initial body as well as the final body.
+It must be the first content in the PR description from creation, before the
+opening prose, WIP notice, or blocker warning. A later discussion comment does
+not satisfy this requirement.
+
 Once the repository's PR workflow authorises creation, open the PR promptly
 with a concise initial body. State what changed and why. Put any genuine merge
-or deploy blocker at the top. This workflow does not change the repository's
-rules for whether a PR may be created or marked ready.
+or deploy blocker immediately after any navigation block. This workflow does not
+change the repository's rules for whether a PR may be created or marked ready.
 
 Do not invoke the cold-reader critic or wait for completion review before
 posting the concise initial body. The repository's PR workflow owns the
 transport checkpoint; this skill owns the body placed on it.
 
 When planned implementation remains after that push, make the concise body an
-explicit WIP checkpoint. Begin with `Work in progress`, state both the current
-branch truth and intended endpoint, and add one `Remaining work` list only when
-it helps. Do not inventory files or commits, and keep the intended final title
+explicit WIP checkpoint. Begin the prose after any navigation block with
+`Work in progress`, state both the current branch truth and intended endpoint,
+and add one `Remaining work` list only when it helps. Do not inventory files or commits, and keep the intended final title
 instead of adding a `WIP` prefix. Replace the WIP body after the last planned
 code push and before readiness.
 
@@ -192,6 +198,9 @@ Rubric:
 4. Every section answers a distinct reviewer question without duplication.
 5. Terms and claims are understandable without ticket or branch history.
 6. Details visible in the diff are omitted unless they change review strategy.
+7. For a multi-PR change, the body starts with a compact Review bundle block:
+   linked Linear ticket, all involved PRs in rollout or logical review order,
+   and this PR marked.
 
 Identify what is unclear, redundant, unsupported by the body, or dependent on
 missing context and explain its reader effect. Do not propose a title, replacement
@@ -211,10 +220,71 @@ for a factual correction that leaves the model unchanged.
 
 ## Compose the body
 
+### Multi-PR review navigation
+
+Before creating or updating a PR body, determine whether it belongs to a review
+bundle. Include the bundle when any of these applies:
+
+- The change spans repositories, such as a server contract and its client,
+  application code and deployment config, or a schema and its consumers.
+- The PR is part of a stack or a larger change split into reviewable slices.
+- Merge or deployment requires coordination: preparation before cutover,
+  migration before consumption, or cleanup after rollout verification.
+- Understanding or judging the change requires reading other PRs, even when
+  the branches are independent and could technically merge in either order.
+- The author identifies several PRs as one unit of review.
+
+The deciding question is whether a reviewer landing on this PR needs the other
+PRs to understand the complete change or assess its delivery. A shared ticket,
+topic, or author alone does not bundle otherwise independent changes. Omit the
+block for a standalone PR.
+
+For a bundle, start **every involved PR description** with `## Review bundle`.
+This is a quick orientation and navigation block: the linked Linear ticket
+followed directly by a numbered list of every PR in the review unit, including
+this PR. Use rollout order when there is a required rollout sequence; otherwise
+use the order that makes the change easiest to review logically. Do not add an
+introductory prose line between the ticket and the PR list. Use a short scope
+label and mark the current entry `**(this PR)**`. Keep the block's
+ticket, membership, order, and labels identical across the unit; only the
+current-PR marker changes.
+
+```markdown
+## Review bundle
+
+Ticket: [AI-1234: Change title](https://linear.app/<workspace>/issue/AI-1234)
+
+1. owner/backend#101 — Add the server contract.
+2. owner/web#202 — Switch the client. **(this PR)**
+
+---
+
+Switches the client to ...
+```
+
+Use `owner/repo#N` even within the current repository so the list works unchanged
+across PRs. Do not substitute `previous`/`next`, a parent link, or a stack-tool
+map for the complete list. Include merged prerequisites that belong to the unit;
+exclude unrelated work and optional future follow-ups. Link additional tickets
+on the ticket line only when needed to identify the review unit.
+
+Keep each PR entry to a short phrase. Put rollout mechanics and explanations
+below the block; add only a terse essential gate such as `after #101 deploys`
+when order alone would mislead. When merge and deploy order differ, label the
+constraint explicitly. If steps can roll out in either order, say so rather
+than inventing a dependency.
+
+Before drafting, establish the review unit from the task, Linear links and
+sub-issues, live PR bodies, and stack/dependency metadata. Verify membership and
+order rather than sorting by PR number or assuming one ticket means one PR.
+Read [references/mechanics.md](references/mechanics.md#multi-pr-navigation-lifecycle)
+for handling missing PR links and keeping the copies consistent.
+
 ### Opening
 
-Lead with the change or, for a fault, the concrete prior-state problem. Explain
-why it matters or why this approach exists within the opening paragraph or two.
+After any navigation block, lead with the change or, for a fault, the concrete
+prior-state problem. Explain why it matters or why this approach exists within
+the opening paragraph or two.
 The title and opening should let a reviewer scanning a queue decide what context
 they need next.
 
@@ -371,6 +441,11 @@ posted with a failed check.
 11. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
 12. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
 13. Remove `How to test` when it only restates the body or routine CI.
+14. For a multi-PR change, verify the opening navigation block against the live
+    ticket and PR set: complete links including this PR, rollout or logical review
+    order, current marker, and consistent copies. This check also gates initial and maintenance
+    bodies; the blind critic checks readability, while the author verifies the
+    actual membership and order.
 
 When a body exceeds 300 words before references, run an explicit compression
 check before posting. Length alone does not require a rewrite. Keep material

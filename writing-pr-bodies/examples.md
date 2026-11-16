@@ -3,6 +3,68 @@
 These examples demonstrate level of abstraction and information shape. Adapt
 them to the actual change; do not copy their headings mechanically.
 
+## Multi-PR review navigation
+
+These historical examples illustrate the navigation format using linked PRs
+from the tickets. Verify the live review unit and order when writing a body;
+these are not current deployment instructions. Each block appears at the top
+of every involved PR with only the `this PR` marker moved. The prose describing
+that particular PR follows the separator.
+
+### Cross-repository change: AG-UI
+
+```markdown
+## Review bundle
+
+Ticket: [AI-2129: Migrate to AG-UI](https://linear.app/alcova/issue/AI-2129/migrate-to-ag-ui)
+
+1. Alcova-AI/alcova-backend#3086 — Add AG-UI endpoints.
+2. Alcova-AI/operator-ui#1399 — Cut over the frontend after backend deploy. **(this PR)**
+
+---
+```
+
+The parent ticket identifies the shared change. PR-specific child-ticket
+references and any closing keywords stay in their respective bodies. Independent
+mobile and frontend-tool follow-ups are outside this review unit.
+
+### Same-repository stack: meeting briefing fan-out
+
+```markdown
+## Review bundle
+
+Ticket: [AI-2901: Run automatic meeting briefings as per-user River jobs](https://linear.app/alcova/issue/AI-2901/run-automatic-meeting-briefings-as-per-user-river-jobs)
+
+1. Alcova-AI/alcova-backend#3130 — Prepare per-user jobs and readiness. **(this PR)**
+2. Alcova-AI/alcova-backend#3131 — Cut over Temporal after worker fleet deploy.
+
+---
+```
+
+Both bodies carry both PRs, even though stack tooling already links their
+ancestry. Detailed fleet deployment and history compatibility constraints belong
+in the body below the navigation block.
+
+### Coordinated rollout: durable pubsub
+
+```markdown
+## Review bundle
+
+Ticket: [AI-2989: Durable domain events and push assembly](https://linear.app/alcova/issue/AI-2989/route-domain-events-durably-via-river-and-migrate-push-notification)
+
+1. Alcova-AI/alcova-backend#3087 — Add durable routing and deduplication.
+2. Alcova-AI/pulumi#416 — Enable dual publishing after backend fleet deploy.
+3. Alcova-AI/pulumi#417 — Switch to River after dual rollout verification.
+4. Alcova-AI/alcova-backend#3088 — Remove legacy assembly after River verification. **(this PR)**
+5. Alcova-AI/pulumi#418 — Remove retired cutover config.
+
+---
+```
+
+This block is a map, not a runbook. Drain conditions, telemetry, rollback and
+configuration instructions stay in the relevant body sections or linked ticket.
+The separate meeting-list SQL-trigger retirement is outside this review unit.
+
 ## Small behaviour change
 
 ```markdown
