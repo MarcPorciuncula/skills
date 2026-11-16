@@ -1,6 +1,6 @@
-# Claude Code Skills
+# Agent Skills
 
-Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/claude-code/skills) for portable workflow automation.
+Personal collection of reusable agent skills and user-level guidance for portable workflow automation across harnesses.
 
 ## Skills
 
@@ -9,6 +9,13 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | **address-review** | Analyze and address PR review comments |
 | **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
+| **coordinate-implementation** | Retain architecture and domain decisions while delegating implementation to a subagent |
+| **dex** | Decompose multi-step work into `dex` epics, tasks, and dependency DAGs, and execute task trees |
+| **github-stacks** | Distinguish base-chained PRs from GitHub native Stacks (`/stacks/` and `gh stack`) and manage native stacks |
+| **inspect-depot-ci** | Inspect and diagnose Depot CI failures from remote logs before reproducing locally |
+| **linear-issue-workflow** | Keep Linear issues aligned with delivery units and reference them by recognizable titles |
+| **map-ui-affordances** | Design and review UI structure with affordance trees |
+| **opencode-subagents** | Run subagents and consult models via the OpenCode CLI |
 | **pressure-test-skills** | Run blind behavior checks after skill changes |
 | **testing** | Admit valuable tests, choose their level, and run red-green |
 | **red-green** | Compatibility entry point for explicit TDD requests |
@@ -16,7 +23,12 @@ Personal collection of [Claude Code skills](https://docs.anthropic.com/en/docs/c
 | **review-findings** | Audit self-review findings before changing code |
 | **setup-notifications** | Set up macOS notification hooks for Claude Code |
 | **setup-worktrees** | Set up a bare repo + worktrees workflow |
-| **update-branch** | Rebase branches or restack git-spice stacks |
+| **update-branch** | Rebase a branch or stack of PR branches |
+| **visual-iteration** | Stage UI changes rapidly before production implementation |
+| **writing-agent-guidance** | Write, revise, or review persistent agent guidance and skills |
+| **writing-persistent-content** | Write durable internal or external content for its eventual audience |
+| **writing-pr-bodies** | Write or revise PR titles and bodies as standalone review briefs |
+| **writing-specs** | Write, revise, or review specifications, design docs, and RFCs at spec altitude |
 
 ## Repo utilities
 
@@ -24,5 +36,11 @@ These live in `.claude/skills/` and are available when working in this repo, not
 
 | Skill | Description |
 |-------|-------------|
-| **setup-claude-preferences** | Set up user-level CLAUDE.md with personal workflow preferences |
+| **manage-user-agent-guidance** | Manage chunked user-level guidance across supported agent harnesses |
 | **sync-skills** | Compare machine vs repo skills, reconcile differences, install new ones |
+
+## User-level agent guidance
+
+Canonical guidance content lives in `user-agent-guidance/`. Its `chunks/` directory contains independently maintainable sections, while `examples/` contains harness-specific configuration fragments referenced by those sections.
+
+Run the `manage-user-agent-guidance` repo utility to compare or render these chunks into a supported harness's user-level guidance file.

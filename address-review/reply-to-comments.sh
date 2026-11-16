@@ -6,11 +6,12 @@
 # The file should contain one reply per line in the format:
 #   comment_id:body
 # where the delimiter is the FIRST colon. The body should already include
-# the [Claude] prefix. Empty lines and lines starting with # are skipped.
+# the configured attribution prefix (e.g. [AI Generated - <MODEL>]).
+# Empty lines and lines starting with # are skipped.
 #
 # Example file contents:
-#   12345:[Claude] Fixed — added nil guard.
-#   67890:[Claude] Not applicable — React 19 handles this natively.
+#   12345:[AI Generated - GPT] Fixed: added nil guard.
+#   67890:[AI Generated - GPT] Intentional: React 19 handles this natively.
 #
 # Example:
 #   reply-to-comments.sh owner/repo 314 replies.txt

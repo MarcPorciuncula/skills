@@ -1,104 +1,93 @@
-# Rewrite examples
+# Rewrite Examples for Agent Guidance
 
-Before/after pairs showing the register this skill targets. Read them before
-composing prose and match the after-forms. Each annotation names the
-transformation; the subject matter is incidental.
+Use these before-and-after pairs when revising guidance or stripping common rot patterns.
 
-These pairs are kept verbatim from real guidance. Do not genericise or
-paraphrase them — fidelity to the real text is what makes them exemplars.
+## Re-synthesize instead of appending bolt-on patches
 
-## Link without summarising; carry emphasis in plain words
+Before (accumulated patches over several edits):
 
-Before (110 words):
-
-> Every ent entity has one owning domain. Code that touches an entity routes
-> through the owning domain package, even from another domain. Being *a*
-> domain service is not enough; the operation must live in *the owner*. Never
-> mutate an entity outside its owning domain. The full rule lives in
-> `pkg/domains/CLAUDE.md` under "Entity Ownership" and "Write Paths and
-> Domain Events": how to find the owner (naming prefix, `// Owns:` doc.go
-> headers, the legacy-owned table), the rules for reads, and which events
-> write paths emit. The Read-Side Queries in Handlers section applies the
-> read rules to handlers.
-
-After (60 words):
-
-> Every ent entity belongs to one domain. Ent code that touches the table for
-> that entity should be written in the domain package that owns it,
-> especially mutations. Do NOT modify an entity directly in code outside its
-> domain package. You must call into a method from the domain package to
-> indirectly mutate the entity. See the full rule in `pkg/domains/CLAUDE.md`
-> under "Entity Ownership".
-
-What changed: the before enumerates the linked file's contents and restates
-one emphasis across three sentences. The after carries the same emphasis in
-two words ("especially mutations"), states the prohibition and the required
-alternative as two imperatives, and links without summarising. No instruction
-was lost.
-
-## Lead with the permission; delete the rule's self-defence
-
-Before (150 words):
-
-> This is an acknowledged exception to strict layering, justified by a
-> CQRS-like read/write separation. The write side — creates, updates,
-> deletes, and any operation with side effects — flows through the entity's
-> owning domain service, which is solely responsible for enforcing invariants
-> and protecting the valid state of data and external services. The read side
-> has no such responsibility: it queries existing state without modifying it.
+> Run `pnpm test` before pushing.
 >
-> Many read queries are tightly coupled to the API request shape: filters map
-> 1:1 to proto fields, pagination is API-specific, and the query assembly is
-> determined entirely by the API contract rather than domain rules. Forcing
-> these through a domain service creates a pass-through layer whose signature
-> mirrors the proto request field-for-field, adding indirection without value.
+> Note: Do not run the full test suite for small changes; scope it to the changed file.
 >
-> **The rule:** Connect handlers may query the database directly — including
-> complex queries with joins, filters, and aggregations — when the query's
-> structure is driven by the API shape and no domain logic is required to
-> evaluate, transform, or filter the results. If domain rules govern what
-> data is returned or how it is interpreted, that logic belongs in the domain
-> service. No business logic may be duplicated into the handler layer under
-> this exception.
+> Exception: If you only edited documentation or comments, skip tests completely. Also, clean rebases do not need tests.
 
-After (90 words):
+After (re-synthesized into one coherent rule):
 
-> Direct ent queries in handlers are permitted when the query shape is
-> heavily specialised to the handler. For example, highly configurable joins,
-> pagination, or complex overlapping filters. Forcing these queries into the
-> domain layer would just add a layer of indirection and a larger interface
-> that's shaped exactly for one/few consumers.
+> When verifying locally, run only the test file or package that exercises the changed behaviour. Skip local tests for documentation, comment-only edits, and clean rebases.
+
+## Strip compliance theatre and state the boundary directly
+
+Before (legacy `obra/superpowers` devices):
+
+> **IRON LAW: NO MIGRATIONS WITHOUT BACKWARDS COMPATIBILITY**
 >
-> If domain rules govern what data is returned, how it's transformed, or how
-> it's interpreted, that logic belongs in the domain service. It can still be
-> called into from the handler to apply such logic. Do NOT duplicate such
-> logic into the handler.
+> Announce at the start of your turn: "I am checking the migration compatibility boundary."
+>
+> | Thought | Reality |
+> |---|---|
+> | "This column is unused, I can drop it now" | Old workers still read this column during rolling deploys. |
+>
+> **Violating the letter of this rule is violating the spirit of it.**
 
-What changed: the before argues the rule's legitimacy for two paragraphs
-before stating it, and buries the rule behind a bold label. The after opens
-with the permission as a plain statement, gives concrete examples, states the
-cost of the alternative in one sentence, and keeps both hard prohibitions.
+After (direct instruction + observable runtime consequence):
 
-## State the directive; no coined labels or self-reference
+> Keep schema migrations backwards-compatible with the currently deployed worker version. Do not drop or rename a column in the same release that removes its code references, because old workers continue querying the schema until the rolling deployment completes.
+
+## Rewrite declarative commands as imperative instructions
+
+Before (controllable choices disguised as facts):
+
+> Feature modules select semantic roles. `theme.css` owns theme values. Shared primitives own repeated state combinations.
+
+After (explicit actions):
+
+> Use semantic roles in feature modules. Define theme values in `theme.css`. Put repeated state combinations in shared primitives.
+
+Keep genuine architectural boundaries declarative when they inform an adjacent instruction:
+
+> The identity service owns account-locking policy. Route lock and unlock operations through that service.
+
+## Preserve closed-set requirements without inventing invariants
+
+Before (when the source only assigns three responsibilities):
+
+> Each stage owns a single responsibility. Do not duplicate checks across stages. Validate envelope syntax in HTTP handlers, business rules in command services, and public error codes in queue workers.
+
+After (preserves supplied rules without inventing exclusivity):
+
+> Validate envelope syntax in HTTP handlers. Validate business rules in command services. Map failures to public error codes in queue workers.
+
+## Keep technical relationships literal and remove manufactured salience
 
 Before:
 
-> Domain events are defined per domain, and not every mutation has one. The
-> failure mode this section guards against is the missed emission: sibling
-> write paths emit an event for a kind of change, a new path performs the
-> same kind of change without emitting, and subscribers miss it.
+> **Two truths:** The key insight: retry behaviour fell out of the worker implementation, and the rule to remember is that schemas steer the ship.
 
 After:
 
-> A new write path emits the same events that the domain's existing write
-> paths emit for that kind of change. When the existing paths emit and a new
-> path does not, subscribers show stale data until a full refetch.
->
-> Not every mutation has an event. A write with no matching event type emits
-> nothing. Do not invent a new event type to cover it.
+> The worker implementation controls retry behaviour. Edit the schema first, then regenerate the client; do not edit generated files directly.
 
-What changed: the before describes the section's own purpose ("the failure
-mode this section guards against"), coins a term ("the missed emission"), and
-chains three clauses the reader must hold to resolve the meaning. The after
-states the directive first; the consequence and the boundary follow as
-standalone sentences, one fact each.
+## Replace vague importance claims with observable consequences
+
+Before:
+
+> Always register error codes in the shared registry. This is very important for consistency across services.
+
+After:
+
+> Register error codes in the shared registry. Inline codes bypass client mapping and surface as generic `UNKNOWN` errors to callers.
+
+## Remove drafting-session leakage while keeping load-bearing rationale
+
+Before (session history):
+
+> We moved this check out of the individual reviewers because the earlier version duplicated the final verification pass.
+
+After (durable ownership rule):
+
+> Run this check only in the final verification pass; do not repeat it in individual reviewers.
+
+Before (load-bearing runtime rationale worth keeping):
+
+> Keep the event field additive during the rolling deployment because old workers can process queued payloads until the previous revision drains.

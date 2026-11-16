@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inspect Depot CI"
+  short_description: "Diagnose Depot CI before local reproduction"
+  default_prompt: "Use $inspect-depot-ci to inspect this failed CI check and identify the remote failure."

@@ -53,19 +53,17 @@ another segment.
 
 ## Agent-authored voice
 
-Agent-authored findings report verified behavior; they do not simulate a human
-reviewer's personal voice.
+Write agent-authored comments as concise technical observations and
+recommendations. Name the behavior or proposed change and its consequence or
+benefit. Do not invent personal opinions or social mannerisms, or phrase
+recommendations as polite requests. Ask questions only to obtain missing
+information. State requirements only when supported by an established
+constraint.
 
-- DO state the observed behavior, consequence, required outcome, and optional
-  remedies directly.
-- DO use a neutral question when the implementation choice is genuinely
-  uncertain.
-- DO NOT frame findings as personal opinions with phrases such as `I think`,
-  `I would`, or `we should`.
-- DO NOT address the author with `you should`; state the required outcome or
-  label an optional remedy as a suggestion.
-- DO NOT treat an AI attribution label as permission to adopt a human reviewer
-  persona.
+Avoid: “Could we reuse `StartWorkflowRunRequest` for the JSON manifest?”
+
+Prefer: “Reusing `StartWorkflowRunRequest` for the JSON manifest would give both
+start paths a shared request definition and reduce contract-drift risk.”
 
 ## Verbatim sanity checks
 
@@ -81,8 +79,10 @@ or revision.
   qualifications, or another valid remedy.
 - DO move non-material technical qualifications into a separate, attributed
   agent report.
-- DO NOT rewrite, polish, or merge the user-authored text unless the user asks
-  for revision.
+- When the user designates text as verbatim, exclude it from drafting and
+  revision. Preserve it exactly without an AI attribution label. Keep
+  agent-authored additions separate and attribute only those additions.
+  Validation does not authorize rewriting.
 
 ## Evidence selection
 
@@ -133,7 +133,6 @@ and label it as a suggestion rather than a target or mandate.
 | An implementation identifier appears before its role is explained | Introduce the behavior or role before the identifier |
 | An architectural alternative is framed as the target structure | Label it `Suggested shape:` and keep ownership as the review point |
 | A remedy is stated before the concern is demonstrated | Show the evidence and consequence first |
-| An AI-attributed finding says `I think`, `I would`, or `you should` | Report the verified behavior and consequence; state the outcome or suggestion neutrally |
 | A verbatim sanity check lists minor precision or completeness qualifications | Confirm material direction; carry useful detail in the separate agent report |
 
 ## Worked example: partial success

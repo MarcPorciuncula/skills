@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing Persistent Content"
+  short_description: "Write durable content for its eventual audience"
+  default_prompt: "Use $writing-persistent-content to draft this content for its eventual audience."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Map UI Affordances"
+  short_description: "Design and review UI structure with affordance trees"
+  default_prompt: "Use $map-ui-affordances to map this interface before proposing structural UI changes."
+policy:
+  allow_implicit_invocation: true

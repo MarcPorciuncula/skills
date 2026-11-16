@@ -10,213 +10,42 @@ description: >
 
 # Writing PR titles and bodies
 
-Write for a senior engineer who knows the codebase but has not read the ticket,
-branch history, diff, or implementation discussion.
+If `writing-persistent-content` is available, load it before drafting and select its internal technical profile. That profile owns prose register; this skill owns the PR body's scope, shape, visual rhythm, and posting workflow.
 
-A useful PR body is a standalone review brief. It gives the reader one coherent
-model of the change at the level that matters for review. Select that model
-before choosing sections or explaining implementation.
+Write for a senior engineer who knows the codebase but has not read the ticket, branch history, diff, or implementation discussion. Optimize for a quick human scan: put the load-bearing model in the title, opening, headings, diagrams, and bullet leads, and leave routine detail in the diff.
 
-Optimize for a human reviewer's scan, not for preserving every fact as future
-context. Put the load-bearing model in the opening, headings, diagrams, and
-bullet leads. Use concise connective prose to show how those parts relate and
-why they matter. Leave supporting detail in the diff or linked specification.
+## First-draft rules
+
+Every PR title and body must satisfy these rules on the first draft:
+
+- **Open with a present-active PR verb:** Start the first agent-authored prose sentence after any review bundle with what the PR changes (`Adds`, `Updates`, `Replaces`, `Moves`, `Removes`, `Prevents`). Never open with `<Subject> now <verb>s...` (`Human checklist items now appear as...`) or `This PR...`.
+- **Foreground contract and schema deltas as diff snippets:** Whenever a PR adds, modifies, or removes database tables/columns/indexes, protobuf/RPC methods or messages, public API payloads, or job/event schemas, render an abridged before/after diff block (`+`, `-`, `~`) showing the exact field, method, or column names and types. Never hide contract or schema changes inside prose summaries.
+- **Match body shape to scope:** Use the simplest tier in **Size and shape** below. Do not turn a small fix or visual cleanup list into a multi-section document.
+- **Break up dense prose:** Keep paragraphs to 3 sentences or fewer. Never write more than 2 consecutive prose paragraphs without a visual break (heading, bullet list, table, diff/schema block, or diagram). Never list 3 or more inline file paths, RPCs, or identifiers inside a prose sentence. Do not hard-wrap prose or bullets across source lines.
+- **Bound bullet lists:** Keep bullet lists to 2 to 6 items, one sentence per item, with no nested sub-bullets. Use bold lead-in stems (`- **Surface:** ...`) when items describe distinct surfaces, components, or guarantees.
+- **Omit banned sections and footers:** Never add `Summary`, `What changed`, `Design`, `Validation:`, `Testing:`, `Verification:`, `Test plan`, unit/CI/linter pass recaps, diff statistics, AI attribution, or file/identifier inventories in the PR body. When the repository uses a separate `Review focus` PR comment, put the reading-order file table there.
+
+## Size and shape
+
+Choose the body tier before drafting. Diff line count does not decide the tier. A required review bundle precedes the body at every tier.
+
+| PR scope | Body shape | Cold-reader critic |
+|---|---|---|
+| **Small single-idea change** (focused bug fix, guard, or small behaviour tweak with no new boundary) | 1 to 2 short paragraphs, no headings | Skip |
+| **Focused multi-item polish or cleanup** (2 to 6 related UI, copy, styling, or ergonomic adjustments with no new architecture) | 1-sentence framing line followed by 2 to 6 one-sentence bullets, plus framed screenshots when visual | Skip |
+| **Substantial feature, contract, or architectural change** | Opening lede (plus optional 2 to 5 headline bullets), then subject-specific sections for changed surfaces and consequential architecture | Run before final body handoff |
 
 ## Classify the primary change
 
-Classify the PR before drafting. Diff size and implementation complexity do not
-decide the classification.
+Classify substantial PRs before choosing sections:
 
-| Primary change | Main subject of the body |
+| Primary change | Title, opening, and first part of the body |
 |---|---|
-| Functional | Changed surfaces, affordances, states, and user journeys |
-| Non-functional | Changed system boundaries, responsibilities, flows, developer interfaces, or operational behaviour |
-| Mixed | The functional or non-functional change that explains why the PR exists |
+| **Functional** (affects user- or consumer-visible behaviour, UI surfaces, or public/developer API contracts) | Lead with changed surfaces, consumer-visible behaviour, contracts, affordances, states, and limitations. Put consequential internal architecture in a separate section after the functional account. |
+| **Non-functional** (changes internal boundaries, flows, storage, or operations while preserving consumer-visible behaviour) | Lead with the changed architecture, contract, ownership, or runtime boundary. |
+| **Mixed** | Lead with the functional or non-functional change that explains why the PR exists. |
 
-Keep the selected register throughout the body. For a mixed PR, use the primary
-register and add material from the other only when it affects behaviour, review
-risk, compatibility, safety, rollout, or a meaningful product limitation.
-
-Do not turn a functional PR into implementation narration after a user-facing
-opening. A product inventory of changed surfaces and affordances is orientation;
-an inventory of files, types, state objects, parsing steps, or serialization is
-not.
-
-## Reader contract
-
-Every body must let a cold reader answer:
-
-- What changes when this merges?
-- Why does the change exist?
-
-For a functional change, it must also let the reader answer:
-
-- Which screens, commands, APIs, or other user-facing surfaces change?
-- What can the user do on each surface?
-- Which important states, transitions, or limitations affect that experience?
-
-For a non-functional change, it must also let the reader answer:
-
-- What are the major components, and how do control or data move between them?
-- Which component owns each important responsibility or invariant?
-- How does this path reuse, replace, or differ from the nearest existing path?
-- What rollout, compatibility, permission, safety, or operational constraint matters?
-
-Right-size the answer. A small, obvious change can satisfy the contract in one
-or two paragraphs without headings.
-
-## Establish the evidence
-
-Use each source for the question it can answer:
-
-| Question | Authority |
-|---|---|
-| What changes atomically? | The base-to-head diff and final commits |
-| Why does it exist? | The task conversation, author brief, ticket, issue, or design discussion |
-| How does it fit the system? | The diff and the relevant surrounding or sibling implementation |
-| What external state affects it? | The live PR, dependencies, deployment state, and linked work |
-| What must survive a revision? | The current PR body, especially human-authored or tool-delimited content |
-
-Read enough surrounding code to understand the boundary the change establishes
-or crosses. Do not infer motivation from implementation when author context
-provides it. Ask the author when material motivation is absent from every
-available source.
-
-Describe the final net change, not the branch's sequence of experiments.
-Intermediate commits belong only when they reveal a constraint that remains
-true after merge.
-
-## Publish in two stages
-
-For a multi-PR change, include the required [review navigation
-block](#multi-pr-review-navigation) in the initial body as well as the final body.
-It must be the first content in the PR description from creation, before the
-opening prose, WIP notice, or blocker warning. A later discussion comment does
-not satisfy this requirement.
-
-Once the repository's PR workflow authorises creation, open the PR promptly
-with a concise initial body. State what changed and why. Put any genuine merge
-or deploy blocker immediately after any navigation block. This workflow does not
-change the repository's rules for whether a PR may be created or marked ready.
-
-Do not invoke the cold-reader critic or wait for completion review before
-posting the concise initial body. The repository's PR workflow owns the
-transport checkpoint; this skill owns the body placed on it.
-
-When planned implementation remains after that push, make the concise body an
-explicit WIP checkpoint. Begin the prose after any navigation block with
-`Work in progress`, state both the current branch truth and intended endpoint,
-and add one `Remaining work` list only when it helps. Do not inventory files or commits, and keep the intended final title
-instead of adding a `WIP` prefix. Replace the WIP body after the last planned
-code push and before readiness.
-
-The concise body is final when the change is small and introduces no new
-responsibility boundary, external system, persistence or permission model,
-rollout, migration, parallel implementation, or non-obvious mechanism.
-
-## Maintain an existing body
-
-Use the maintenance path when the title, intended takeaway, retained facts,
-primary register, and consequential constraints remain unchanged:
-
-1. Re-read the live title, body, and head.
-2. Patch only claims made stale by the code or review discussion.
-3. Verify the changed claims against the diff and author context.
-4. Preserve protected content, post through a file, and verify the live body.
-
-Do not create a new reader model or invoke a critic for maintenance. Use the
-final-body workflow when the revision changes the body model named above.
-
-## Build the final body
-
-For a substantial PR, use an isolated cold-reader critic when delegation is
-available. Keep the critic blind to the implementation for its entire task. Do
-not use the critic to draft the initial body or give it the PR URL, diff,
-ticket, author brief, intended model, task history, repository access, or tools.
-Start the critic without inherited parent turns or conversation history.
-
-1. **Write the reader model.** Record the primary impact, one-sentence intended
-   takeaway, three to five facts the reader should retain, and consequential
-   constraints. Do this before writing PR prose.
-2. **Draft from the model.** Write the title and body together. Use the body
-   shape for the primary classification. Draft through a file so the exact
-   artifact can be reviewed and posted.
-3. **Run the blind read.** Give an isolated critic only the proposed title and
-   body plus the complete request below. When delegation is unavailable,
-   produce the same report yourself as a mechanical review artifact.
-4. **Check the evidence.** The primary agent checks the reader model and body
-   against the author brief, live PR, base-to-head diff, and relevant
-   surrounding code. Correct unsupported claims and consequential omissions
-   without restoring detail merely because it exists in the diff.
-5. **Revise and recheck.** Address every failed cold-read check. Return the
-   revision to the still-blind critic for a final verdict. Do not post the final
-   body while it still fails.
-6. **Protect concurrent work.** Re-read the live head, title, and body before
-   posting. Refresh and repeat from drafting when the head changed. Stop and
-   return the draft instead of overwriting a concurrently changed title or
-   body.
-7. **Post and verify.** Preserve human-authored or tool-delimited content, post
-   the title and body, and verify the live artifact.
-
-Use this reader-model shape:
-
-```text
-Primary impact: functional | non-functional | mixed (<primary>)
-Intended takeaway: <one sentence>
-
-Reader should retain:
-- <fact 1>
-- <fact 2>
-- <fact 3>
-
-Consequential constraints:
-- <only when applicable>
-```
-
-Use this complete cold-read request without adding implementation context:
-
-```text
-Cold-read the proposed PR title and body using only the artifact and rubric in
-this message. Do not inspect a repository, PR, ticket, diff, file, or skill. Do
-not use tools.
-
-Return:
-- scan-only takeaway after reading the title, opening, headings, diagrams, and
-  bullet leads without reading prose paragraphs in full;
-- full-read interpretation of the net change and motivation;
-- the three to five facts or relationships you retained;
-- the apparent functional or non-functional register;
-- blocking issues as: location, reader effect, and failed rubric check;
-- duplicated ideas, diff-level details, and context-dependent terms;
-- PASS or FAIL.
-
-Rubric:
-1. A scan reveals the net change, motivation, and core model.
-2. A full read teaches one coherent model in one primary register.
-3. Functional bodies identify changed surfaces and principal affordances;
-   non-functional bodies identify flow, ownership, and consequential constraints.
-4. Every section answers a distinct reviewer question without duplication.
-5. Terms and claims are understandable without ticket or branch history.
-6. Details visible in the diff are omitted unless they change review strategy.
-7. For a multi-PR change, the body starts with a compact Review bundle block:
-   linked Linear ticket, all involved PRs in rollout or logical review order,
-   and this PR marked.
-
-Identify what is unclear, redundant, unsupported by the body, or dependent on
-missing context and explain its reader effect. Do not propose a title, replacement
-wording, a revised section structure, or exact edits. The author owns all
-editorial decisions.
-```
-
-The primary agent owns the title and body. The critic reports and verifies; it
-does not post or inspect implementation evidence. Check code against the user
-requirements and accepted behaviour, not against the PR body as an acceptance
-specification. When body and code differ, correct the body unless an independent
-requirement shows the code is wrong.
-
-A later code change requires another title and body check only when it
-invalidates a body claim or changes the reader model. Use the maintenance path
-for a factual correction that leaves the model unchanged.
+Do not interleave product behaviour with implementation mechanics. Omit an architecture section when no consequential internal boundary changes.
 
 ## Compose the body
 
@@ -280,204 +109,153 @@ order rather than sorting by PR number or assuming one ticket means one PR.
 Read [references/mechanics.md](references/mechanics.md#multi-pr-navigation-lifecycle)
 for handling missing PR links and keeping the copies consistent.
 
+### Titles
+
+Use a specific imperative verb and object (`Add X`, `Fix Y when Z`, `Move A out of B`, `Replace X with Y`). Name the affected behaviour or boundary rather than only an area or internal type. Follow repository conventions for ticket prefixes and stack numbering.
+
 ### Opening
 
-After any navigation block, lead with the change or, for a fault, the concrete
-prior-state problem. Explain why it matters or why this approach exists within
-the opening paragraph or two.
-The title and opening should let a reviewer scanning a queue decide what context
-they need next.
+After any review bundle, lead with the net change (starting with a present-active verb) or, for a fault, the concrete prior-state problem, and state why it exists.
 
-For a functional change, lead with externally observable behaviour. For a
-non-functional change, lead with the code or system boundary being changed.
-Implementation belongs in the opening only when that boundary is the subject.
+- When a PR has 2 to 5 distinct headline changes across surfaces or boundaries, follow the 1 to 2 sentence lede immediately with a compact bullet list (2 to 5 one-sentence bullets) before any section headings.
+- Do not open with a `Summary` or `What changed` heading.
 
-Prefer subjectless present-active language when the PR is the implicit subject:
-`Adds`, `Moves`, `Switches`, `Removes`, `Prevents`. Use a named subject when it
-carries information: `Each upload now reports its own progress`.
+### Functional surfaces
 
-Do not use a `Summary` or `What changed` heading. The opening is the summary.
+Inventory changed user- or consumer-facing surfaces and the observable behaviour, contracts, states, or transitions on each. Organise around the product model or user journey, not the order in which code executes. Use a compact table or parallel bold-stem bullets (`- **Inbox:** ...`) when several surfaces change.
 
-### Functional body
+### Architecture and internal contracts
 
-Inventory the changed surfaces and the main affordances, states, or transitions
-on each. Use parallel bullets or a compact table when several surfaces change.
-Organise them as a product model or user journey, not as the order in which the
-code processes data.
+Include internal architecture only when a reviewer needs it to judge correctness, ownership, persistence, permissions, operations, or compatibility. Ask whether a plausible alternative implementation could deliver the same feature with a different boundary; if not, leave the mechanics in the diff.
 
-Add implementation architecture only when it explains an observable behaviour,
-review risk, compatibility or safety property, rollout constraint, or meaningful
-product limitation. Diff size is not a reason to add it.
+| Reviewer question | What belongs in the body (when changed) | What stays in the diff |
+|---|---|---|
+| Who owns the invariant? | Responsibility moves, policy ownership, and cross-component boundaries | Helper splits, private types, local state hooks, and component props |
+| Where and when does execution happen? | New or changed jobs, queues, workers, RPCs, transaction boundaries, and post-commit dispatch | Polling intervals, debounce timers, cache-key wiring, and routine event handlers |
+| Where does state live? | Authoritative records, projections, lookup keys, uniqueness, and lifecycle | Routine CRUD queries, serializer helpers, and local UI state |
+| What must versions agree on? | Producer/consumer payloads, dual-read/write compatibility, migrations, and rollout order | Unchanged wire formats and routine test fixtures |
 
-### Non-functional body
+When storage changes matter, use an ASCII schema block with `+` / `~` / `-` markers and adjacent `# comments` explaining authority, lookup purpose, and lifecycle instead of repeating DDL in prose.
 
-Explain meaningful architecture at the level of components and responsibilities:
+### Visualise contract and schema deltas
 
-1. where input enters;
-2. which components own orchestration, state, policy, or external integration;
-3. how control and data move between them;
-4. where output, errors, or durable state end up.
+Whenever a PR changes an RPC service or message, public API or webhook payload, database table/column/index, or persisted job/event contract, show the exact added, modified, or removed declarations in a compact `diff` or annotated block. Reviewers catch naming, type, nullability, and symmetry issues immediately when the exact names are visible in the PR body; prose summaries and conceptual tables hide those names.
 
-When the PR adds a sibling, replacement, or parallel path, compare it with the
-nearest existing implementation. State what is shared, what differs, and why.
+- Include only the changed methods, fields, or columns plus 1 to 2 unchanged lines for context.
+- Use `+` / `-` markers (in a ```` ```diff ```` or ```` ```text ```` block) and short adjacent `#` or `//` comments for non-obvious semantics, units, lookup keys, or constraints.
 
-### Choose the information shape
+````markdown
+```diff
+ service ActionItemsService {
++  rpc ListActionItems(ListActionItemsRequest) returns (ListActionItemsResponse);
++  rpc UpdateActionItem(UpdateActionItemRequest) returns (UpdateActionItemResponse);
+ }
+
+ message ActionItem {
+   string id = 1;
++  ActionItemState state = 2;              // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
++  google.protobuf.Timestamp due_time = 3; // deadline only; does not schedule a reminder
+ }
+```
+````
+
+````markdown
+```diff
+ calendar_events
+   id
+-  organiser_copy_seen boolean NOT NULL DEFAULT false
++  organiser_last_seen_time timestamptz NULL  # set when organiser's calendar copy is observed
+```
+````
+
+### Choose the representation
+
+Use one representation per reviewer question; do not repeat the same model in a diagram, table, and prose walkthrough.
 
 | Information | Representation |
 |---|---|
-| Parallel screens, surfaces, or affordances | Bullets or a compact table |
-| Component topology, branching flow, or state movement | Plain-text diagram |
-| Temporal procedure | Numbered sequence |
-| Responsibility ownership | Labels in a plain-text diagram or parallel bullets |
-| Parallel guarantees, modes, conditions, or exceptions | Bullets |
-| Cause, comparison, implication, or rationale | Short prose |
-| Small API delta | Before/after snippet |
+| Added, modified, or removed RPCs, messages, API fields, or job/event payloads | Compact `diff` snippet with exact method/field names, types, and adjacent comments |
+| Added, modified, or removed database tables, columns, or constraints | ASCII schema `diff` block (`+`, `-`, `~`) with adjacent `#` comments |
+| Parallel UI surfaces, affordances, or component ownership without branching topology | Compact table or 2 to 6 bold-stem bullets |
+| Ordered runtime sequence | Numbered list (1 to 5 steps) |
+| Non-linear topology, branching, convergence, cycle, or state transition | Plain-text diagram |
+| Cause, tradeoff, compatibility, or implication | Short prose (1 to 3 sentences) |
 
-Use one primary representation for one model. Do not repeat the same model as a
-diagram, table, prose explanation, and test plan. Prose beside a diagram or
-table explains its implications instead of narrating it again. Keep one
-abstraction level in each visual.
+Before keeping a plain-text diagram, confirm that its geometry communicates branching, convergence, or containment that a numbered list or table would hide, that it has one dominant reading direction with no crossings, and that unlabelled arrows share one meaning. Follow a diagram with at most one short paragraph stating its implication; put additional parallel facts in bullets.
 
-When a heading does not explain why a list, table, or diagram follows, add a
-short lead-in that frames the reviewer question or relationship. Do not repeat
-the heading in sentence form. A lead-in earns its place by making the material
-that follows easier to interpret.
+### Screenshots and visual changes
 
-When prose asks the reader to connect three or more components or branching
-states, replace it with a plain-text diagram. Use subject-specific
-headings such as `Changed surfaces`, `Runtime flow`, `Permission model`,
-`Compatibility`, or `Release path`. Avoid a generic `Design` section.
+When a PR changes UI appearance or layout, include focused screenshots uploaded with `gh pr create --attach` or `gh pr edit --attach`. Never commit screenshots to the repository solely to embed them in a PR.
 
-After a diagram, use at most one short prose paragraph to explain its
-implication. A lead-in before the diagram does not count against that paragraph.
-Put additional responsibilities, guarantees, or constraints into parallel
-bullets or a section that answers a different reviewer question. Do not follow
-a visual with a prose walkthrough of the same model.
+Frame screenshots so they scan cleanly in GitHub's PR column without stretching to full width:
 
-### Include only consequential detail
+1. **Crop to the area of focus with breathing room:** Capture the target component or region with 24 to 48px of surrounding context rather than a mostly empty full-viewport screenshot.
+2. **Composite narrow or portrait crops onto a ~16:9 canvas:** GitHub expands standalone tall or narrow images (such as sidebars, dialogs, menus, or mobile views with aspect ratio `< 1.4:1`) to fill the column width, overwhelming the PR body. Center narrow crops on a ~16:9 landscape canvas (such as `1312x738`) padded with a neutral background that contrasts cleanly with the component (for example, `#f5f4f0` behind a white `#ffffff` light-mode card, or `#141413` in dark mode).
+3. **Attach inline via local file paths:** Reference the local path in the body file (`![Descriptive alt text](/tmp/opencode/shot.png)`) and pass `--attach /tmp/opencode/shot.png` when creating or editing the PR so `gh` replaces the local path with the uploaded asset URL.
 
-Include an implementation detail only when it:
+Read [references/mechanics.md](references/mechanics.md) for the ready-to-run browser and `ffmpeg` 16:9 compositing snippets, `--attach` commands, external ticket links, stack/dependency rules, and protected human sections. Read [examples.md](examples.md) for concrete examples of each tier.
 
-- identifies a load-bearing responsibility boundary;
-- explains surprising externally visible behaviour;
-- changes what a reviewer must verify;
-- establishes a safety, compatibility, persistence, permission, or rollout property; or
-- distinguishes the change from a plausible existing path.
+## Workflow: Draft, maintain, and verify
 
-Omit ordinary parsing, cloning, rendering, serialization, local state handling,
-schema traversal, types, functions, and files unless they pass one of those
-tests. For each named mechanism, ask what reviewer decision changes because it
-is present. Remove it when there is no answer.
+### 1. Gather evidence
 
-Put rationale beside the boundary or behaviour it explains. Mention an
-alternative only when another plausible design would establish a different
-ownership, runtime, compatibility, product, or operational boundary.
+Inspect the base-to-head diff and surrounding code for changed boundaries, and use the task conversation, ticket, or design brief for motivation. Describe the final net change on the branch, not the history of intermediate commits.
 
-Replace plan-only phase, checkpoint, workstream, or initiative labels with the
-concrete capability or boundary they denote. Keep a label only when it is an
-established code or product term, and define it on first use. A linked
-specification does not make its private vocabulary available to a cold reader.
+### 2. Publish in two stages when needed
 
-### Release and review constraints
+For a multi-PR change, the review bundle must be the first content in every involved PR description from creation, before opening prose, WIP notices, or blocker warnings. Include it in initial, maintained, and final bodies; a later discussion comment does not satisfy this requirement.
 
-State rollout order, migration behaviour, version skew, permissions, safety
-properties, known limitations, or unusual generated churn only when they change
-how the PR can be reviewed, merged, deployed, or operated.
+When repository policy opens a draft PR early, post a concise initial body first (stating what changed, why, and any deploy blocker, or beginning the prose after any review bundle with `Work in progress` if implementation remains). Skip the cold-reader critic for initial and WIP bodies, and for small or cleanup-list PRs.
 
-Use `How to test` only for PR-specific reproduction or review steps. Do not use
-it to repeat the feature inventory. Routine CI commands and test inventories do
-not belong in the body.
+### 3. Maintain an existing body
 
-For stacks, external references, Linear triggers, dependencies, deploy blockers,
-human-authored content, and detailed posting mechanics, read
-[references/mechanics.md](references/mechanics.md). Load only the sections that
-apply.
+When updating a PR whose scope and core model have not changed:
 
-## Style
+1. Re-read the live title, body, and head.
+2. Patch only claims made stale by the new commits.
+3. Preserve human-authored sections (`Human overview`, `Human notes`), uploaded media, and HTML-comment-delimited tool blocks byte-for-byte.
+4. Recheck any review bundle against the live ticket and PR set, updating membership, order, and copies within the authorised scope.
+5. Post via `--body-file` and verify the live result.
 
-- Use precise domain language after introducing the concept.
-- Prefer plain sentences, short paragraphs, and concrete subjects.
-- Keep one idea in each paragraph.
-- When several paragraphs under one heading make their relationship hard to recover, add connective wording, split a distinct reviewer question into its own section, or recast genuinely parallel facts. Paragraph count alone does not decide the structure.
-- When a paragraph functions as an inventory of parallel responsibilities, guarantees, modes, conditions, or exceptions, use bullets or a diagram. Keep causal, comparative, and connective explanation in prose.
-- Use bullets only for genuinely parallel items.
-- Mention secondary changes only when they have a behavioural, API, review, or release consequence.
-- Omit file inventories, identifier inventories, generated-file recaps, routine test lists, diff statistics, process narration, and branch history.
-- Avoid marketing language, generic reassurance, literary transitions, and padding.
-- Do not add AI attribution to the PR title or body.
+### 4. Build and verify a substantial final body
 
-Read [examples.md](examples.md) for positive examples of small, functional,
-mixed, architectural, and compatibility-focused bodies.
+For a substantial PR (new feature surfaces, changed public contracts, or new architectural/storage boundaries), write a brief reader model before drafting:
 
-## Titles
+```text
+Primary impact: functional | non-functional | mixed (<primary>)
+Intended takeaway: <one sentence>
+Reader should retain:
+- <3 to 5 core facts>
+Consequential constraints:
+- <rollout, migration, or compatibility constraints, if any>
+```
 
-Use a specific imperative verb and object: `Add X`, `Fix Y when Z`, `Move A out
-of B`, `Drop X`, `Switch X to Y`. Name the affected behaviour or boundary, not
-only the area or an internal implementation detail.
+Before posting, verify the draft against this checklist:
 
-The title must match the final one-sentence scope and remain useful in review
-lists, search, notifications, and the squash commit. Follow established
-repository conventions for prefixes, ticket IDs, and stack numbering.
+1. **First-draft rules pass:** Opening prose after any review bundle starts with a present-active PR verb; contains no `Validation:`/`Testing:` footer, `How to test` recap of routine CI, or file/identifier inventory; paragraphs are <= 3 sentences; at most 2 consecutive prose paragraphs appear without a structural break; no sentence lists 3+ inline paths or identifiers.
+2. **Contract and schema deltas are visible:** Any changed RPC method/message, API payload, persisted job/event schema, or database table/column/constraint is shown as a compact `diff` snippet with exact field/column names and types, not merely described in prose or a conceptual table.
+3. **Scan test passes:** Reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
+4. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
+5. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
+6. **Review bundle is complete when required:** The description starts with the linked Linear ticket and every involved PR in rollout or logical review order, marks this PR, and matches the other copies. Apply this check to initial and maintenance bodies too; the author verifies actual membership and order against live sources.
 
-Evaluate the title with the body during full drafting. Change an existing title
-when another title better communicates the final scope or when the user requests
-a rewrite.
+When subagent delegation is available on a substantial PR, pass only the proposed title and agent-authored body (excluding human-authored sections) to an isolated subagent with no repo access or tools:
 
-## Cold-read checks
+```text
+Cold-read this PR title and body using only the text below. Do not use tools or inspect any files.
 
-Apply these checks to the title and body together. A substantial body cannot be
-posted with a failed check.
+Return:
+1. Scan-only takeaway from reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bullet stems.
+2. Any violation of these rules:
+   - First prose sentence after any review bundle must start with a present-active PR verb (Adds, Updates, Replaces, Moves, Removes, Prevents), never "<Noun> now <verb>s" or "This PR".
+   - Changed RPCs, API/message fields, database tables/columns, or persisted schemas must appear as a compact diff/schema block showing exact names and types, not only prose or a conceptual summary table.
+   - No Validation/Testing/Verification summaries, CI/test-pass recaps, or file/identifier inventories.
+   - Max 3 sentences per paragraph; max 2 consecutive prose paragraphs without a visual break; no 3+ inline paths/identifiers in a prose sentence.
+   - Functional behaviour must precede internal architecture without interleaving or narrating routine mechanics (timers, cache wiring, local hooks).
+   - No capability or guarantee repeated across multiple sections or representations.
+   - Diagrams must show real branching, convergence, or containment with unambiguous arrows.
+   - For a multi-PR change, the body must start with a compact Review bundle: linked Linear ticket, complete ordered PR list, and this PR marked, with no introductory prose between the ticket and list.
+3. PASS or FAIL with exact locations of any failures. Do not rewrite the text.
+```
 
-1. Scan only the title, opening, headings, diagrams, and bullet leads. State the net change, motivation, and core model without reading prose paragraphs in full. Recast the body when load-bearing facts are invisible at scan depth.
-2. Read the body in full. Confirm that its sections and representations connect naturally instead of making the reader infer why one follows another. Add concise lead-ins or connective prose when the scan works but the full read feels abrupt.
-3. Reconstruct the three to five facts or relationships the full body teaches. They must form one model and match the intended reader model.
-4. Confirm that the body keeps the primary functional or non-functional register after the opening.
-5. For a functional PR, enumerate the changed surfaces and their principal affordances from the body alone.
-6. Name the distinct reviewer question answered by each section. Cut or combine a section with no distinct answer.
-7. Replace terminology that depends on the ticket, specification, branch history, or implementation discussion.
-8. Remove implementation details that the diff exposes without changing reviewer understanding or review strategy.
-9. Consolidate any capability, flow, or boundary explained in more than one place.
-10. Replace prose reconstruction of topology or branching state with a plain-text diagram.
-11. Recast a diagram followed by multiple explanatory paragraphs. Keep one short implication paragraph and make additional parallel facts scannable.
-12. Confirm that release, compatibility, and safety constraints are visible when they affect review or delivery.
-13. Remove `How to test` when it only restates the body or routine CI.
-14. For a multi-PR change, verify the opening navigation block against the live
-    ticket and PR set: complete links including this PR, rollout or logical review
-    order, current marker, and consistent copies. This check also gates initial and maintenance
-    bodies; the blind critic checks readability, while the author verifies the
-    actual membership and order.
-
-When a body exceeds 300 words before references, run an explicit compression
-check before posting. Length alone does not require a rewrite. Keep material
-that answers a distinct reviewer question or supplies connective context, and
-remove material that communicates the same model less directly.
-
-| Failure pattern | Required response |
-|---|---|
-| Functional opening followed by implementation narration | Rebuild the body from changed surfaces and affordances |
-| Many accurate details but no retained model | Recast the body around the reader-model facts |
-| The same capability appears in several sections | Keep one representation and remove the repeats |
-| Prose makes the reader reconstruct connected components or branching states | Replace it with a plain-text diagram |
-| A diagram is followed by several paragraphs of responsibilities or guarantees | Move parallel facts into diagram labels or bullets and keep one implication paragraph |
-| Several independent guarantees share one prose paragraph | Convert them to bullets, even when the paragraph is short |
-| The scan works but the full read feels abrupt or fragmented | Add a concise lead-in, connect related ideas, or combine sections without hiding parallel facts in prose |
-| A phase or checkpoint name only makes sense after reading a linked document | Name the concrete capability or boundary instead |
-| A mechanism is named only because it appears in the diff | Remove it |
-| Test steps repeat the feature inventory | Remove the section or keep only PR-specific reproduction needs |
-
-## Red flags
-
-| Thought | Reality |
-|---|---|
-| "This detail may help a later agent understand the branch" | The diff and specification preserve detail. The PR body must first work for a human reviewer. |
-| "Each component deserves a paragraph because the architecture is substantial" | Encode connected responsibilities in a diagram or parallel bullets. Paragraph volume does not make the model clearer. |
-| "These guarantees fit in one short paragraph" | Length is not scanability. If the reader can enumerate the facts, use bullets. |
-| "Lead-ins are padding because the heading already names the topic" | A heading names the topic. Keep a concise lead-in when it explains the question, relationship, or reason for the representation that follows. |
-| "The phase name is defined in the linked specification" | The body is standalone. Use the concrete scope unless the term is already established outside the specification. |
-
-**Violating the letter of these rules is violating the spirit of them.**
-
-Post the final body only after the blind report and evidence check pass. This
-gate does not delay the concise initial body or draft PR. Verify that the live
-title and body match the reviewed artifact. Do not narrate the check or report
-each edit it caught in the PR body.
+Revise any failed check, re-read the live PR title and body to avoid clobbering concurrent edits, post with `gh pr create --body-file` or `gh pr edit --body-file`, and verify the rendered result.
