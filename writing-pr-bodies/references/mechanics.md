@@ -100,6 +100,19 @@ Put references in a Markdown list so GitHub PR and issue references unfurl. Use 
 - Link reviewer-facing tickets, issues, and design specifications. Omit author-facing implementation plans and task checklists.
 - Ask the user when a workspace slug, URL shape, or title cannot be verified.
 
+For a multi-PR change, the opening `Review bundle` block carries the navigation
+map. Use a numbered list there; do not repeat the full PR map in a references
+footer. The shared ticket line uses `Ticket:`, without a closing keyword.
+
+Preserve or add a separate Linear keyword reference for the PR's issue
+association or automation, even when it repeats the bundle's ticket. This
+duplication is intentional. Use a non-closing keyword for a contributing PR;
+reserve a closing keyword for the PR that actually completes the ticket.
+
+```markdown
+- Refs [AI-1234: Change title](https://linear.app/<workspace>/issue/AI-1234)
+```
+
 ### Linear trigger words
 
 Linear treats a recognized keyword next to a ticket ID as automation, not decoration.
@@ -130,7 +143,7 @@ A stack and a dependency describe different boundaries.
 |---|---|
 | The branch was based on another branch in the same repository, so git ancestry enforces merge order | `Stacked on #N.` |
 | The branch is independent but cannot merge or deploy until another PR lands | Explain the dependency and required order |
-| Another PR depends on this PR | Mention the consumer only when it helps explain the change; this PR is not blocked |
+| Another PR depends on this PR | Include the consumer in the shared review bundle when it is part of the same change; this PR is not necessarily blocked |
 
 Preserve an existing `Stacked on #N` line after the parent merges because it records lineage. Change it only if the branch was rebased or reordered onto a different parent.
 
@@ -142,18 +155,45 @@ Depends on owner/repo#1413, which ships the schema consumed by the generated cli
 
 Cross-repository relationships are dependencies, never stacks.
 
-When several stacked PRs are mechanical slices of one unit of work, a one-sentence pre-lede may state the shared intent. Do not enumerate the stack in the body; the stack tooling and references already carry the map.
+Every involved PR must start with the complete `Review bundle` navigation
+block prescribed in `SKILL.md`, including mechanical slices of a stack. Stack
+tooling supplements this map. Keep lineage and detailed dependency explanations
+below it.
+
+### Multi-PR navigation lifecycle
+
+- Establish one shared ticket and ordered PR list for the review unit. Copy it
+  to every involved body, changing only the `**(this PR)**` marker.
+- If a required PR does not exist yet, list its repository and short scope as
+  `PR pending`. Mark the initial body WIP rather than omitting that part or
+  inventing a link. After creation, replace pending entries and add the new
+  PR's own number to all copies. A temporary `this PR — number pending` entry
+  is acceptable only during the create call; immediately patch and verify it.
+- Final and ready-for-review bodies require every PR link. Unverified membership
+  or order must remain explicitly unresolved in WIP; ask only for the missing
+  information that the available sources cannot establish.
+- Recheck the block on every body update, including maintenance. When a PR is
+  added, split, replaced, or reordered, refresh every copy within the authorised
+  editing scope. Read each live body first and preserve protected content and
+  concurrent edits. For sibling PRs outside that scope, supply the exact patch
+  and identify the stale copy; do not silently claim the unit is consistent.
+- After posting, read back the affected bodies and verify the links, order, and
+  current markers. Keep merged prerequisites in the map for orientation; do not
+  add status bookkeeping that needs constant updates.
 
 ## Merge and deploy blockers
 
-Lead with a GitHub warning only when ignoring the condition can break a merge or deployment:
+Immediately after any navigation block, lead with a GitHub warning only when
+ignoring the condition can break a merge or deployment:
 
 ```markdown
 > [!WARNING]
 > Do not merge before owner/repo#1413 deploys. The client in this PR calls the schema that PR introduces; deploying this one first breaks request handling.
 ```
 
-State both the blocking condition and what clears it. Carry the referenced PR in the external-reference list. Remove the warning when the blocker clears.
+State both the blocking condition and what clears it. Carry the referenced PR
+in the navigation block or external-reference list. Remove the warning when the
+blocker clears; retain the navigation map.
 
 Do not use an alert for context, ordinary risk, or a stack's ancestry-enforced order.
 

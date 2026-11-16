@@ -18,7 +18,7 @@ Write for a senior engineer who knows the codebase but has not read the ticket, 
 
 Every PR title and body must satisfy these rules on the first draft:
 
-- **Open with a present-active PR verb:** Start the first agent-authored sentence with what the PR changes (`Adds`, `Updates`, `Replaces`, `Moves`, `Removes`, `Prevents`). Never open with `<Subject> now <verb>s...` (`Human checklist items now appear as...`) or `This PR...`.
+- **Open with a present-active PR verb:** Start the first agent-authored prose sentence after any review bundle with what the PR changes (`Adds`, `Updates`, `Replaces`, `Moves`, `Removes`, `Prevents`). Never open with `<Subject> now <verb>s...` (`Human checklist items now appear as...`) or `This PR...`.
 - **Foreground contract and schema deltas as diff snippets:** Whenever a PR adds, modifies, or removes database tables/columns/indexes, protobuf/RPC methods or messages, public API payloads, or job/event schemas, render an abridged before/after diff block (`+`, `-`, `~`) showing the exact field, method, or column names and types. Never hide contract or schema changes inside prose summaries.
 - **Match body shape to scope:** Use the simplest tier in **Size and shape** below. Do not turn a small fix or visual cleanup list into a multi-section document.
 - **Break up dense prose:** Keep paragraphs to 3 sentences or fewer. Never write more than 2 consecutive prose paragraphs without a visual break (heading, bullet list, table, diff/schema block, or diagram). Never list 3 or more inline file paths, RPCs, or identifiers inside a prose sentence. Do not hard-wrap prose or bullets across source lines.
@@ -27,7 +27,7 @@ Every PR title and body must satisfy these rules on the first draft:
 
 ## Size and shape
 
-Choose the body tier before drafting. Diff line count does not decide the tier.
+Choose the body tier before drafting. Diff line count does not decide the tier. A required review bundle precedes the body at every tier.
 
 | PR scope | Body shape | Cold-reader critic |
 |---|---|---|
@@ -49,13 +49,77 @@ Do not interleave product behaviour with implementation mechanics. Omit an archi
 
 ## Compose the body
 
+### Multi-PR review navigation
+
+Before creating or updating a PR body, determine whether it belongs to a review
+bundle. Include the bundle when any of these applies:
+
+- The change spans repositories, such as a server contract and its client,
+  application code and deployment config, or a schema and its consumers.
+- The PR is part of a stack or a larger change split into reviewable slices.
+- Merge or deployment requires coordination: preparation before cutover,
+  migration before consumption, or cleanup after rollout verification.
+- Understanding or judging the change requires reading other PRs, even when
+  the branches are independent and could technically merge in either order.
+- The author identifies several PRs as one unit of review.
+
+The deciding question is whether a reviewer landing on this PR needs the other
+PRs to understand the complete change or assess its delivery. A shared ticket,
+topic, or author alone does not bundle otherwise independent changes. Omit the
+block for a standalone PR.
+
+For a bundle, start **every involved PR description** with `## Review bundle`.
+This is a quick orientation and navigation block: the linked Linear ticket
+followed directly by a numbered list of every PR in the review unit, including
+this PR. Use rollout order when there is a required rollout sequence; otherwise
+use the order that makes the change easiest to review logically. Do not add an
+introductory prose line between the ticket and the PR list. Use a short scope
+label and mark the current entry `**(this PR)**`. Keep the block's
+ticket, membership, order, and labels identical across the unit; only the
+current-PR marker changes.
+
+```markdown
+## Review bundle
+
+Ticket: [AI-1234: Change title](https://linear.app/<workspace>/issue/AI-1234)
+
+1. owner/backend#101 — Add the server contract.
+2. owner/web#202 — Switch the client. **(this PR)**
+
+---
+
+Switches the client to ...
+```
+
+Use `owner/repo#N` even within the current repository so the list works unchanged
+across PRs. Do not substitute `previous`/`next`, a parent link, or a stack-tool
+map for the complete list. Include merged prerequisites that belong to the unit;
+exclude unrelated work and optional future follow-ups. Link additional tickets
+on the ticket line only when needed to identify the review unit.
+
+The bundle does not replace Linear keyword references. Repeat the same ticket
+in the references list with the appropriate linking or closing keyword when
+needed for association or automation; do not remove it as redundant.
+
+Keep each PR entry to a short phrase. Put rollout mechanics and explanations
+below the block; add only a terse essential gate such as `after #101 deploys`
+when order alone would mislead. When merge and deploy order differ, label the
+constraint explicitly. If steps can roll out in either order, say so rather
+than inventing a dependency.
+
+Before drafting, establish the review unit from the task, Linear links and
+sub-issues, live PR bodies, and stack/dependency metadata. Verify membership and
+order rather than sorting by PR number or assuming one ticket means one PR.
+Read [references/mechanics.md](references/mechanics.md#multi-pr-navigation-lifecycle)
+for handling missing PR links and keeping the copies consistent.
+
 ### Titles
 
 Use a specific imperative verb and object (`Add X`, `Fix Y when Z`, `Move A out of B`, `Replace X with Y`). Name the affected behaviour or boundary rather than only an area or internal type. Follow repository conventions for ticket prefixes and stack numbering.
 
 ### Opening
 
-Lead with the net change (starting with a present-active verb) or, for a fault, the concrete prior-state problem, and state why it exists.
+After any review bundle, lead with the net change (starting with a present-active verb) or, for a fault, the concrete prior-state problem, and state why it exists.
 
 - When a PR has 2 to 5 distinct headline changes across surfaces or boundaries, follow the 1 to 2 sentence lede immediately with a compact bullet list (2 to 5 one-sentence bullets) before any section headings.
 - Do not open with a `Summary` or `What changed` heading.
@@ -143,7 +207,9 @@ Inspect the base-to-head diff and surrounding code for changed boundaries, and u
 
 ### 2. Publish in two stages when needed
 
-When repository policy opens a draft PR early, post a concise initial body first (stating what changed, why, and any deploy blocker, or beginning with `Work in progress` if implementation remains). Skip the cold-reader critic for initial and WIP bodies, and for small or cleanup-list PRs.
+For a multi-PR change, the review bundle must be the first content in every involved PR description from creation, before opening prose, WIP notices, or blocker warnings. Include it in initial, maintained, and final bodies; a later discussion comment does not satisfy this requirement.
+
+When repository policy opens a draft PR early, post a concise initial body first (stating what changed, why, and any deploy blocker, or beginning the prose after any review bundle with `Work in progress` if implementation remains). Skip the cold-reader critic for initial and WIP bodies, and for small or cleanup-list PRs.
 
 ### 3. Maintain an existing body
 
@@ -152,7 +218,8 @@ When updating a PR whose scope and core model have not changed:
 1. Re-read the live title, body, and head.
 2. Patch only claims made stale by the new commits.
 3. Preserve human-authored sections (`Human overview`, `Human notes`), uploaded media, and HTML-comment-delimited tool blocks byte-for-byte.
-4. Post via `--body-file` and verify the live result.
+4. Recheck any review bundle against the live ticket and PR set, updating membership, order, and copies within the authorised scope.
+5. Post via `--body-file` and verify the live result.
 
 ### 4. Build and verify a substantial final body
 
@@ -169,11 +236,12 @@ Consequential constraints:
 
 Before posting, verify the draft against this checklist:
 
-1. **First-draft rules pass:** Starts with a present-active PR verb; contains no `Validation:`/`Testing:` footer, `How to test` recap of routine CI, or file/identifier inventory; paragraphs are <= 3 sentences; at most 2 consecutive prose paragraphs appear without a structural break; no sentence lists 3+ inline paths or identifiers.
+1. **First-draft rules pass:** Opening prose after any review bundle starts with a present-active PR verb; contains no `Validation:`/`Testing:` footer, `How to test` recap of routine CI, or file/identifier inventory; paragraphs are <= 3 sentences; at most 2 consecutive prose paragraphs appear without a structural break; no sentence lists 3+ inline paths or identifiers.
 2. **Contract and schema deltas are visible:** Any changed RPC method/message, API payload, persisted job/event schema, or database table/column/constraint is shown as a compact `diff` snippet with exact field/column names and types, not merely described in prose or a conceptual table.
 3. **Scan test passes:** Reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
 4. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
 5. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
+6. **Review bundle is complete when required:** The description starts with the linked Linear ticket and every involved PR in rollout or logical review order, marks this PR, and matches the other copies. Apply this check to initial and maintenance bodies too; the author verifies actual membership and order against live sources.
 
 When subagent delegation is available on a substantial PR, pass only the proposed title and agent-authored body (excluding human-authored sections) to an isolated subagent with no repo access or tools:
 
@@ -183,13 +251,14 @@ Cold-read this PR title and body using only the text below. Do not use tools or 
 Return:
 1. Scan-only takeaway from reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bullet stems.
 2. Any violation of these rules:
-   - First sentence must start with a present-active PR verb (Adds, Updates, Replaces, Moves, Removes, Prevents), never "<Noun> now <verb>s" or "This PR".
+   - First prose sentence after any review bundle must start with a present-active PR verb (Adds, Updates, Replaces, Moves, Removes, Prevents), never "<Noun> now <verb>s" or "This PR".
    - Changed RPCs, API/message fields, database tables/columns, or persisted schemas must appear as a compact diff/schema block showing exact names and types, not only prose or a conceptual summary table.
    - No Validation/Testing/Verification summaries, CI/test-pass recaps, or file/identifier inventories.
    - Max 3 sentences per paragraph; max 2 consecutive prose paragraphs without a visual break; no 3+ inline paths/identifiers in a prose sentence.
    - Functional behaviour must precede internal architecture without interleaving or narrating routine mechanics (timers, cache wiring, local hooks).
    - No capability or guarantee repeated across multiple sections or representations.
    - Diagrams must show real branching, convergence, or containment with unambiguous arrows.
+   - For a multi-PR change, the body must start with a compact Review bundle: linked Linear ticket, complete ordered PR list, and this PR marked, with no introductory prose between the ticket and list.
 3. PASS or FAIL with exact locations of any failures. Do not rewrite the text.
 ```
 
