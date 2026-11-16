@@ -97,6 +97,10 @@ map for the complete list. Include merged prerequisites that belong to the unit;
 exclude unrelated work and optional future follow-ups. Link additional tickets
 on the ticket line only when needed to identify the review unit.
 
+The bundle does not replace Linear keyword references. Repeat the same ticket
+in the references list with the appropriate linking or closing keyword when
+needed for association or automation; do not remove it as redundant.
+
 Keep each PR entry to a short phrase. Put rollout mechanics and explanations
 below the block; add only a terse essential gate such as `after #101 deploys`
 when order alone would mislead. When merge and deploy order differ, label the

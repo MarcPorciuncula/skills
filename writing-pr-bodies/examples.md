@@ -45,6 +45,13 @@ Both bodies carry both PRs, even though stack tooling already links their
 ancestry. Detailed fleet deployment and history compatibility constraints belong
 in the body below the navigation block.
 
+The contributing PR can also repeat the bundle ticket in its references list
+to associate the PR with Linear without closing the shared issue:
+
+```markdown
+- Refs [AI-2901: Run automatic meeting briefings as per-user River jobs](https://linear.app/alcova/issue/AI-2901/run-automatic-meeting-briefings-as-per-user-river-jobs)
+```
+
 ### Coordinated rollout: durable pubsub
 
 ```markdown

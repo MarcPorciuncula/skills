@@ -100,11 +100,18 @@ Put references in a Markdown list so GitHub PR and issue references unfurl. Use 
 - Link reviewer-facing tickets, issues, and design specifications. Omit author-facing implementation plans and task checklists.
 - Ask the user when a workspace slug, URL shape, or title cannot be verified.
 
-For a multi-PR change, the opening `Review bundle` block owns the ticket and
-PR map. Use a numbered list there; do not repeat the map in a references footer.
-Keep any intentional Linear closing automation separate and scoped to the PR
-that actually completes the ticket. The shared ticket line uses `Ticket:`,
-without a closing keyword.
+For a multi-PR change, the opening `Review bundle` block carries the navigation
+map. Use a numbered list there; do not repeat the full PR map in a references
+footer. The shared ticket line uses `Ticket:`, without a closing keyword.
+
+Preserve or add a separate Linear keyword reference for the PR's issue
+association or automation, even when it repeats the bundle's ticket. This
+duplication is intentional. Use a non-closing keyword for a contributing PR;
+reserve a closing keyword for the PR that actually completes the ticket.
+
+```markdown
+- Refs [AI-1234: Change title](https://linear.app/<workspace>/issue/AI-1234)
+```
 
 ### Linear trigger words
 
