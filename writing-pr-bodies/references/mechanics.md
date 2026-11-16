@@ -102,10 +102,11 @@ Put references in a Markdown list so GitHub PR and issue references unfurl. Use 
 
 For a multi-PR change, the opening `Review bundle` block carries the navigation
 map. Use a numbered list there; do not repeat the full PR map in a references
-footer. The shared ticket line uses `Ticket:`, without a closing keyword.
+footer. Use `Ticket:` for one ticket or `Tickets:` for related tickets in the
+same review unit, without closing keywords on that line.
 
 Preserve or add a separate Linear keyword reference for the PR's issue
-association or automation, even when it repeats the bundle's ticket. This
+association or automation, even when it repeats the bundle's ticket links. This
 duplication is intentional. Use a non-closing keyword for a contributing PR;
 reserve a closing keyword for the PR that actually completes the ticket.
 
@@ -160,14 +161,38 @@ block prescribed in `SKILL.md`, including mechanical slices of a stack. Stack
 tooling supplements this map. Keep lineage and detailed dependency explanations
 below it.
 
+### GitHub PR reference rendering
+
+[GitHub documents](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#issues-and-pull-requests)
+that PR references in lists unfurl to the title and state. Repository context
+controls where a reference points and how its identifier is shortened; it does
+not require repeating the title beside the link.
+
+| PR location relative to the body | Markdown reference | Additional text |
+|---|---|---|
+| Same repository | `#101` | Omit the title; GitHub supplies it. |
+| Another repository | `owner/web#202` | Omit the title; add a short repo label such as `Web:` only if needed for orientation. |
+| Destination does not show an expanded title | Verified PR reference or explicit Markdown link | Supply one short scope label or title, then check that it appears once. |
+
+Verify the destination repository before using `#N`. Fully qualified references
+to that same repository may also display as `#N`; their source spelling does not
+guarantee a visible repo label. Cross-repository references retain repository
+qualification. The Markdown API confirms reference targets and shortening, but
+the GitHub web interface performs title/state expansion; raw API HTML alone is
+not proof of the final displayed title. Inspect the rendered PR body when
+available, and do not infer title visibility for readers without repository
+access.
+
 ### Multi-PR navigation lifecycle
 
-- Establish one shared ticket and ordered PR list for the review unit. Copy it
-  to every involved body, changing only the `**(this PR)**` marker.
+- Establish the linked ticket set and ordered PR identities for the review unit.
+  Start every body with `### Review bundle`; use `Ticket:` for one or `Tickets:`
+  for several related tickets. Adapt local/cross-repository references for each
+  destination, and move the `**(this PR)**` marker without changing membership.
 - If a required PR does not exist yet, list its repository and short scope as
   `PR pending`. Mark the initial body WIP rather than omitting that part or
   inventing a link. After creation, replace pending entries and add the new
-  PR's own number to all copies. A temporary `this PR — number pending` entry
+  PR's own number to all copies. A temporary `this PR: number pending` entry
   is acceptable only during the create call; immediately patch and verify it.
 - Final and ready-for-review bodies require every PR link. Unverified membership
   or order must remain explicitly unresolved in WIP; ask only for the missing
@@ -177,9 +202,10 @@ below it.
   editing scope. Read each live body first and preserve protected content and
   concurrent edits. For sibling PRs outside that scope, supply the exact patch
   and identify the stale copy; do not silently claim the unit is consistent.
-- After posting, read back the affected bodies and verify the links, order, and
-  current markers. Keep merged prerequisites in the map for orientation; do not
-  add status bookkeeping that needs constant updates.
+- After posting, read back the affected bodies and verify the heading level,
+  ticket set, resolved PR targets, order, current markers, and absence of repeated
+  titles in the rendered lists. Keep merged prerequisites in the map for
+  orientation; do not add status bookkeeping that needs constant updates.
 
 ## Merge and deploy blockers
 

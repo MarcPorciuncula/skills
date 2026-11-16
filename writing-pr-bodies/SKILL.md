@@ -68,41 +68,47 @@ PRs to understand the complete change or assess its delivery. A shared ticket,
 topic, or author alone does not bundle otherwise independent changes. Omit the
 block for a standalone PR.
 
-For a bundle, start **every involved PR description** with `## Review bundle`.
-This is a quick orientation and navigation block: the linked Linear ticket
-followed directly by a numbered list of every PR in the review unit, including
-this PR. Use rollout order when there is a required rollout sequence; otherwise
-use the order that makes the change easiest to review logically. Do not add an
-introductory prose line between the ticket and the PR list. Use a short scope
-label and mark the current entry `**(this PR)**`. Keep the block's
-ticket, membership, order, and labels identical across the unit; only the
-current-PR marker changes.
+For a bundle, start **every involved PR description** with `### Review bundle`.
+Follow it with `Ticket:` and one linked Linear ticket, or `Tickets:` and the
+related ticket links when several tickets identify the review unit. Follow the
+ticket line directly with a numbered list of every PR, including this PR.
+Separate the heading, ticket line, and list with blank lines.
+Use rollout order when required; otherwise use logical review order. Do not add
+introductory prose between the ticket line and the list. Mark the current entry
+`**(this PR)**`.
+
+Keep the ticket set, PR membership, order, and meaning consistent across the unit.
+Adapt reference syntax to the repository containing each body; move the current-PR
+marker to its entry. Use `#N` for a PR in that repository and `owner/repo#N` for a
+PR elsewhere. GitHub expands list references to show the PR title and state;
+do not append another copy or paraphrase of the title. Add a short repository
+label only when the rendered references need it for orientation.
 
 ```markdown
-## Review bundle
+### Review bundle
 
 Ticket: [AI-1234: Change title](https://linear.app/<workspace>/issue/AI-1234)
 
-1. owner/backend#101 — Add the server contract.
-2. owner/web#202 — Switch the client. **(this PR)**
+1. owner/backend#101
+2. #202 **(this PR)**
 
 ---
 
 Switches the client to ...
 ```
 
-Use `owner/repo#N` even within the current repository so the list works unchanged
-across PRs. Do not substitute `previous`/`next`, a parent link, or a stack-tool
-map for the complete list. Include merged prerequisites that belong to the unit;
-exclude unrelated work and optional future follow-ups. Link additional tickets
-on the ticket line only when needed to identify the review unit.
+This example is posted in `owner/web`. Do not substitute `previous`/`next`, a
+parent link, or a stack-tool map for the complete list. Include merged
+prerequisites that belong to the unit; exclude unrelated work and optional
+future follow-ups. List related tickets when they help identify the same review
+unit; sharing a topic alone does not establish membership.
 
-The bundle does not replace Linear keyword references. Repeat the same ticket
+The bundle does not replace Linear keyword references. Repeat relevant tickets
 in the references list with the appropriate linking or closing keyword when
 needed for association or automation; do not remove it as redundant.
 
-Keep each PR entry to a short phrase. Put rollout mechanics and explanations
-below the block; add only a terse essential gate such as `after #101 deploys`
+Keep each PR entry to its reference and necessary orientation. Put rollout
+mechanics and explanations below the block; add only a terse essential gate such as `after #101 deploys`
 when order alone would mislead. When merge and deploy order differ, label the
 constraint explicitly. If steps can roll out in either order, say so rather
 than inventing a dependency.
@@ -110,8 +116,8 @@ than inventing a dependency.
 Before drafting, establish the review unit from the task, Linear links and
 sub-issues, live PR bodies, and stack/dependency metadata. Verify membership and
 order rather than sorting by PR number or assuming one ticket means one PR.
-Read [references/mechanics.md](references/mechanics.md#multi-pr-navigation-lifecycle)
-for handling missing PR links and keeping the copies consistent.
+Read [references/mechanics.md](references/mechanics.md#github-pr-reference-rendering)
+for rendering rules, missing PR links, and keeping copies consistent.
 
 ### Titles
 
@@ -241,7 +247,7 @@ Before posting, verify the draft against this checklist:
 3. **Scan test passes:** Reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
 4. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
 5. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
-6. **Review bundle is complete when required:** The description starts with the linked Linear ticket and every involved PR in rollout or logical review order, marks this PR, and matches the other copies. Apply this check to initial and maintenance bodies too; the author verifies actual membership and order against live sources.
+6. **Review bundle is complete when required:** The description starts with `### Review bundle`, one linked ticket or related tickets, and every involved PR in rollout or logical review order. Mark this PR, resolve each reference relative to the destination repository, and avoid repeating expanded titles. Keep ticket sets and PR membership consistent across copies. Apply this check to initial and maintenance bodies too; verify membership and order against live sources.
 
 When subagent delegation is available on a substantial PR, pass only the proposed title and agent-authored body (excluding human-authored sections) to an isolated subagent with no repo access or tools:
 
@@ -258,7 +264,7 @@ Return:
    - Functional behaviour must precede internal architecture without interleaving or narrating routine mechanics (timers, cache wiring, local hooks).
    - No capability or guarantee repeated across multiple sections or representations.
    - Diagrams must show real branching, convergence, or containment with unambiguous arrows.
-   - For a multi-PR change, the body must start with a compact Review bundle: linked Linear ticket, complete ordered PR list, and this PR marked, with no introductory prose between the ticket and list.
+   - For a multi-PR change, the body must start with `### Review bundle`: linked ticket or related tickets, complete ordered PR list using repository-appropriate references, and this PR marked, without duplicated titles or introductory prose between the ticket line and list.
 3. PASS or FAIL with exact locations of any failures. Do not rewrite the text.
 ```
 

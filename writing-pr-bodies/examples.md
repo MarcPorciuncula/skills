@@ -8,21 +8,26 @@ them to the actual change; do not copy their headings mechanically.
 These historical examples illustrate the navigation format using linked PRs
 from the tickets. Verify the live review unit and order when writing a body;
 these are not current deployment instructions. Each block appears at the top
-of every involved PR with only the `this PR` marker moved. The prose describing
-that particular PR follows the separator.
+of every involved PR with repository-relative references and the `this PR`
+marker adapted to that destination. GitHub supplies the title and state for
+each list reference. The prose describing that PR follows the separator.
 
 ### Cross-repository change: AG-UI
 
 ```markdown
-## Review bundle
+### Review bundle
 
 Ticket: [AI-2129: Migrate to AG-UI](https://linear.app/alcova/issue/AI-2129/migrate-to-ag-ui)
 
-1. Alcova-AI/alcova-backend#3086 — Add AG-UI endpoints.
-2. Alcova-AI/operator-ui#1399 — Cut over the frontend after backend deploy. **(this PR)**
+1. Alcova-AI/alcova-backend#3086
+2. #1399 **(this PR)**
 
 ---
 ```
+
+This copy is posted in `Alcova-AI/operator-ui`. In the backend copy, use `#3086`
+and `Alcova-AI/operator-ui#1399`, and mark `#3086` as this PR. The expanded titles
+identify each change without an appended paraphrase.
 
 The parent ticket identifies the shared change. PR-specific child-ticket
 references and any closing keywords stay in their respective bodies. Independent
@@ -31,12 +36,12 @@ mobile and frontend-tool follow-ups are outside this review unit.
 ### Same-repository stack: meeting briefing fan-out
 
 ```markdown
-## Review bundle
+### Review bundle
 
 Ticket: [AI-2901: Run automatic meeting briefings as per-user River jobs](https://linear.app/alcova/issue/AI-2901/run-automatic-meeting-briefings-as-per-user-river-jobs)
 
-1. Alcova-AI/alcova-backend#3130 — Prepare per-user jobs and readiness. **(this PR)**
-2. Alcova-AI/alcova-backend#3131 — Cut over Temporal after worker fleet deploy.
+1. #3130 **(this PR)**
+2. #3131
 
 ---
 ```
@@ -55,22 +60,43 @@ to associate the PR with Linear without closing the shared issue:
 ### Coordinated rollout: durable pubsub
 
 ```markdown
-## Review bundle
+### Review bundle
 
 Ticket: [AI-2989: Durable domain events and push assembly](https://linear.app/alcova/issue/AI-2989/route-domain-events-durably-via-river-and-migrate-push-notification)
 
-1. Alcova-AI/alcova-backend#3087 — Add durable routing and deduplication.
-2. Alcova-AI/pulumi#416 — Enable dual publishing after backend fleet deploy.
-3. Alcova-AI/pulumi#417 — Switch to River after dual rollout verification.
-4. Alcova-AI/alcova-backend#3088 — Remove legacy assembly after River verification. **(this PR)**
-5. Alcova-AI/pulumi#418 — Remove retired cutover config.
+1. #3087
+2. Alcova-AI/pulumi#416
+3. Alcova-AI/pulumi#417
+4. #3088 **(this PR)**
+5. Alcova-AI/pulumi#418
 
 ---
 ```
 
+This copy is posted in `Alcova-AI/alcova-backend`. Use local `#N` references for
+the Pulumi entries when adapting it to a Pulumi PR.
+
 This block is a map, not a runbook. Drain conditions, telemetry, rollback and
 configuration instructions stay in the relevant body sections or linked ticket.
 The separate meeting-list SQL-trigger retirement is outside this review unit.
+
+### One review unit spanning related tickets
+
+```markdown
+### Review bundle
+
+Tickets: [AI-1234: Add the server contract](https://linear.app/<workspace>/issue/AI-1234), [AI-1235: Switch the web client](https://linear.app/<workspace>/issue/AI-1235)
+
+1. owner/backend#101
+2. #202 **(this PR)**
+
+---
+```
+
+This copy is posted in `owner/web`. Both tickets identify the coordinated
+server/client change, so retain both links in each body. A merely related
+follow-up that is not needed to review or deliver this unit stays outside the
+bundle. Keep PR-specific linking or closing keywords in each body's references.
 
 ## Small behaviour change
 
