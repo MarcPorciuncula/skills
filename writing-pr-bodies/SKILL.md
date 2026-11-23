@@ -19,7 +19,7 @@ Write for a senior engineer who knows the codebase but has not read the ticket, 
 Every PR title and body must satisfy these rules on the first draft:
 
 - **Open with a present-active PR verb:** Start the first agent-authored prose sentence after any review bundle with what the PR changes (`Adds`, `Updates`, `Replaces`, `Moves`, `Removes`, `Prevents`). Never open with `<Subject> now <verb>s...` (`Human checklist items now appear as...`) or `This PR...`.
-- **Foreground contract and schema deltas as diff snippets:** Whenever a PR adds, modifies, or removes database tables/columns/indexes, protobuf/RPC methods or messages, public API payloads, or job/event schemas, render an abridged before/after diff block (`+`, `-`, `~`) showing the exact field, method, or column names and types. Never hide contract or schema changes inside prose summaries.
+- **Foreground contract and schema deltas as diff snippets:** Show changed contracts in compact diffs with exact declarations. Label each contract with its kind and container name, then indent its changes below the label. Follow **Visualise contract and schema deltas** for layout and examples.
 - **Match body shape to scope:** Use the simplest tier in **Size and shape** below. Do not turn a small fix or visual cleanup list into a multi-section document.
 - **Break up dense prose:** Keep paragraphs to 3 sentences or fewer. Never write more than 2 consecutive prose paragraphs without a visual break (heading, bullet list, table, diff/schema block, or diagram). Never list 3 or more inline file paths, RPCs, or identifiers inside a prose sentence. Do not hard-wrap prose or bullets across source lines.
 - **Bound bullet lists:** Keep bullet lists to 2 to 6 items, one sentence per item, with no nested sub-bullets. Use bold lead-in stems (`- **Surface:** ...`) when items describe distinct surfaces, components, or guarantees.
@@ -145,36 +145,29 @@ Include internal architecture only when a reviewer needs it to judge correctness
 | Where does state live? | Authoritative records, projections, lookup keys, uniqueness, and lifecycle | Routine CRUD queries, serializer helpers, and local UI state |
 | What must versions agree on? | Producer/consumer payloads, dual-read/write compatibility, migrations, and rollout order | Unchanged wire formats and routine test fixtures |
 
-When storage changes matter, use an ASCII schema block with `+` / `~` / `-` markers and adjacent `# comments` explaining authority, lookup purpose, and lifecycle instead of repeating DDL in prose.
+For storage changes, use the schema diff format in **Visualise contract and schema deltas**. Use adjacent comments to explain authority, lookup purpose, and lifecycle where needed.
 
 ### Visualise contract and schema deltas
 
-Whenever a PR changes an RPC service or message, public API or webhook payload, database table/column/index, or persisted job/event contract, show the exact added, modified, or removed declarations in a compact `diff` or annotated block. Reviewers catch naming, type, nullability, and symmetry issues immediately when the exact names are visible in the PR body; prose summaries and conceptual tables hide those names.
+Whenever a PR changes an RPC service, message, interface, public API or webhook payload, database table, column, index, or constraint, or persisted job or event payload, show the exact changed declarations in a compact `diff` or annotated `text` block.
 
-- Include only the changed methods, fields, or columns plus 1 to 2 unchanged lines for context.
-- Use `+` / `-` markers (in a ```` ```diff ```` or ```` ```text ```` block) and short adjacent `#` or `//` comments for non-obvious semantics, units, lookup keys, or constraints.
+- Give each contract one label with the full contract kind followed by the exact container name, such as `table trigger_tags`, `job payload triggers.dispatch`, or `event payload meeting.notes_ready`.
+- Indent declarations under their label. Use `+`, `-`, or `~` to mark changes, with indentation after the marker. Include exact names and types, plus up to two unchanged lines where they clarify the change.
+- Contracts can share a block. Put their labels at the same indentation level and leave a blank line between contracts.
+- Use short adjacent `#` or `//` comments for non-obvious semantics, units, lookup keys, or constraints.
 
 ````markdown
 ```diff
- service ActionItemsService {
+ RPC service ActionItemsService
 +  rpc ListActionItems(ListActionItemsRequest) returns (ListActionItemsResponse);
-+  rpc UpdateActionItem(UpdateActionItemRequest) returns (UpdateActionItemResponse);
- }
 
- message ActionItem {
+ protobuf message ActionItem
    string id = 1;
-+  ActionItemState state = 2;              // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
-+  google.protobuf.Timestamp due_time = 3; // deadline only; does not schedule a reminder
- }
-```
-````
++  google.protobuf.Timestamp due_time = 3; // deadline only
 
-````markdown
-```diff
- calendar_events
-   id
+ table calendar_events
 -  organiser_copy_seen boolean NOT NULL DEFAULT false
-+  organiser_last_seen_time timestamptz NULL  # set when organiser's calendar copy is observed
++  organiser_last_seen_time timestamptz NULL
 ```
 ````
 
@@ -184,8 +177,8 @@ Use one representation per reviewer question; do not repeat the same model in a 
 
 | Information | Representation |
 |---|---|
-| Added, modified, or removed RPCs, messages, API fields, or job/event payloads | Compact `diff` snippet with exact method/field names, types, and adjacent comments |
-| Added, modified, or removed database tables, columns, or constraints | ASCII schema `diff` block (`+`, `-`, `~`) with adjacent `#` comments |
+| Added, modified, or removed RPCs, messages, API fields, or job/event payloads | Labelled `diff` snippet with exact method/field names and types |
+| Added, modified, or removed database tables, columns, or constraints | Labelled schema `diff` with exact column names and types |
 | Parallel UI surfaces, affordances, or component ownership without branching topology | Compact table or 2 to 6 bold-stem bullets |
 | Ordered runtime sequence | Numbered list (1 to 5 steps) |
 | Non-linear topology, branching, convergence, cycle, or state transition | Plain-text diagram |
@@ -243,7 +236,7 @@ Consequential constraints:
 Before posting, verify the draft against this checklist:
 
 1. **First-draft rules pass:** Opening prose after any review bundle starts with a present-active PR verb; contains no `Validation:`/`Testing:` footer, `How to test` recap of routine CI, or file/identifier inventory; paragraphs are <= 3 sentences; at most 2 consecutive prose paragraphs appear without a structural break; no sentence lists 3+ inline paths or identifiers.
-2. **Contract and schema deltas are visible:** Any changed RPC method/message, API payload, persisted job/event schema, or database table/column/constraint is shown as a compact `diff` snippet with exact field/column names and types, not merely described in prose or a conceptual table.
+2. **Contract and schema deltas are visible:** Check that each changed contract has a compact diff with exact declarations indented under a label that gives its kind and container name. In shared blocks, check that contract labels align and blank lines separate the contracts.
 3. **Scan test passes:** Reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
 4. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
 5. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
@@ -258,7 +251,7 @@ Return:
 1. Scan-only takeaway from reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bullet stems.
 2. Any violation of these rules:
    - First prose sentence after any review bundle must start with a present-active PR verb (Adds, Updates, Replaces, Moves, Removes, Prevents), never "<Noun> now <verb>s" or "This PR".
-   - Changed RPCs, API/message fields, database tables/columns, or persisted schemas must appear as a compact diff/schema block showing exact names and types, not only prose or a conceptual summary table.
+   - Each changed contract must appear as a compact diff/schema snippet with exact declarations indented under a label that gives its kind and container name. In shared blocks, contract labels must align and blank lines must separate the contracts.
    - No Validation/Testing/Verification summaries, CI/test-pass recaps, or file/identifier inventories.
    - Max 3 sentences per paragraph; max 2 consecutive prose paragraphs without a visual break; no 3+ inline paths/identifiers in a prose sentence.
    - Functional behaviour must precede internal architecture without interleaving or narrating routine mechanics (timers, cache wiring, local hooks).

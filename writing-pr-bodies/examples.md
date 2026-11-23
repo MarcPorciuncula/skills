@@ -198,18 +198,20 @@ The scheduler creates a delivery attempt and enqueues the NEW `report.deliver` j
 
 ## Persisted delivery contract
 
-```text
-reports                              # existing report definitions
-  id
-+ next_delivery_at                   # NEW: scheduler's due-work lookup
+```diff
+ job payload report.deliver
++  attempt_id uuid
 
-report_delivery_attempts             # NEW: durable attempt state
-  id
-  report_id -> reports.id            # parent report, not the content to send
-  scheduled_for                      # identity of the scheduled occurrence
-  snapshot                           # immutable content used across retries
-  status                             # pending / delivered / failed
-  UNIQUE(report_id, scheduled_for)    # one attempt per scheduled occurrence
+ table reports
++  next_delivery_at timestamptz NULL     # scheduler's due-work lookup
+
+ table report_delivery_attempts
++  id uuid
++  report_id uuid REFERENCES reports(id)
++  scheduled_for timestamptz
++  snapshot jsonb                      # reused across retries
++  status text
++  UNIQUE(report_id, scheduled_for)
 ```
 
 Cancellation clears `next_delivery_at`. It does not delete attempt records or cancel an in-flight provider request.
@@ -218,8 +220,8 @@ Cancellation clears `next_delivery_at`. It does not delete attempt records or ca
 The functional description precedes the architectural account. The body exposes
 a new job and worker, queue reuse, transaction ownership, and the durable
 snapshot contract. The schema comments explain the relevant fields without
-reproducing migration DDL. The `+` marker distinguishes a new column on an
-existing record; the new-record comment applies to its listed fields.
+reproducing migration DDL. Each label identifies the job payload or table
+that owns the indented fields.
 
 ## Contract change with a sequential runtime path
 
@@ -229,20 +231,17 @@ Adds named credentials to deployment definitions so jobs can use centrally manag
 ## Changed contracts
 
 ```diff
- message DeploymentDefinition {
+ protobuf message DeploymentDefinition
    string id = 1;
-+  repeated string allowed_credential_names = 4; // names that jobs in this definition may request
- }
++  repeated string allowed_credential_names = 4; // names that jobs may request
 
- message StartDeploymentRequest {
+ protobuf message StartDeploymentRequest
    string definition_id = 1;
 +  map<string, string> credential_bindings = 3;  // required name -> project credential_id
- }
 
- deployment_runs
-   id
-   definition_id -> deployment_definitions.id
-+  credential_bindings jsonb NOT NULL            # validated name -> credential_id map; never stores secret values
+ table deployment_runs
+   definition_id uuid REFERENCES deployment_definitions(id)
++  credential_bindings jsonb NOT NULL           # validated name -> credential_id map
 ```
 
 ## Resolution sequence
