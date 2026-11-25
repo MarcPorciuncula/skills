@@ -104,47 +104,47 @@ When an independently shippable base PR is a dependency for multiple separate
 downstream bundles, use `---`, short bold boundary labels, and restarted `1.`
 numbering to separate mergeable boundaries while keeping dependencies clear.
 
-On the shared base PR (`owner/backend#3206`):
+On the shared base PR (`owner/backend#100`):
 
 ```markdown
 ### Review bundle
 
-Ticket: [AI-3046: Layer 1 triggers and automations v1](https://linear.app/alcova/issue/AI-3046)
+Ticket: [ENG-100: Add shared base service](https://linear.app/<workspace>/issue/ENG-100)
 
 **Standalone base (ships independently)**
-1. #3206 **(this PR)**
+1. #100 **(this PR)**
 
 ---
 
-**Downstream bundle — Paired Automation Agent (AI-3052)** *(builds on #3206)*
-1. #3219
-2. owner/web#1472
+**Downstream bundle — Consumer A (ENG-101)** *(builds on #100)*
+1. #101
+2. owner/web#201
 
 ---
 
-**Downstream bundle — Workflow WAIT triggers (AI-3053)** *(builds on #3206)*
-1. #3220
-2. owner/web#1471
+**Downstream bundle — Consumer B (ENG-102)** *(builds on #100)*
+1. #102
+2. owner/web#202
 
 ---
 ```
 
-On a downstream PR (`owner/web#1472`), include the shared base prerequisite and
+On a downstream PR (`owner/web#201`), include the shared base prerequisite and
 only its own bundle so reviewers do not assume the sibling bundle is coupled:
 
 ```markdown
 ### Review bundle
 
-Ticket: [AI-3052: Paired Automation Agent](https://linear.app/alcova/issue/AI-3052)
+Ticket: [ENG-101: Add Consumer A](https://linear.app/<workspace>/issue/ENG-101)
 
 **Shared base (ships independently)**
-1. owner/backend#3206
+1. owner/backend#100
 
 ---
 
 **This bundle**
-1. owner/backend#3219
-2. #1472 **(this PR)**
+1. owner/backend#101
+2. #201 **(this PR)**
 
 ---
 ```
