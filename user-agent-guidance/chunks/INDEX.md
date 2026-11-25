@@ -4,7 +4,7 @@ Each entry below names a chunk `id` and summarises what it contains. The note af
 
 - **agency**: Task autonomy, mixed-turn sequencing gates, redirections, and refactoring scope. Always applicable.
 - **review-findings**: Load `review-findings` before acting on review findings and avoid automatic self-review at intermediate checkpoints. Applies when the `review-findings` skill is installed.
-- **general-communication**: Structural communication preferences (diagrams/tables for 3+ elements, direct subject naming, no unsolicited closing offers) and conditional routing to `writing-persistent-content`. Always applicable.
+- **general-communication**: Scannable multi-part response structure (paragraph caps, headings/bold-stem bullets/tables, structural skeleton), caveat-resolution gate, direct subject naming, no unsolicited closing offers, and conditional routing to `writing-persistent-content`. Always applicable.
 - **attributing-content**: Label AI-authored GitHub/Linear comments, preserve protected fields, and manage standing vs per-request PR review reply authorization. Contains `{{USER_NAME}}` and `{{PR_REVIEW_REPLY_ALLOWLIST}}` placeholders. Skip for users who do not collaborate on shared issue trackers.
 - **writing-tests**: Load the `testing` skill (and its frontend reference for UI/browser tests) before behavioural edits or test changes. Applies when the `testing` skill is installed.
 - **worktrees**: Keep the repo root on `main` (no other-branch checkouts, even read-only); do all non-`main` work in `.claude/worktrees/<branch>/`. Most relevant when multiple agents or sessions share a single clone; skip for users who work from a single checkout.
