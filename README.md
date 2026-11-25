@@ -10,6 +10,7 @@ Personal collection of reusable agent skills and user-level guidance for portabl
 | **babysit-pr** | Watch a PR over time: address bot review comments and rebase when stale |
 | **clean-workspaces** | Clean up worktrees for merged branches |
 | **coordinate-implementation** | Retain architecture and domain decisions while delegating implementation to a subagent |
+| **dev-servers** | Manage long-lived local development servers in named tmux sessions with ownership metadata and logs |
 | **dex** | Decompose multi-step work into `dex` epics, tasks, and dependency DAGs, and execute task trees |
 | **github-stacks** | Distinguish base-chained PRs from GitHub native Stacks (`/stacks/` and `gh stack`) and manage native stacks |
 | **inspect-depot-ci** | Inspect and diagnose Depot CI failures from remote logs before reproducing locally |
