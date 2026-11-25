@@ -1,12 +1,10 @@
 ---
 id: codex-harness-execution
-description: Codex sandbox permission requests and configured path conventions.
+description: Codex sandbox permission requests, cache preservation, and policy feedback.
 ---
 
-## Codex Harness Execution
+## Codex Sandbox
 
-- In Codex, run commands confined to the workspace, configured writable caches, and allowed loopback services normally without requesting extra permissions.
-- Set `sandbox_permissions` to `require_escalated` on the first call when a command predictably needs network access or external writes (`gh`, `gcloud`, `pulumi`, `git fetch/pull/push`, package installs, or network tests); include the destination or side effect in the justification and submit directly via the tool call.
-- When a necessary command fails due to a sandbox DNS, filesystem, or socket restriction, retry the exact command once with `require_escalated`.
-- Keep caches, tool state, and configuration in their configured paths rather than relocating them into `/tmp` or the workspace.
-- When Auto-review declines a request, respect the decision; choose a safer alternative or ask the user.
+- For commands that need public network access (`gh`, `gcloud`, `pulumi`, `git fetch/pull/push`, or uncached package downloads), set `sandbox_permissions` to `require_escalated` on the first call with a brief justification.
+- If a command hits a sandbox write restriction on a shared cache or tool state path, rerun it with `require_escalated` instead of redirecting cache or config env vars (`GOCACHE`, `GOPATH`, `XDG_*`, etc.) to a fresh directory.
+- When a recurring local tool fails due to a missing filesystem write or loopback rule in the Codex sandbox, mention it in your response and recommend the exact path or domain to add to `~/.codex/config.toml`.
