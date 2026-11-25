@@ -103,6 +103,22 @@ prerequisites that belong to the unit; exclude unrelated work and optional
 future follow-ups. List related tickets when they help identify the same review
 unit; sharing a topic alone does not establish membership.
 
+When an independently shippable base PR is a shared dependency for one or more
+separate downstream review bundles, express each bundle boundary explicitly with
+a horizontal rule (`---`), a short bold boundary label, and a numbered list
+restarting at `1.`:
+
+- **On the shared base PR:** List the base first in its own standalone section
+  (for example `**Standalone base (ships independently)**`), then add one
+  `---`-separated section per independent downstream bundle that builds on it
+  (for example `**Downstream bundle — <name> (<ticket>)** *(builds on #100)*`),
+  restarting numbering at `1.` in each section.
+- **On each downstream PR:** List the shared base prerequisite in a
+  `**Shared base (ships independently)**` section above `---`, then list only
+  that downstream bundle's PRs under `**This bundle**` restarting at `1.`. Omit
+  unrelated sibling bundles so reviewers see only the PRs required to review and
+  ship this unit.
+
 The bundle does not replace Linear keyword references. Repeat relevant tickets
 in the references list with the appropriate linking or closing keyword when
 needed for association or automation; do not remove it as redundant.
@@ -240,7 +256,7 @@ Before posting, verify the draft against this checklist:
 3. **Scan test passes:** Reading only the title, opening, headings, diff/schema blocks, diagrams, tables, and bold bullet stems communicates the net change, motivation, and core model.
 4. **Separation holds:** Functional behaviour comes first; consequential internal architecture is in a separate section; routine implementation mechanics (timers, local state, helper names) are omitted.
 5. **Zero duplication:** Each capability, contract, or guarantee is explained in one place and one representation.
-6. **Review bundle is complete when required:** The description starts with `### Review bundle`, one linked ticket or related tickets, and every involved PR in rollout or logical review order. Mark this PR, resolve each reference relative to the destination repository, and avoid repeating expanded titles. Keep ticket sets and PR membership consistent across copies. Apply this check to initial and maintenance bodies too; verify membership and order against live sources.
+6. **Review bundle is complete when required:** The description starts with `### Review bundle`, one linked ticket or related tickets, and every involved PR in rollout or logical review order. Mark this PR, resolve each reference relative to the destination repository, and avoid repeating expanded titles. When an independently shippable base feeds separate downstream bundles, separate bundle boundaries with `---`, short bold labels, and restarted numbering (showing all downstream bundles on the base PR, and only the shared base plus this bundle on each downstream PR). Keep ticket sets and PR membership consistent across copies. Apply this check to initial and maintenance bodies too; verify membership and order against live sources.
 
 When subagent delegation is available on a substantial PR, pass only the proposed title and agent-authored body (excluding human-authored sections) to an isolated subagent with no repo access or tools:
 
@@ -257,7 +273,7 @@ Return:
    - Functional behaviour must precede internal architecture without interleaving or narrating routine mechanics (timers, cache wiring, local hooks).
    - No capability or guarantee repeated across multiple sections or representations.
    - Diagrams must show real branching, convergence, or containment with unambiguous arrows.
-   - For a multi-PR change, the body must start with `### Review bundle`: linked ticket or related tickets, complete ordered PR list using repository-appropriate references, and this PR marked, without duplicated titles or introductory prose between the ticket line and list.
+   - For a multi-PR change, the body must start with `### Review bundle`: linked ticket or related tickets, complete ordered PR list using repository-appropriate references, and this PR marked, without duplicated titles or introductory prose between the ticket line and list. When an independently shippable base feeds separate downstream bundles, bundle boundaries must use `---`, short bold labels, and restarted `1.` numbering (base lists each downstream bundle; each downstream PR lists only the shared base plus its own bundle).
 3. PASS or FAIL with exact locations of any failures. Do not rewrite the text.
 ```
 

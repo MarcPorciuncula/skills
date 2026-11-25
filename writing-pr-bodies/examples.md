@@ -98,6 +98,57 @@ server/client change, so retain both links in each body. A merely related
 follow-up that is not needed to review or deliver this unit stays outside the
 bundle. Keep PR-specific linking or closing keywords in each body's references.
 
+### Shared base with separate downstream bundles
+
+When an independently shippable base PR is a dependency for multiple separate
+downstream bundles, use `---`, short bold boundary labels, and restarted `1.`
+numbering to separate mergeable boundaries while keeping dependencies clear.
+
+On the shared base PR (`owner/backend#3206`):
+
+```markdown
+### Review bundle
+
+Ticket: [AI-3046: Layer 1 triggers and automations v1](https://linear.app/alcova/issue/AI-3046)
+
+**Standalone base (ships independently)**
+1. #3206 **(this PR)**
+
+---
+
+**Downstream bundle — Paired Automation Agent (AI-3052)** *(builds on #3206)*
+1. #3219
+2. owner/web#1472
+
+---
+
+**Downstream bundle — Workflow WAIT triggers (AI-3053)** *(builds on #3206)*
+1. #3220
+2. owner/web#1471
+
+---
+```
+
+On a downstream PR (`owner/web#1472`), include the shared base prerequisite and
+only its own bundle so reviewers do not assume the sibling bundle is coupled:
+
+```markdown
+### Review bundle
+
+Ticket: [AI-3052: Paired Automation Agent](https://linear.app/alcova/issue/AI-3052)
+
+**Shared base (ships independently)**
+1. owner/backend#3206
+
+---
+
+**This bundle**
+1. owner/backend#3219
+2. #1472 **(this PR)**
+
+---
+```
+
 ## Small behaviour change
 
 ```markdown
