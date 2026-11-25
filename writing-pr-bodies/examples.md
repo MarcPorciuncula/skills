@@ -98,6 +98,57 @@ server/client change, so retain both links in each body. A merely related
 follow-up that is not needed to review or deliver this unit stays outside the
 bundle. Keep PR-specific linking or closing keywords in each body's references.
 
+### Shared base with separate downstream bundles
+
+When an independently shippable base PR is a dependency for multiple separate
+downstream bundles, use `---`, short bold boundary labels, and restarted `1.`
+numbering to separate mergeable boundaries while keeping dependencies clear.
+
+On the shared base PR (`owner/backend#100`):
+
+```markdown
+### Review bundle
+
+Ticket: [ENG-100: Add shared base service](https://linear.app/<workspace>/issue/ENG-100)
+
+**Standalone base (ships independently)**
+1. #100 **(this PR)**
+
+---
+
+**Downstream bundle — Consumer A (ENG-101)** *(builds on #100)*
+1. #101
+2. owner/web#201
+
+---
+
+**Downstream bundle — Consumer B (ENG-102)** *(builds on #100)*
+1. #102
+2. owner/web#202
+
+---
+```
+
+On a downstream PR (`owner/web#201`), include the shared base prerequisite and
+only its own bundle so reviewers do not assume the sibling bundle is coupled:
+
+```markdown
+### Review bundle
+
+Ticket: [ENG-101: Add Consumer A](https://linear.app/<workspace>/issue/ENG-101)
+
+**Shared base (ships independently)**
+1. owner/backend#100
+
+---
+
+**This bundle**
+1. owner/backend#101
+2. #201 **(this PR)**
+
+---
+```
+
 ## Small behaviour change
 
 ```markdown
