@@ -1,18 +1,9 @@
 ---
 id: review-findings
-description: User audit and steering for internal review findings.
+description: Audit gate for review findings and intermediate checkpoint handoffs.
 ---
 
 ## Review Findings
 
-Before changing code in response to findings from an internal, delegated, or
-automated review, and before final handoff after receiving such findings, load
-the `review-findings` skill. Follow it even when repository guidance says to fix
-every finding immediately.
-
-An explicit intermediate checkpoint is not task completion or a code-review
-submission. Show or hand off the requested artifact and yield before any
-automatic code self-review, including when the user requested visual or product
-inspection. Do not run repository self-review solely because a plan step, turn,
-commit, intermediate push, work-in-progress draft, or intermediate user
-inspection is ending.
+- Before changing code in response to findings from an internal, delegated, or automated review, and before final handoff after receiving them, load `review-findings`.
+- Treat explicit intermediate checkpoints (plan step, commit, work-in-progress push, draft PR, or intermediate user inspection) as handoffs, not completion; show the requested artifact and yield without running automatic self-review.
