@@ -1,13 +1,13 @@
 ---
 name: writing-specs
 description: >
-  Write, revise, or review software specifications, architecture documents,
-  RFCs, and substantive technical design tickets at spec altitude. TRIGGER when
-  the user asks to write a spec, draft a design doc or RFC, specify an
-  architectural or contract boundary in the repository or a ticket, or update
-  an existing specification. SKIP routine implementation without a requested
-  spec, pull request bodies (use writing-pr-bodies), and lightweight issue
-  triage.
+  Write, revise, cross-check, or review software specifications, architecture
+  documents, RFCs, and substantive technical design tickets at spec altitude.
+  TRIGGER when the user asks to write a spec, draft a design doc or RFC,
+  specify an architectural or contract boundary in the repository or a ticket,
+  update an existing specification, or cross-check a spec. SKIP routine
+  implementation without a requested spec, pull request bodies (use
+  writing-pr-bodies), and lightweight issue triage.
 ---
 
 # Writing Specifications and Design Documents
@@ -78,17 +78,52 @@ Distill the non-negotiable rules of the design into a numbered **Invariants** li
 
 Include a compact `Alternative | Decision` table recording plausible designs that were rejected and the concrete structural reason they fail (such as coupling failure domains, violating single-source-of-truth authority, or requiring cross-table unions on replay). This prevents implementers and reviewers from re-proposing rejected shortcuts.
 
-## 4. Calibrate contract precision and implementation latitude
+## 4. Calibrate spec altitude and implementation latitude
 
-Give the implementer exact shapes where boundaries meet, while preserving freedom over local code mechanics:
+Select the spec altitude before drafting. Default to architectural altitude unless the user explicitly asks for low-level planning:
 
-- **Binding contracts vs. indicative shapes:** Provide exact protobuf/RPC declarations, JSON payloads, SQL/ent schema trees, or discriminator tables when they define a cross-component contract, migration, or UI-to-backend boundary. When showing a Go signature or internal struct to illustrate data flow, label it as an **indicative shape** and state what is binding (*"The sequencing and ownership above are the contract; exact method splits are implementation decisions"*).
+| Mode | Trigger | Assumed implementer | Required content |
+|---|---|---|---|
+| **Architectural spec** *(default)* | Any normal request to write a spec, design doc, or RFC | Capable, codebase-literate implementer that resolves local code mechanics | Required components, ownership, data-model semantics, cross-domain seams, transactional and failure boundaries, invariants, rejected alternatives, behavioural acceptance criteria, and any user-agreed low-level decisions (~150 to 300 lines for a single-PR or single-domain spec) |
+| **Detailed / `on-rails` spec** *(opt-in)* | Only when the user explicitly requests a detailed, low-level, or `on-rails` spec, or names a lower-reasoning or high-throughput executor | Executor that needs local implementation decisions pre-resolved | Everything in an architectural spec plus concrete package and file maps, exact proto/DDL/interface signatures, and ordered implementation slices |
+
+Apply these precision rules in the default architectural mode:
+
+- **Include low-level detail only by contract or agreement:** Specify exact wire keys, backwards-compatible column or enum names, cross-domain interfaces, or low-level mechanics when they define an externally locked contract or were explicitly agreed with the user during design discussion. Do not invent low-level mechanics on the user's behalf to put implementation on rails.
+- **Specify data-model semantics over full DDL:** State entities, ownership, immutability, uniqueness and concurrency keys, and RLS or visibility rules. Omit unagreed column defaults, `CHECK` constraints, secondary indexes, and full `.proto` or SQL DDL dumps unless they are externally locked contracts.
+- **State the delegation boundary explicitly:** Include a one-line clause stating that the boundaries, sequencing, and ownership rules are binding while internal file layout, helper splits, and local DTO shapes are implementation choices. When showing a Go signature or internal struct to illustrate data flow, label it as an **indicative shape**.
+- **Keep code blocks minimal:** Restrict code blocks to cross-boundary seams, small wire shapes, and compact ASCII flows.
 - **Worked state or history traces:** When specifying a state machine, reducer, or multi-step protocol (such as join arrival deduplication or event-sourced prefix reduction), include a short step-by-step trace (`1. Event A -> state X`) showing how concrete inputs advance the state.
-- **UI surfaces and affordances:** When the spec covers a user-facing screen or workflow, state the primary user task, include an affordance tree (`map-ui-affordances`) or a `User need | Affordance | Consequence if absent` table, and map domain states to derived UI presentation states (`Domain state | Presentation`).
-- **Use codebase paths as grounding anchors, not edit scripts:** Cite existing files, functions, or rules (`ent/rules/filter_task.go`, `meetings.go:1455`) to ground where a boundary lives today or which existing pattern to mirror. Never turn a spec into a line-by-line edit script.
+- **UI surfaces and affordances:** When the spec covers a user-facing screen or workflow, state the primary user task, include an affordance tree (using `map-ui-affordances` if available) or a `User need | Affordance | Consequence if absent` table, and map domain states to derived UI presentation states (`Domain state | Presentation`).
+- **Ground in codebase anchors without line numbers:** Cite existing packages, files, types, or rules (`ent/rules/filter_task.go`, `pkg/domains/triggers/`) to anchor where a boundary lives today or which pattern to mirror. Do not cite `file:line` numbers, prescribe per-file layouts for new packages, or turn a spec into a line-by-line edit script.
 
 ## 5. Keep scope splits, open questions, and acceptance clean
 
 - **Explicit `Out of scope` and `Open questions`:** List excluded capabilities (linking to the follow-up ticket that owns them) and unresolved design questions (with recommended defaults) in dedicated sections. Never hide `TBD` inside a settled requirement.
 - **Focused acceptance direction, not a second copy of the spec:** Keep `Acceptance criteria` (or `Acceptance direction`) to a tight list of observable end-to-end properties and boundary proofs (such as idempotency under duplicate delivery, permission enforcement, or zero cross-domain imports). Do not append a 15-bullet checklist that merely repeats every paragraph of the spec body.
 - **Re-synthesize when updating a living spec:** When decisions evolve, integrate the new design directly into the governing sections and remove superseded claims instead of stacking `Update:` notes at the bottom.
+
+## 6. Cross-check a spec when requested
+
+Run this cross-check workflow only when the user explicitly asks to cross-check or multi-agent review a spec. Do not run it automatically on every spec.
+
+1. **Dispatch a scoped, read-only reviewer:** Send an independent agent to inspect the spec against the repository. Instruct the reviewer to report only:
+   - Missing or violated invariants, security or RLS gaps, or unaddressed concurrency and failure/effect boundaries.
+   - Contradictions with real codebase constraints or existing contracts.
+   - Unresolved product, UX, scope, or compatibility forks.
+   Instruct the reviewer to skip naming, internal file-layout, and local DTO-shape nitpicks, and to preserve low-level decisions explicitly agreed with the user.
+2. **Triage every finding in the main agent:** Verify each finding against the codebase and the user's original intent before editing the spec, assigning one disposition:
+
+| Disposition | Criteria | Action |
+|---|---|---|
+| `Fix` | Verified invariant gap, boundary/security/effect defect, or real codebase contradiction with one clear fix aligned with user intent | Re-synthesize the governing section directly |
+| `Lift` | Minor inaccuracy in an unagreed implementation-level detail (such as a helper signature, index, or internal type) that does not affect architecture in default architectural mode | Delete the detail or lift it to a higher-level requirement instead of patching low-level mechanics (in `on-rails` mode, use `Fix` instead) |
+| `Escalate` | Genuine fork in product semantics, scope, risk tolerance, or compatibility where multiple valid answers exist | Record in `Open questions` with concrete options, trade-off, and a recommendation for the user |
+| `Reject` | Out of scope, speculative hardening, or reviewer preference | Drop with a one-line rationale; do not debate across rounds |
+
+3. **Cap convergence at 3 rounds:**
+   - **Round 1:** Full architectural review against the codebase.
+   - **Round 2 (only if Round 1 made substantive `Fix` edits):** Targeted re-check of the modified sections and boundaries only, not a fresh open-ended hunt.
+   - **Round 3 (only if Round 2 uncovered a new boundary contradiction):** Final convergence check, then stop.
+   Stop early whenever a round produces zero `Fix` items. Move any issue still contested after Round 3 to `Escalate` for human decision.
+4. **Report a concise handoff:** Present the updated spec link, a brief list of auto-applied `Fix` and `Lift` changes, and any `Escalate` items requiring user input. Do not dump raw multi-round reviewer transcripts.
